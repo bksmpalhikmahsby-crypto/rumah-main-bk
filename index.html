@@ -1,0 +1,1532 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rumah Main BK • SMP Al Hikmah Surabaya</title>
+<style>
+:root{
+  --teal-deep:#0f3d3e;
+  --teal:#1d6b66;
+  --gold:#d4a857;
+  --cream:#faf3e2;
+  --sand:#f0e3c4;
+  --coral:#e0664f;
+  --ink:#1b2a2a;
+  --good:#3f8f5f;
+  --bad:#c2503f;
+  --display: 'Marhey', 'Trebuchet MS', sans-serif;
+  --body: 'Tahoma', 'Segoe UI', sans-serif;
+}
+@font-face{
+  font-family:'Marhey';
+  src: local('Marhey');
+}
+*{box-sizing:border-box; margin:0; padding:0; -webkit-touch-callout:none;}
+.game-area, .game-area *, canvas, .seq-pad, .seq-btn, .btn, .btn-row, .keyboard, .key, .mod{
+  -webkit-user-select:none; -moz-user-select:none; user-select:none;
+}
+html,body{
+  min-height:100vh;
+  background: radial-gradient(circle at 20% 0%, #134d4d 0%, var(--teal-deep) 55%, #0a2a2b 100%);
+  font-family: var(--body);
+  color: var(--cream);
+  overflow-x:hidden;
+}
+#app{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding: 28px 16px 60px;
+}
+.screen{
+  width:100%;
+  max-width:760px;
+  display:none;
+  flex-direction:column;
+  gap:18px;
+  animation: fadeUp .5s ease;
+}
+.screen.active{display:flex;}
+@keyframes fadeUp{
+  from{opacity:0; transform:translateY(14px);}
+  to{opacity:1; transform:translateY(0);}
+}
+.eyebrow{
+  text-transform:uppercase;
+  letter-spacing:.18em;
+  font-size:11px;
+  color:var(--gold);
+  font-weight:700;
+}
+h1{
+  font-family: var(--display);
+  font-size: clamp(28px,6vw,42px);
+  color: var(--cream);
+  line-height:1.15;
+}
+h2{
+  font-family: var(--display);
+  font-size: clamp(22px,4.5vw,28px);
+  color: var(--gold);
+}
+.card{
+  background: rgba(250,243,226,0.06);
+  border: 1px solid rgba(212,168,87,0.35);
+  border-radius: 18px;
+  padding: 22px;
+  backdrop-filter: blur(2px);
+}
+.ornament{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color: var(--gold);
+  font-size:13px;
+}
+.ornament .line{flex:1; height:1px; background:linear-gradient(90deg, transparent, var(--gold), transparent);}
+p{line-height:1.6; font-size:15px; color:#ece2c8;}
+.ayat{
+  font-style:italic;
+  border-left:3px solid var(--gold);
+  padding-left:14px;
+  font-size:15px;
+  color:#f5e9c8;
+}
+.ayat small{display:block; margin-top:6px; color:var(--gold); font-style:normal; font-size:12px; letter-spacing:.05em;}
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  background: linear-gradient(135deg, var(--gold), #c2913f);
+  color: var(--teal-deep);
+  font-weight:700;
+  border:none;
+  border-radius:999px;
+  padding:14px 28px;
+  font-size:15px;
+  cursor:pointer;
+  transition: transform .15s ease, box-shadow .15s ease;
+  box-shadow: 0 6px 18px rgba(212,168,87,0.25);
+}
+.btn:hover{transform:translateY(-2px); box-shadow:0 10px 22px rgba(212,168,87,0.35);}
+.btn:active{transform:translateY(0);}
+.btn.ghost{
+  background:transparent;
+  color: var(--cream);
+  border:1px solid rgba(250,243,226,0.4);
+  box-shadow:none;
+}
+.btn.ghost:hover{border-color:var(--gold); color:var(--gold);}
+.btn:disabled{opacity:.45; cursor:not-allowed; transform:none; box-shadow:none;}
+.btn-row{display:flex; gap:12px; flex-wrap:wrap;}
+
+/* header / top bar across module screens */
+.topbar{
+  display:flex; justify-content:space-between; align-items:center; gap:10px; width:100%;
+}
+.topbar .school{font-size:12px; color:var(--gold); letter-spacing:.08em;}
+
+/* user counter box */
+.counter-box{
+  display:flex; align-items:center; gap:14px;
+  background: linear-gradient(135deg, rgba(212,168,87,0.18), rgba(224,102,79,0.12));
+  border:1px solid rgba(212,168,87,0.4);
+  border-radius:16px;
+  padding:16px 20px;
+}
+.counter-box .num{
+  font-family: var(--display);
+  font-size:34px;
+  color:var(--gold);
+  line-height:1;
+}
+.counter-box .label{font-size:12px; color:#ece2c8; letter-spacing:.05em;}
+
+/* module grid */
+.grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px,1fr));
+  gap:14px;
+}
+.mod{
+  background: rgba(250,243,226,0.05);
+  border:1px solid rgba(212,168,87,0.25);
+  border-radius:16px;
+  padding:16px 14px;
+  display:flex; flex-direction:column; gap:8px;
+  cursor:pointer;
+  transition: border-color .15s, transform .15s;
+  position:relative;
+}
+.mod:hover{border-color:var(--gold); transform:translateY(-3px);}
+.mod.locked{opacity:.5; cursor:not-allowed;}
+.mod.locked:hover{transform:none; border-color:rgba(212,168,87,0.25);}
+.mod .emoji{font-size:30px;}
+.mod .name{font-size:13.5px; font-weight:700; color:var(--cream);}
+.mod .tag{font-size:10.5px; color:var(--gold); letter-spacing:.05em;}
+.badge-soon{
+  position:absolute; top:10px; right:10px;
+  font-size:9px; background:var(--coral); color:white; padding:3px 7px; border-radius:999px;
+}
+
+/* instruction list */
+ul.instr{padding-left:18px; display:flex; flex-direction:column; gap:6px;}
+ul.instr li{font-size:14.5px; color:#ece2c8; line-height:1.5;}
+
+/* game area generic */
+.game-area{
+  background: rgba(0,0,0,0.18);
+  border-radius:18px;
+  border:1px solid rgba(212,168,87,0.25);
+  padding:16px;
+  display:flex; flex-direction:column; gap:12px;
+  align-items:center;
+}
+.hud{display:flex; justify-content:space-between; width:100%; font-size:13px; color:var(--gold); font-weight:700;}
+
+/* tembak burung */
+#birdCanvas{background:linear-gradient(180deg,#9fd6e0,#cdeedd); border-radius:14px; touch-action:none; max-width:100%;}
+
+/* deret angka */
+.seq-pad{display:grid; grid-template-columns:repeat(3,70px); gap:10px;}
+.seq-btn{
+  width:70px; height:70px; border-radius:14px; border:none; font-size:22px; font-weight:700;
+  background: var(--sand); color:var(--teal-deep); cursor:pointer; transition: filter .1s;
+}
+.seq-btn.flash{background:var(--gold); box-shadow:0 0 18px var(--gold);}
+.seq-btn:active{filter:brightness(0.9);}
+
+/* labirin */
+#mazeWrap{display:flex; justify-content:center;}
+#mazeCanvas{background:#0b2627; border-radius:10px; touch-action:none; max-width:100%; height:auto;}
+
+/* tebak kata */
+.word-letters{display:flex; gap:8px; flex-wrap:wrap; justify-content:center;}
+.letter-slot{
+  width:34px; height:42px; border-bottom:3px solid var(--gold);
+  display:flex; align-items:center; justify-content:center;
+  font-size:20px; font-weight:700; color:var(--cream); font-family:var(--display);
+}
+.keyboard{display:flex; flex-wrap:wrap; gap:6px; justify-content:center; max-width:520px;}
+.key{
+  width:36px; height:40px; border-radius:8px; border:none; background:var(--sand); color:var(--teal-deep);
+  font-weight:700; cursor:pointer; font-size:14px;
+}
+.key:disabled{opacity:.3; cursor:not-allowed;}
+.key.correct{background:var(--good); color:white;}
+.key.wrong{background:var(--bad); color:white;}
+
+/* cari kotak sama */
+.match-grid{display:grid; grid-template-columns:repeat(4,64px); gap:8px;}
+.match-card{
+  width:64px; height:64px; border-radius:10px; background:var(--sand);
+  display:flex; align-items:center; justify-content:center; font-size:26px;
+  cursor:pointer; transition:transform .25s; user-select:none;
+}
+.match-card.flipped{background:var(--teal); transform:scale(1.04);}
+.match-card.matched{background:rgba(63,143,95,0.35); cursor:default;}
+@media (max-width:420px){
+  .match-grid{grid-template-columns:repeat(4,56px);}
+  .match-card{width:56px; height:56px; font-size:22px;}
+}
+
+/* puzzle geser */
+.puzzle-grid{display:grid; gap:4px;}
+.puzzle-tile{
+  display:flex; align-items:center; justify-content:center;
+  background:var(--sand); color:var(--teal-deep); font-weight:700; font-size:18px;
+  border-radius:8px; cursor:pointer; user-select:none;
+}
+.puzzle-tile.empty{background:transparent; cursor:default;}
+
+.result-banner{
+  text-align:center; padding:20px; border-radius:16px;
+}
+.result-banner.win{background:rgba(63,143,95,0.18); border:1px solid var(--good);}
+.result-banner.lose{background:rgba(194,80,63,0.18); border:1px solid var(--bad);}
+.result-banner .quote{font-style:italic; margin-top:8px; color:var(--gold);}
+
+footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:center;}
+@media (max-width:480px){
+  .seq-pad{grid-template-columns:repeat(3,58px);}
+  .seq-btn{width:58px; height:58px; font-size:18px;}
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ===================== HALAMAN 1 : SAMBUTAN & INSTRUKSI ===================== -->
+  <section class="screen active" id="screen-welcome">
+    <div class="ornament"><div class="line"></div><span>BIMBINGAN &amp; KONSELING</span><div class="line"></div></div>
+    <div class="card" style="text-align:center;">
+      <div class="eyebrow">SMP Al Hikmah Surabaya</div>
+      <h1>أهلاً وسهلاً<br>Ahlan wa Sahlan!</h1>
+      <p>Selamat datang di <strong>Rumah Main BK</strong> — tempat bermain sambil mengenal diri sendiri lebih baik. Di sini, kamu akan melatih fokus, daya ingat, logika, dan kosa kata, sambil tetap merasa senang.</p>
+    </div>
+
+    <div class="card">
+      <h2>🎯 Tujuan Permainan</h2>
+      <p>Bukan soal menang atau kalah — tujuan utama kita adalah <strong>bahagia</strong>. Setiap permainan dirancang untuk membantumu mengenali kekuatanmu, melatih kesabaran, dan menikmati proses belajar tanpa tekanan.</p>
+    </div>
+
+    <div class="card">
+      <h2>🔥 Semangat dari Kami</h2>
+      <p>"Kamu tidak harus sempurna untuk mulai bermain. Kamu hanya perlu berani mencoba. Setiap level yang kamu lalui adalah bukti bahwa kamu sedang bertumbuh!"</p>
+    </div>
+
+    <div class="card">
+      <h2>📖 Bekal Semangat dari Al-Qur'an</h2>
+      <div class="ayat">
+        "Maka sesungguhnya bersama kesulitan ada kemudahan."
+        <small>QS. Al-Insyirah (94): 6</small>
+      </div>
+      <div class="ayat" style="margin-top:14px;">
+        "Dan bersegeralah kamu kepada ampunan dari Tuhanmu dan kepada surga... yang disediakan untuk orang-orang yang bertakwa."
+        <small>QS. Ali 'Imran (3): 133 — semangat untuk terus menjadi yang terbaik</small>
+      </div>
+      <div class="ayat" style="margin-top:14px;">
+        "Sesungguhnya Allah menyukai orang yang apabila mengerjakan sesuatu, dilakukan dengan tekun (itmam)."
+        <small>HR. Baihaqi — semangat melakukan yang terbaik dalam setiap usaha</small>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📋 Sebelum Mulai, Baca Dulu Ya!</h2>
+      <ul class="instr">
+        <li>Pilih permainan yang ingin kamu coba di halaman berikutnya.</li>
+        <li>Setiap permainan punya instruksi singkat — baca dulu sebelum bermain.</li>
+        <li>Kalah atau menang itu wajar, yang penting kamu sudah berusaha dan tetap senang.</li>
+        <li>Gunakan permainan ini di tempat yang tenang supaya kamu bisa fokus.</li>
+        <li>Tarik napas dulu, senyum, lalu klik tombol di bawah untuk lanjut 😊</li>
+      </ul>
+    </div>
+
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn" onclick="goTo('screen-menu'); refreshCounter();">Lanjut ke Pilihan Permainan →</button>
+    </div>
+  </section>
+
+  <!-- ===================== HALAMAN 2 : MENU MODUL ===================== -->
+  <section class="screen" id="screen-menu">
+    <div class="topbar">
+      <div>
+        <div class="eyebrow">Rumah Main BK</div>
+        <h2 style="font-size:20px;">Pilih Permainanmu</h2>
+      </div>
+      <button class="btn ghost" onclick="goTo('screen-welcome')">← Kembali</button>
+    </div>
+
+    <div class="counter-box">
+      <div class="num" id="userCount">—</div>
+      <div class="label">Total siswa<br>yang sudah bermain<br>di platform ini</div>
+    </div>
+
+    <div class="card">
+      <p style="margin-bottom:10px;">8 permainan siap dimainkan. Selamat mencoba! 🌱</p>
+      <div class="grid">
+        <div class="mod" onclick="goTo('instr-tembak')"><div class="emoji">🐦</div><div class="name">Tembak Burung</div><div class="tag">Kecepatan</div></div>
+        <div class="mod" onclick="goTo('instr-ingat')"><div class="emoji">🔢</div><div class="name">Mengingat Deret</div><div class="tag">Daya Ingat</div></div>
+        <div class="mod" onclick="goTo('instr-maze')"><div class="emoji">🌀</div><div class="name">Labirin</div><div class="tag">Konsentrasi</div></div>
+        <div class="mod" onclick="goTo('instr-word')"><div class="emoji">🔤</div><div class="name">Tebak Kata</div><div class="tag">Kosa Kata</div></div>
+
+        <div class="mod" onclick="goTo('instr-mobil')"><div class="emoji">🚗</div><div class="name">Mobil Rintangan</div><div class="tag">Konsentrasi</div></div>
+        <div class="mod" onclick="goTo('instr-kotak')"><div class="emoji">🔲</div><div class="name">Cari Kotak Sama</div><div class="tag">Tebakan</div></div>
+        <div class="mod" onclick="goTo('instr-puzzle')"><div class="emoji">🧩</div><div class="name">Puzzle</div><div class="tag">Visual</div></div>
+        <div class="mod" onclick="goTo('instr-hitung')"><div class="emoji">➗</div><div class="name">Logika Berhitung</div><div class="tag">Numerik</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ INSTRUKSI + GAME: TEMBAK BURUNG ============ -->
+  <section class="screen" id="instr-tembak">
+    <div class="topbar"><div class="eyebrow">Modul 1 • Kecepatan</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="card">
+      <h2>🐦 Tembak Burung</h2>
+      <p>Latihan ini melatih kecepatan reaksi dan fokus matamu.</p>
+      <ul class="instr">
+        <li>Burung akan muncul dan terbang di area permainan secara acak.</li>
+        <li>Klik/tap burung sebelum ia menghilang untuk mendapat poin.</li>
+        <li>Kamu punya waktu 30 detik — semakin cepat dan tepat, semakin tinggi skormu.</li>
+        <li><strong>Tantangan:</strong> kumpulkan minimal 20 poin untuk jadi "Penembak Jitu"!</li>
+      </ul>
+    </div>
+    <div class="btn-row" style="justify-content:center;"><button class="btn" onclick="startBird()">Mulai Bermain</button></div>
+  </section>
+
+  <section class="screen" id="game-tembak">
+    <div class="topbar"><div class="eyebrow">Tembak Burung</div><button class="btn ghost" onclick="stopBird(); goTo('screen-menu')">← Menu</button></div>
+    <div class="game-area">
+      <div class="hud"><span id="birdScore">Skor: 0</span><span id="birdTime">Waktu: 30</span></div>
+      <canvas id="birdCanvas" width="640" height="360"></canvas>
+    </div>
+  </section>
+
+  <section class="screen" id="result-tembak">
+    <div id="resultBannerTembak" class="result-banner"></div>
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn" onclick="startBird()">Main Lagi</button>
+      <button class="btn ghost" onclick="goTo('screen-menu')">Pilih Permainan Lain</button>
+    </div>
+  </section>
+
+  <!-- ============ INSTRUKSI + GAME: MENGINGAT DERET ANGKA ============ -->
+  <section class="screen" id="instr-ingat">
+    <div class="topbar"><div class="eyebrow">Modul 2 • Daya Ingat</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="card">
+      <h2>🔢 Mengingat Deret Angka</h2>
+      <p>Permainan ini melatih daya ingat jangka pendekmu.</p>
+      <ul class="instr">
+        <li>Perhatikan tombol angka yang menyala secara berurutan, setelah hitungan mundur 3-2-1.</li>
+        <li>Setelah selesai, tekan tombol-tombol itu dengan urutan yang sama.</li>
+        <li>Setiap level berhasil, urutan akan bertambah panjang — dari yang mudah (sedikit angka) sampai paling sulit (deret sangat panjang).</li>
+        <li>Mulai level 10, tata letak tombol akan <strong>diacak ulang</strong> setiap ronde dan kedipannya lebih cepat — jauh lebih menantang!</li>
+        <li><strong>Tantangan:</strong> capai level 15 untuk jadi "Master Memori"!</li>
+      </ul>
+    </div>
+    <div class="btn-row" style="justify-content:center;"><button class="btn" onclick="startMemory()">Mulai Bermain</button></div>
+  </section>
+
+  <section class="screen" id="game-ingat">
+    <div class="topbar"><div class="eyebrow">Mengingat Deret Angka</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="game-area">
+      <div class="hud"><span id="memLevel">Level: 1</span><span id="memStatus">Perhatikan...</span></div>
+      <div class="seq-pad" id="seqPad"></div>
+    </div>
+  </section>
+
+  <section class="screen" id="result-ingat">
+    <div id="resultBannerIngat" class="result-banner"></div>
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn" onclick="startMemory()">Main Lagi</button>
+      <button class="btn ghost" onclick="goTo('screen-menu')">Pilih Permainan Lain</button>
+    </div>
+  </section>
+
+  <!-- ============ INSTRUKSI + GAME: LABIRIN ============ -->
+  <section class="screen" id="instr-maze">
+    <div class="topbar"><div class="eyebrow">Modul 6 • Konsentrasi</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="card">
+      <h2>🌀 Labirin</h2>
+      <p>Permainan ini melatih konsentrasi dan kesabaran dalam mencari jalan keluar.</p>
+      <ul class="instr">
+        <li>Sebelum bergerak, kamu diberi <strong>waktu berpikir</strong> untuk mengamati seluruh jalur labirin (8–12 detik, makin sulit makin lama).</li>
+        <li>Setelah waktu berpikir habis, jam <strong>kecepatan</strong> mulai berjalan — selesaikan sebelum waktu habis (90–220 detik, sesuai tingkat).</li>
+        <li>Gunakan tombol arah panah (atau tombol di layar untuk HP) untuk menggerakkan titik emas.</li>
+        <li>Temukan jalan dari titik awal ke pintu keluar (warna hijau) — jalan keluar selalu tersedia, tapi sengaja ditempatkan di titik paling jauh dan berliku.</li>
+        <li>Ada 3 tingkat: Mudah, Sedang, Sulit — semakin tinggi tingkatnya, labirin makin besar, jalurnya makin berliku, dan waktu berpikir-kecepatan makin menantang.</li>
+        <li><strong>Tantangan:</strong> selesaikan tingkat Sulit sebelum waktu habis untuk jadi "Penjelajah Sejati"!</li>
+      </ul>
+    </div>
+    <div class="btn-row" style="justify-content:center;"><button class="btn" onclick="startMaze(0)">Mulai Bermain</button></div>
+  </section>
+
+  <section class="screen" id="game-maze">
+    <div class="topbar"><div class="eyebrow" id="mazeLevelLabel">Labirin • Mudah</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="game-area">
+      <div class="hud"><span id="mazeMoves">Langkah: 0</span><span id="mazeHint">Gunakan tombol arah</span></div>
+      <div id="mazeWrap"><canvas id="mazeCanvas" width="320" height="320"></canvas></div>
+      <div class="btn-row">
+        <button class="btn ghost" onclick="mazeMove(0,-1)">↑</button>
+        <button class="btn ghost" onclick="mazeMove(0,1)">↓</button>
+        <button class="btn ghost" onclick="mazeMove(-1,0)">←</button>
+        <button class="btn ghost" onclick="mazeMove(1,0)">→</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="result-maze">
+    <div id="resultBannerMaze" class="result-banner"></div>
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn" id="mazeNextBtn" onclick="">Lanjut</button>
+      <button class="btn ghost" onclick="goTo('screen-menu')">Pilih Permainan Lain</button>
+    </div>
+  </section>
+
+  <!-- ============ INSTRUKSI + GAME: TEBAK KATA ============ -->
+  <section class="screen" id="instr-word">
+    <div class="topbar"><div class="eyebrow">Modul 9 • Kosa Kata</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="card">
+      <h2>🔤 Tebak Kata</h2>
+      <p>Permainan ini melatih kosa kata Bahasa Indonesia dan Bahasa Inggris.</p>
+      <ul class="instr">
+        <li>Sebuah kata disembunyikan dalam bentuk garis bawah.</li>
+        <li>Tebak huruf satu per satu dengan mengklik papan huruf di bawah.</li>
+        <li>Kamu punya 6 kali kesempatan salah sebelum permainan berakhir.</li>
+        <li>Permainan dimulai dari level <strong>Mudah</strong>, lalu naik ke <strong>Sedang</strong> dan <strong>Sulit</strong> setiap kali kamu berhasil menebak.</li>
+        <li><strong>Tantangan:</strong> tebak kata dengan kesalahan kurang dari 3 untuk jadi "Pakar Kata"!</li>
+      </ul>
+    </div>
+    <div class="btn-row" style="justify-content:center;"><button class="btn" onclick="wordLevel=1; startWord();">Mulai Bermain</button></div>
+  </section>
+
+  <section class="screen" id="game-word">
+    <div class="topbar"><div class="eyebrow">Tebak Kata</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="game-area">
+      <div class="hud"><span id="wordTries">Kesalahan: 0/6</span><span id="wordCategory">Kategori: -</span></div>
+      <div class="word-letters" id="wordLetters"></div>
+      <div class="keyboard" id="wordKeyboard"></div>
+    </div>
+  </section>
+
+  <section class="screen" id="result-word">
+    <div id="resultBannerWord" class="result-banner"></div>
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn" onclick="startWord()">Main Lagi</button>
+      <button class="btn ghost" onclick="goTo('screen-menu')">Pilih Permainan Lain</button>
+    </div>
+  </section>
+
+  <!-- ============ MODUL 3: MOBIL RINTANGAN ============ -->
+  <section class="screen" id="instr-mobil">
+    <div class="topbar"><div class="eyebrow">Modul 3 • Konsentrasi</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="card">
+      <h2>🚗 Mobil Rintangan</h2>
+      <p>Permainan ini melatih konsentrasi dan refleks dalam menghindari halangan.</p>
+      <ul class="instr">
+        <li>Gunakan tombol kiri/kanan (atau panah keyboard) untuk menggeser mobil.</li>
+        <li>Hindari rintangan yang jatuh dari atas — kamu punya 3 nyawa.</li>
+        <li>Semakin lama bertahan, rintangan akan jatuh semakin cepat.</li>
+        <li><strong>Tantangan:</strong> bertahan hingga 45 detik untuk jadi "Sopir Lincah"!</li>
+      </ul>
+    </div>
+    <div class="btn-row" style="justify-content:center;"><button class="btn" onclick="startCar()">Mulai Bermain</button></div>
+  </section>
+
+  <section class="screen" id="game-mobil">
+    <div class="topbar"><div class="eyebrow">Mobil Rintangan</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="game-area">
+      <div class="hud"><span id="carTime">Waktu: 0s</span><span id="carLives">❤️❤️❤️</span></div>
+      <canvas id="carCanvas" width="320" height="420"></canvas>
+      <div class="btn-row">
+        <button class="btn ghost" onclick="carSetDir(-1)" onmousedown="carSetDir(-1)" onmouseup="carSetDir(0)" ontouchstart="carSetDir(-1)" ontouchend="carSetDir(0)">←</button>
+        <button class="btn ghost" onclick="carSetDir(1)" onmousedown="carSetDir(1)" onmouseup="carSetDir(0)" ontouchstart="carSetDir(1)" ontouchend="carSetDir(0)">→</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="result-mobil">
+    <div id="resultBannerMobil" class="result-banner"></div>
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn" onclick="startCar()">Main Lagi</button>
+      <button class="btn ghost" onclick="goTo('screen-menu')">Pilih Permainan Lain</button>
+    </div>
+  </section>
+
+  <!-- ============ MODUL 4: CARI KOTAK SAMA ============ -->
+  <section class="screen" id="instr-kotak">
+    <div class="topbar"><div class="eyebrow">Modul 4 • Tebakan</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="card">
+      <h2>🔲 Cari Kotak Sama</h2>
+      <p>Permainan ini melatih daya ingat visual dan ketelitian di bawah tekanan waktu.</p>
+      <ul class="instr">
+        <li>Ada 16 kotak tertutup. Klik dua kotak untuk membuka dan melihat isinya.</li>
+        <li>Jika isinya sama, kotak akan tetap terbuka. Jika berbeda, kotak tertutup lagi.</li>
+        <li>Temukan semua 8 pasangan sebelum waktu habis.</li>
+        <li><strong>Mudah:</strong> waktu 90 detik. <strong>Sulit:</strong> waktu 45 detik saja!</li>
+        <li><strong>Tantangan:</strong> selesaikan dalam 24 langkah atau kurang untuk jadi "Mata Elang"!</li>
+      </ul>
+    </div>
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn" onclick="startMatch('Mudah',90)">Mudah (90 detik)</button>
+      <button class="btn" onclick="startMatch('Sulit',45)">Sulit (45 detik)</button>
+    </div>
+  </section>
+
+  <section class="screen" id="game-kotak">
+    <div class="topbar"><div class="eyebrow" id="matchLevelLabel">Cari Kotak Sama</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="game-area">
+      <div class="hud"><span id="matchMoves">Langkah: 0</span><span id="matchFound">Pasangan: 0/8</span><span id="matchTime">⏱️ 0s</span></div>
+      <div class="match-grid" id="matchGrid"></div>
+    </div>
+  </section>
+
+  <section class="screen" id="result-kotak">
+    <div id="resultBannerKotak" class="result-banner"></div>
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn" id="matchAgainBtn">Main Lagi</button>
+      <button class="btn ghost" onclick="goTo('screen-menu')">Pilih Permainan Lain</button>
+    </div>
+  </section>
+
+
+  <!-- ============ MODUL 7: PUZZLE ============ -->
+  <section class="screen" id="instr-puzzle">
+    <div class="topbar"><div class="eyebrow">Modul 7 • Visual</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="card">
+      <h2>🧩 Puzzle Geser</h2>
+      <p>Susun kembali angka secara berurutan dengan menggeser kotak ke ruang kosong.</p>
+      <ul class="instr">
+        <li>Klik kotak yang bersebelahan dengan kotak kosong untuk menggesernya.</li>
+        <li>Susun angka 1 sampai habis secara berurutan dari kiri atas.</li>
+        <li>Pilih tingkat kesulitan: Mudah (3×3) atau Sulit (4×4).</li>
+        <li><strong>Tantangan:</strong> selesaikan tingkat Sulit untuk jadi "Penyusun Andal"!</li>
+      </ul>
+    </div>
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn" onclick="startPuzzle(3)">Mudah (3×3)</button>
+      <button class="btn" onclick="startPuzzle(4)">Sulit (4×4)</button>
+    </div>
+  </section>
+
+  <section class="screen" id="game-puzzle">
+    <div class="topbar"><div class="eyebrow" id="puzzleLabel">Puzzle</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="game-area">
+      <div class="hud"><span id="puzzleMoves">Langkah: 0</span><span></span></div>
+      <div class="puzzle-grid" id="puzzleGrid"></div>
+    </div>
+  </section>
+
+  <section class="screen" id="result-puzzle">
+    <div id="resultBannerPuzzle" class="result-banner"></div>
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn" id="puzzleAgainBtn">Main Lagi</button>
+      <button class="btn ghost" onclick="goTo('screen-menu')">Pilih Permainan Lain</button>
+    </div>
+  </section>
+
+  <!-- ============ MODUL 10: LOGIKA BERHITUNG ============ -->
+  <section class="screen" id="instr-hitung">
+    <div class="topbar"><div class="eyebrow">Modul 10 • Numerik</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="card">
+      <h2>➗ Logika Berhitung</h2>
+      <p>Latih kemampuan calistung (membaca-menulis-berhitung) dan logika angka, dari yang santai sampai yang menantang waktu!</p>
+      <ul class="instr">
+        <li><strong>Mudah:</strong> 15 soal calistung dasar — penjumlahan, pengurangan, perkalian, pembagian sederhana. Tanpa waktu.</li>
+        <li><strong>Sulit:</strong> 15 soal deret pola, hitungan calistung tingkat sedang-sulit, dan logika berpikir. Tanpa waktu.</li>
+        <li><strong>Sangat Sulit:</strong> 15 soal cerita setingkat SMA/kuliah (aljabar, trigonometri, peluang, turunan, dll). Ada <strong>batas waktu di setiap soal</strong>, makin sulit soalnya makin lama waktunya.</li>
+        <li>Setelah menjawab, akan muncul <strong>kunci jawaban dan cara penyelesaian detail</strong> — untuk soal Sangat Sulit juga disertai info jenjang (SMA/Kuliah) dan perkiraan era soal serupa.</li>
+        <li>Setiap kali masuk kembali ke permainan ini, soal akan otomatis <strong>diacak ulang dan berbeda</strong> dari sebelumnya.</li>
+        <li><strong>Tantangan:</strong> jawab benar minimal 11 dari 15 untuk jadi "Jagoan Logika"!</li>
+      </ul>
+    </div>
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn" onclick="startMath('mudah')">Mudah (Calistung)</button>
+      <button class="btn" onclick="startMath('sulit')">Sulit (Pola &amp; Logika)</button>
+      <button class="btn" onclick="startMath('sangat_sulit')">Sangat Sulit (SMA/Kuliah)</button>
+    </div>
+  </section>
+
+  <section class="screen" id="game-hitung">
+    <div class="topbar"><div class="eyebrow" id="mathLabel">Soal 1/15</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="game-area" style="align-items:stretch;">
+      <div class="hud"><span id="mathScore">Skor: 0</span><span id="mathLevelTag">Tingkat: -</span><span id="mathTime">⏱️ -</span></div>
+      <div class="card" style="width:100%; text-align:center;">
+        <p id="mathQuestion" style="font-size:20px; font-weight:700; color:var(--gold); margin-bottom:14px; font-family:var(--display); line-height:1.4;"></p>
+        <div class="btn-row" id="mathOptions" style="justify-content:center;"></div>
+        <div id="mathFeedback" style="display:none; text-align:left; margin-top:16px;">
+          <div id="mathFeedbackBanner" style="padding:10px 14px; border-radius:10px; font-weight:700; margin-bottom:10px;"></div>
+          <div class="ayat" id="mathExplanation" style="margin-bottom:6px;"></div>
+          <div id="mathMeta" style="font-size:12px; color:var(--gold); margin-top:6px;"></div>
+        </div>
+        <div class="btn-row" style="justify-content:center; margin-top:14px;">
+          <button class="btn" id="mathNextBtn" style="display:none;">Lanjut →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="result-hitung">
+    <div id="resultBannerHitung" class="result-banner"></div>
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn" id="mathAgainBtn">Main Lagi</button>
+      <button class="btn ghost" onclick="goTo('screen-menu')">Pilih Permainan Lain</button>
+    </div>
+  </section>
+
+  <footer>Rumah Main BK • SMP Al Hikmah Surabaya — Bermain untuk Bahagia 🌿</footer>
+</div>
+
+<script>
+/* ===================== NAVIGASI ===================== */
+function goTo(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+  stopBird();   // pastikan loop game burung berhenti saat pindah halaman lain
+  stopMemory(); // pastikan timer mengingat-deret berhenti, mencegah deret nyasar di game baru
+  clearMazeTimers(); // pastikan timer labirin berhenti
+  stopCar(); // pastikan loop mobil rintangan berhenti
+  stopMatchTimer(); // pastikan timer cari kotak sama berhenti
+  stopMathTimer(); // pastikan timer logika berhitung (tingkat Sangat Sulit) berhenti
+}
+
+/* ===================== COUNTER PENGGUNA (shared storage) ===================== */
+async function refreshCounter(){
+  try{
+    let visited = sessionStorage.getItem('bk_counted');
+    let result = await window.storage.get('total_pemain', true);
+    let total = result ? parseInt(result.value) : 0;
+    if(!visited){
+      total += 1;
+      await window.storage.set('total_pemain', String(total), true);
+      sessionStorage.setItem('bk_counted','1');
+    }
+    document.getElementById('userCount').textContent = total;
+  }catch(e){
+    try{
+      await window.storage.set('total_pemain', '1', true);
+      document.getElementById('userCount').textContent = '1';
+      sessionStorage.setItem('bk_counted','1');
+    }catch(e2){
+      document.getElementById('userCount').textContent = '–';
+    }
+  }
+}
+
+/* ===================== MOTIVASI ===================== */
+const winQuotes = [
+  "Kerja bagus! Usahamu hari ini membuktikan kamu mampu lebih dari yang kamu kira.",
+  "Mantap! Kemenangan kecil ini adalah langkah besar untuk kepercayaan dirimu.",
+  "Hebat! Teruslah berusaha menjadi yang terbaik, seperti yang Allah cintai dari hamba-Nya yang tekun.",
+  "Selamat! Fokus dan kesabaranmu hari ini membawa hasil yang manis."
+];
+const loseQuotes = [
+  "Tidak masalah! Setiap percobaan adalah latihan menuju versi terbaik dirimu.",
+  "Belum berhasil bukan berarti gagal — itu artinya kamu sedang belajar. Coba lagi, ya!",
+  "Bersama kesulitan ada kemudahan (QS. Al-Insyirah:6). Yuk, coba sekali lagi dengan tenang.",
+  "Santai saja, yang penting kamu sudah berani mencoba. Itu sudah luar biasa!"
+];
+function randomQuote(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function showResult(bannerId, win, scoreText){
+  const el = document.getElementById(bannerId);
+  el.className = 'result-banner ' + (win?'win':'lose');
+  el.innerHTML = `<h2>${win? '🎉 Selamat!' : '💪 Tetap Semangat!'}</h2><p>${scoreText}</p><div class="quote">"${randomQuote(win?winQuotes:loseQuotes)}"</div>`;
+}
+
+/* ===================== MODUL 1: TEMBAK BURUNG ===================== */
+let birdCtx, birdCanvas, birdLoop, birdTimer, birdScore=0, birdTimeLeft=30, birds=[], particles=[];
+function startBird(){
+  goTo('game-tembak');
+  birdCanvas = document.getElementById('birdCanvas');
+  birdCtx = birdCanvas.getContext('2d');
+  birdScore=0; birdTimeLeft=30; birds=[]; particles=[];
+  document.getElementById('birdScore').textContent='Skor: 0';
+  document.getElementById('birdTime').textContent='Waktu: 30';
+  clearInterval(birdTimer);
+  birdTimer = setInterval(()=>{
+    birdTimeLeft--;
+    document.getElementById('birdTime').textContent='Waktu: '+birdTimeLeft;
+    if(birdTimeLeft<=0){ endBird(); }
+  },1000);
+  birdCanvas.onclick = (e)=>{
+    const rect = birdCanvas.getBoundingClientRect();
+    const x = (e.clientX-rect.left)*(birdCanvas.width/rect.width);
+    const y = (e.clientY-rect.top)*(birdCanvas.height/rect.height);
+    for(let i=birds.length-1;i>=0;i--){
+      const b = birds[i];
+      if(Math.hypot(x-b.x,y-b.y) < b.r+8){
+        spawnBurst(b.x, b.y, b.r);
+        birds.splice(i,1);
+        birdScore++;
+        document.getElementById('birdScore').textContent='Skor: '+birdScore;
+        break;
+      }
+    }
+  };
+  spawnBirdLoop();
+  drawBirdLoop();
+}
+function spawnBurst(x,y,r){
+  const colors = ['#d4a857','#e0664f','#f0e3c4','#3f8f5f','#faf3e2'];
+  const count = 10 + Math.floor(Math.random()*6);
+  for(let i=0;i<count;i++){
+    const angle = Math.random()*Math.PI*2;
+    const speed = 1.5 + Math.random()*4;
+    const sides = 3 + Math.floor(Math.random()*4); // bentuk tak beraturan: segitiga s/d heptagon acak
+    const points = [];
+    const baseSize = (r*0.35) + Math.random()*(r*0.35);
+    for(let s=0;s<sides;s++){
+      const ang = (Math.PI*2/sides)*s + Math.random()*0.6;
+      const dist = baseSize*(0.6+Math.random()*0.8);
+      points.push([Math.cos(ang)*dist, Math.sin(ang)*dist]);
+    }
+    particles.push({
+      x, y,
+      vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed - 1.5,
+      rot: Math.random()*Math.PI*2,
+      vr: (Math.random()-0.5)*0.3,
+      points, color: colors[Math.floor(Math.random()*colors.length)],
+      life: 0, maxLife: 32+Math.random()*16
+    });
+  }
+}
+let spawnTimeout;
+function spawnBirdLoop(){
+  spawnTimeout = setTimeout(()=>{
+    if(birds.length < 5){
+      birds.push({
+        x: 30, y: 30+Math.random()*300,
+        r: 16+Math.random()*8,
+        vx: 2+Math.random()*3,
+        born: Date.now(), life: 1800+Math.random()*1200
+      });
+    }
+    spawnBirdLoop();
+  }, 500+Math.random()*400);
+}
+function drawBirdLoop(){
+  if(!birdCtx) return;
+  birdCtx.clearRect(0,0,birdCanvas.width,birdCanvas.height);
+  const now = Date.now();
+  for(let i=birds.length-1;i>=0;i--){
+    const b = birds[i];
+    b.x += b.vx;
+    if(b.x > birdCanvas.width-20 || now-b.born > b.life){ birds.splice(i,1); continue; }
+    birdCtx.font = (b.r*2)+'px serif';
+    birdCtx.fillText('🐦', b.x-b.r, b.y+b.r);
+  }
+  for(let i=particles.length-1;i>=0;i--){
+    const p = particles[i];
+    p.life++;
+    if(p.life > p.maxLife){ particles.splice(i,1); continue; }
+    p.x += p.vx; p.y += p.vy; p.vy += 0.18; p.rot += p.vr;
+    const alpha = 1 - (p.life/p.maxLife);
+    birdCtx.save();
+    birdCtx.translate(p.x, p.y);
+    birdCtx.rotate(p.rot);
+    birdCtx.globalAlpha = Math.max(alpha,0);
+    birdCtx.beginPath();
+    p.points.forEach(([px,py],idx)=>{
+      if(idx===0) birdCtx.moveTo(px,py); else birdCtx.lineTo(px,py);
+    });
+    birdCtx.closePath();
+    birdCtx.fillStyle = p.color;
+    birdCtx.fill();
+    birdCtx.restore();
+  }
+  birdCtx.globalAlpha = 1;
+  birdLoop = requestAnimationFrame(drawBirdLoop);
+}
+function stopBird(){
+  clearInterval(birdTimer);
+  clearTimeout(spawnTimeout);
+  cancelAnimationFrame(birdLoop);
+  birdCtx=null;
+}
+function endBird(){
+  stopBird();
+  const win = birdScore>=20;
+  showResult('resultBannerTembak', win, `Skor akhir kamu: <strong>${birdScore} poin</strong> dari target 20 poin.`);
+  goTo('result-tembak');
+}
+
+/* ===================== MODUL 2: MENGINGAT DERET ANGKA ===================== */
+let memSeq=[], memUserPos=0, memLevel=1, memAccepting=false;
+let memSessionId=0, memCountdownTimer=null, memRoundTimeout=null;
+function startMemory(){
+  stopMemory();
+  memSessionId++;
+  goTo('game-ingat');
+  memSeq=[]; memLevel=1;
+  buildSeqPad(false);
+  nextMemRound();
+}
+function stopMemory(){
+  clearInterval(memCountdownTimer);
+  clearTimeout(memRoundTimeout);
+  memAccepting=false;
+}
+function buildSeqPad(shuffleLayout){
+  const pad = document.getElementById('seqPad');
+  pad.innerHTML='';
+  let nums = [1,2,3,4,5,6,7,8,9];
+  if(shuffleLayout) nums = shuffleArr(nums.slice());
+  for(const i of nums){
+    const b = document.createElement('button');
+    b.className='seq-btn'; b.textContent=i; b.dataset.num=i;
+    b.onclick=()=>memInput(i);
+    pad.appendChild(b);
+  }
+}
+function nextMemRound(){
+  const session = memSessionId;
+  memSeq.push(1+Math.floor(Math.random()*9));
+  memUserPos=0; memAccepting=false;
+  document.getElementById('memLevel').textContent='Level: '+memLevel;
+  // Mulai level 10, tata letak tombol diacak ulang setiap ronde agar lebih menantang
+  if(memLevel>=10){ buildSeqPad(true); }
+  startCountdown(session);
+}
+function startCountdown(session){
+  let n = 3;
+  document.getElementById('memStatus').textContent='Bersiap... '+n;
+  clearInterval(memCountdownTimer);
+  memCountdownTimer = setInterval(()=>{
+    if(session !== memSessionId){ clearInterval(memCountdownTimer); return; } // sesi lama, batalkan
+    n--;
+    if(n>0){
+      document.getElementById('memStatus').textContent='Bersiap... '+n;
+    } else {
+      clearInterval(memCountdownTimer);
+      document.getElementById('memStatus').textContent='Perhatikan...';
+      playSequence(session);
+    }
+  },700);
+}
+async function playSequence(session){
+  // Kecepatan kedip makin cepat di level tinggi agar lebih menantang dan acak dirasakan
+  const flashSpeed = memLevel>=10 ? 320 : 500;
+  const gapSpeed = memLevel>=10 ? 130 : 250;
+  for(const n of memSeq){
+    if(session !== memSessionId) return; // sesi sudah berganti, hentikan
+    await flashButton(n, flashSpeed);
+    await new Promise(r=>setTimeout(r,gapSpeed));
+  }
+  if(session !== memSessionId) return;
+  memAccepting=true;
+  document.getElementById('memStatus').textContent='Giliranmu!';
+}
+function flashButton(n, duration){
+  return new Promise(resolve=>{
+    const btn = document.querySelector(`.seq-btn[data-num="${n}"]`);
+    if(!btn){ resolve(); return; }
+    btn.classList.add('flash');
+    setTimeout(()=>{btn.classList.remove('flash'); resolve();}, duration||500);
+  });
+}
+function memInput(n){
+  if(!memAccepting) return;
+  const session = memSessionId;
+  const btn = document.querySelector(`.seq-btn[data-num="${n}"]`);
+  if(btn){ btn.classList.add('flash'); setTimeout(()=>btn.classList.remove('flash'),200); }
+  if(memSeq[memUserPos] === n){
+    memUserPos++;
+    if(memUserPos === memSeq.length){
+      memAccepting=false;
+      if(memLevel>=15){ endMemory(true); return; }
+      memLevel++;
+      document.getElementById('memStatus').textContent='Benar! Lanjut level berikutnya...';
+      clearTimeout(memRoundTimeout);
+      memRoundTimeout = setTimeout(()=>{ if(session===memSessionId) nextMemRound(); }, 900);
+    }
+  } else {
+    endMemory(false);
+  }
+}
+function endMemory(win){
+  stopMemory();
+  showResult('resultBannerIngat', win, win
+    ? `Kamu berhasil mencapai <strong>Level ${memLevel}</strong> (deret super panjang dengan tata letak acak) dan jadi Master Memori!`
+    : `Kamu berhenti di <strong>Level ${memLevel}</strong> dari target Level 15.`);
+  goTo('result-ingat');
+}
+
+/* ===================== MODUL 6: LABIRIN ===================== */
+const mazeLevels = [
+  { name:'Mudah',  cells:8,  thinkTime:8,  timeLimit:90 },
+  { name:'Sedang', cells:13, thinkTime:10, timeLimit:150 },
+  { name:'Sulit',  cells:19, thinkTime:12, timeLimit:220 }
+];
+function shuffleArr(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+function generateMaze(cells){
+  const w = cells*2+1, h = cells*2+1;
+  const grid = Array.from({length:h},()=>Array(w).fill('#'));
+  const visited = Array.from({length:cells},()=>Array(cells).fill(false));
+  function carve(cx,cy){
+    visited[cy][cx]=true;
+    grid[cy*2+1][cx*2+1]='.';
+    const dirs = shuffleArr([[0,-1],[0,1],[-1,0],[1,0]]);
+    for(const [dx,dy] of dirs){
+      const nx=cx+dx, ny=cy+dy;
+      if(nx>=0 && ny>=0 && nx<cells && ny<cells && !visited[ny][nx]){
+        grid[cy*2+1+dy][cx*2+1+dx]='.';
+        carve(nx,ny);
+      }
+    }
+  }
+  carve(0,0);
+  // Cari titik TERJAUH dari titik awal lewat BFS, supaya jalur keluar selalu
+  // panjang dan menantang (bukan sekadar pojok berlawanan yang bisa dekat).
+  const startX=1, startY=1;
+  const dist = Array.from({length:h},()=>Array(w).fill(-1));
+  dist[startY][startX]=0;
+  let queue=[[startX,startY]];
+  let farthest=[startX,startY], farthestDist=0;
+  while(queue.length){
+    const next=[];
+    for(const [x,y] of queue){
+      for(const [dx,dy] of [[0,-1],[0,1],[-1,0],[1,0]]){
+        const nx=x+dx, ny=y+dy;
+        if(nx>=0&&ny>=0&&nx<w&&ny<h && grid[ny][nx]!=='#' && dist[ny][nx]===-1){
+          dist[ny][nx] = dist[y][x]+1;
+          if(dist[ny][nx] > farthestDist){ farthestDist = dist[ny][nx]; farthest=[nx,ny]; }
+          next.push([nx,ny]);
+        }
+      }
+    }
+    queue = next;
+  }
+  grid[startY][startX]='S';
+  grid[farthest[1]][farthest[0]]='E';
+  return grid.map(r=>r.join(''));
+}
+let mazeLevelIdx=0, mazeMatrix=[], mazePlayer={x:0,y:0}, mazeMovesCount=0, mazeExit={x:0,y:0}, mazeCell=24;
+function parseMaze(idx){
+  const raw = generateMaze(mazeLevels[idx].cells);
+  const rows = raw.length, cols = Math.max(...raw.map(r=>r.length));
+  mazeMatrix = raw.map(r=> r.padEnd(cols,'#').split(''));
+  for(let y=0;y<rows;y++) for(let x=0;x<cols;x++){
+    if(mazeMatrix[y][x]==='S'){ mazePlayer={x,y}; }
+    if(mazeMatrix[y][x]==='E'){ mazeExit={x,y}; }
+  }
+}
+let mazeThinkTimer=null, mazeSpeedTimer=null, mazeLocked=false, mazeTimeLeft=0;
+function clearMazeTimers(){
+  clearInterval(mazeThinkTimer);
+  clearInterval(mazeSpeedTimer);
+}
+function startMaze(idx){
+  clearMazeTimers();
+  mazeLevelIdx = idx;
+  parseMaze(idx);
+  mazeMovesCount=0;
+  mazeLocked=true;
+  document.getElementById('mazeLevelLabel').textContent = 'Labirin • '+mazeLevels[idx].name;
+  document.getElementById('mazeMoves').textContent='Langkah: 0';
+  goTo('game-maze');
+  drawMaze();
+  document.onkeydown = mazeKeyHandler;
+  startMazeThinkPhase(idx);
+}
+function startMazeThinkPhase(idx){
+  let t = mazeLevels[idx].thinkTime;
+  document.getElementById('mazeHint').textContent = `🧠 Amati jalurnya! Mulai bergerak dalam ${t}s`;
+  mazeThinkTimer = setInterval(()=>{
+    t--;
+    if(t>0){
+      document.getElementById('mazeHint').textContent = `🧠 Amati jalurnya! Mulai bergerak dalam ${t}s`;
+    } else {
+      clearInterval(mazeThinkTimer);
+      mazeLocked=false;
+      startMazeSpeedPhase(idx);
+    }
+  },1000);
+}
+function startMazeSpeedPhase(idx){
+  mazeTimeLeft = mazeLevels[idx].timeLimit;
+  document.getElementById('mazeHint').textContent = `⏱️ Sisa waktu: ${mazeTimeLeft}s`;
+  mazeSpeedTimer = setInterval(()=>{
+    mazeTimeLeft--;
+    document.getElementById('mazeHint').textContent = `⏱️ Sisa waktu: ${mazeTimeLeft}s`;
+    if(mazeTimeLeft<=0){
+      clearMazeTimers();
+      document.onkeydown=null;
+      showResult('resultBannerMaze', false, `Waktu habis! Kamu sudah berusaha melangkah ${mazeMovesCount} kali mencari jalan keluar tingkat ${mazeLevels[idx].name}.`);
+      const nextBtn = document.getElementById('mazeNextBtn');
+      nextBtn.textContent='Coba Lagi';
+      nextBtn.onclick = ()=>startMaze(mazeLevelIdx);
+      goTo('result-maze');
+    }
+  },1000);
+}
+function mazeKeyHandler(e){
+  const map = {ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]};
+  if(map[e.key]){ e.preventDefault(); mazeMove(...map[e.key]); }
+}
+function mazeMove(dx,dy){
+  if(mazeLocked) return; // masih dalam fase waktu berpikir, belum boleh bergerak
+  const nx = mazePlayer.x+dx, ny = mazePlayer.y+dy;
+  if(mazeMatrix[ny] && mazeMatrix[ny][nx] && mazeMatrix[ny][nx] !== '#'){
+    mazePlayer.x=nx; mazePlayer.y=ny;
+    mazeMovesCount++;
+    document.getElementById('mazeMoves').textContent='Langkah: '+mazeMovesCount;
+    drawMaze();
+    if(nx===mazeExit.x && ny===mazeExit.y){
+      clearMazeTimers();
+      document.onkeydown=null;
+      const isLast = mazeLevelIdx === mazeLevels.length-1;
+      showResult('resultBannerMaze', true, isLast
+        ? `Luar biasa! Kamu menyelesaikan semua tingkat labirin dalam ${mazeMovesCount} langkah dengan sisa waktu ${mazeTimeLeft}s dan jadi Penjelajah Sejati!`
+        : `Kamu menyelesaikan tingkat ${mazeLevels[mazeLevelIdx].name} dalam ${mazeMovesCount} langkah dengan sisa waktu ${mazeTimeLeft}s!`);
+      const nextBtn = document.getElementById('mazeNextBtn');
+      if(isLast){
+        nextBtn.textContent='Ulangi dari Awal';
+        nextBtn.onclick = ()=>startMaze(0);
+      } else {
+        nextBtn.textContent='Lanjut Tingkat Berikutnya';
+        nextBtn.onclick = ()=>startMaze(mazeLevelIdx+1);
+      }
+      goTo('result-maze');
+    }
+  }
+}
+function drawMaze(){
+  const canvas = document.getElementById('mazeCanvas');
+  const rows = mazeMatrix.length, cols = mazeMatrix[0].length;
+  mazeCell = Math.min(420/cols, 420/rows);
+  canvas.width = cols*mazeCell; canvas.height = rows*mazeCell;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  for(let y=0;y<rows;y++) for(let x=0;x<cols;x++){
+    const c = mazeMatrix[y][x];
+    ctx.fillStyle = c==='#' ? '#0b2627' : '#173f40';
+    ctx.fillRect(x*mazeCell,y*mazeCell,mazeCell,mazeCell);
+  }
+  ctx.fillStyle = '#3f8f5f';
+  ctx.fillRect(mazeExit.x*mazeCell, mazeExit.y*mazeCell, mazeCell, mazeCell);
+  ctx.beginPath();
+  ctx.arc(mazePlayer.x*mazeCell+mazeCell/2, mazePlayer.y*mazeCell+mazeCell/2, mazeCell/2.6, 0, Math.PI*2);
+  ctx.fillStyle = '#d4a857';
+  ctx.fill();
+}
+
+/* ===================== MODUL 9: TEBAK KATA ===================== */
+const wordBank = [
+  {word:'TEMAN', cat:'Bahasa Indonesia • Mudah', level:1},
+  {word:'BUKU', cat:'Bahasa Indonesia • Mudah', level:1},
+  {word:'FRIEND', cat:'English • Easy', level:1},
+  {word:'BOOK', cat:'English • Easy', level:1},
+  {word:'SEKOLAH', cat:'Bahasa Indonesia • Sedang', level:2},
+  {word:'PERCAYA DIRI', cat:'Bahasa Indonesia • Sedang', level:2},
+  {word:'CONFIDENCE', cat:'English • Medium', level:2},
+  {word:'COURAGE', cat:'English • Medium', level:2},
+  {word:'TANGGUNG JAWAB', cat:'Bahasa Indonesia • Sulit', level:3},
+  {word:'PENGENDALIAN DIRI', cat:'Bahasa Indonesia • Sulit', level:3},
+  {word:'RESPONSIBILITY', cat:'English • Hard', level:3},
+  {word:'PERSEVERANCE', cat:'English • Hard', level:3},
+];
+let wordTarget='', wordCategory='', wordGuessed=[], wordWrong=0, wordLevel=1;
+function startWord(){
+  const pool = wordBank.filter(w=>w.level===wordLevel);
+  const pick = pool[Math.floor(Math.random()*pool.length)];
+  wordTarget = pick.word.toUpperCase();
+  wordCategory = pick.cat;
+  wordGuessed = []; wordWrong = 0;
+  document.getElementById('wordTries').textContent='Kesalahan: 0/6';
+  document.getElementById('wordCategory').textContent='Kategori: '+wordCategory;
+  renderWordLetters();
+  renderKeyboard();
+  goTo('game-word');
+}
+function renderWordLetters(){
+  const box = document.getElementById('wordLetters');
+  box.innerHTML='';
+  for(const ch of wordTarget){
+    const slot = document.createElement('div');
+    if(ch === ' '){ slot.style.width='18px'; slot.style.borderBottom='none'; }
+    else { slot.className='letter-slot'; slot.textContent = wordGuessed.includes(ch) ? ch : ''; }
+    box.appendChild(slot);
+  }
+}
+function renderKeyboard(){
+  const kb = document.getElementById('wordKeyboard');
+  kb.innerHTML='';
+  for(const ch of 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'){
+    const b = document.createElement('button');
+    b.className='key'; b.textContent=ch;
+    b.onclick = ()=>wordGuess(ch,b);
+    kb.appendChild(b);
+  }
+}
+function wordGuess(ch, btn){
+  btn.disabled=true;
+  if(wordTarget.includes(ch)){
+    wordGuessed.push(ch);
+    btn.classList.add('correct');
+    renderWordLetters();
+    const remaining = [...wordTarget].some(c=> c!==' ' && !wordGuessed.includes(c));
+    if(!remaining){ endWord(true); }
+  } else {
+    wordWrong++;
+    btn.classList.add('wrong');
+    document.getElementById('wordTries').textContent='Kesalahan: '+wordWrong+'/6';
+    if(wordWrong>=6){ endWord(false); }
+  }
+}
+function endWord(win){
+  const goodRun = win && wordWrong<3;
+  showResult('resultBannerWord', win,
+    win ? `Kamu menebak kata <strong>${wordTarget}</strong> dengan ${wordWrong} kesalahan. ${goodRun? 'Kamu jadi Pakar Kata! 🏅':''}`
+        : `Kata yang benar adalah <strong>${wordTarget}</strong>. Yuk coba kata lain!`);
+  if(win && wordLevel<3){ wordLevel++; }
+  goTo('result-word');
+}
+
+/* ===================== MODUL 3: MOBIL RINTANGAN ===================== */
+let carCtx, carCanvas, carLoop, carTimerSec, carSessionId=0;
+let carX=0, carDir=0, carObstacles=[], carLives=3, carElapsed=0, carSpeed=2.2;
+function startCar(){
+  stopCar();
+  carSessionId++;
+  const session = carSessionId;
+  goTo('game-mobil');
+  carCanvas = document.getElementById('carCanvas');
+  carCtx = carCanvas.getContext('2d');
+  carX = carCanvas.width/2 - 20; carDir=0; carObstacles=[]; carLives=3; carElapsed=0; carSpeed=2.2;
+  document.getElementById('carTime').textContent='Waktu: 0s';
+  document.getElementById('carLives').textContent='❤️❤️❤️';
+  document.onkeydown = (e)=>{
+    if(e.key==='ArrowLeft') carDir=-1;
+    if(e.key==='ArrowRight') carDir=1;
+  };
+  document.onkeyup = (e)=>{
+    if(e.key==='ArrowLeft'||e.key==='ArrowRight') carDir=0;
+  };
+  carTimerSec = setInterval(()=>{
+    if(session!==carSessionId){ clearInterval(carTimerSec); return; }
+    carElapsed++;
+    document.getElementById('carTime').textContent='Waktu: '+carElapsed+'s';
+    carSpeed += 0.12;
+    if(carElapsed>=45){ endCar(true, session); }
+  },1000);
+  carLoopFn(session);
+}
+function carSetDir(d){ carDir = d; }
+function carLoopFn(session){
+  if(session!==carSessionId) return;
+  if(!carCtx) return;
+  const w = carCanvas.width, h = carCanvas.height;
+  carX += carDir*4.5;
+  carX = Math.max(4, Math.min(w-44, carX));
+  if(Math.random() < 0.035 + carElapsed*0.001){
+    carObstacles.push({x: 10+Math.random()*(w-50), y:-30, w:34+Math.random()*14});
+  }
+  carCtx.clearRect(0,0,w,h);
+  carCtx.fillStyle = '#173f40';
+  carCtx.fillRect(0,0,w,h);
+  carCtx.strokeStyle = 'rgba(212,168,87,0.25)';
+  for(let i=0;i<w;i+=20){ carCtx.beginPath(); carCtx.moveTo(i,0); carCtx.lineTo(i,h); carCtx.stroke(); }
+  for(let i=carObstacles.length-1;i>=0;i--){
+    const o = carObstacles[i];
+    o.y += carSpeed;
+    carCtx.font='28px serif';
+    carCtx.fillText('🪵', o.x, o.y);
+    if(o.y > h+30){ carObstacles.splice(i,1); continue; }
+    if(o.y > h-60 && o.y < h-10 && o.x < carX+40 && o.x+o.w > carX){
+      carObstacles.splice(i,1);
+      carLives--;
+      document.getElementById('carLives').textContent = '❤️'.repeat(Math.max(carLives,0)) + '🖤'.repeat(3-Math.max(carLives,0));
+      if(carLives<=0){ endCar(false, session); return; }
+    }
+  }
+  carCtx.font='34px serif';
+  carCtx.fillText('🚓', carX, h-20);
+  carLoop = requestAnimationFrame(()=>carLoopFn(session));
+}
+function stopCar(){
+  clearInterval(carTimerSec);
+  cancelAnimationFrame(carLoop);
+  document.onkeyup = null;
+  carCtx = null;
+}
+function endCar(win, session){
+  if(session!==carSessionId) return;
+  stopCar();
+  showResult('resultBannerMobil', win, win
+    ? `Kamu berhasil bertahan penuh <strong>45 detik</strong> dan jadi Sopir Lincah!`
+    : `Kamu bertahan selama <strong>${carElapsed} detik</strong> sebelum kehabisan nyawa.`);
+  goTo('result-mobil');
+}
+
+/* ===================== MODUL 4: CARI KOTAK SAMA ===================== */
+const matchEmojis = ['🎈','📚','⭐','🍎','🎯','🌙','🐳','🎨'];
+let matchCards=[], matchOpened=[], matchMovesCount=0, matchFoundCount=0, matchLock=false;
+let matchTimer=null, matchTimeLeft=0, matchSessionId=0, matchLevelName='Mudah';
+function startMatch(levelName, seconds){
+  stopMatchTimer();
+  matchSessionId++;
+  const session = matchSessionId;
+  matchLevelName = levelName;
+  goTo('game-kotak');
+  document.getElementById('matchLevelLabel').textContent = 'Cari Kotak Sama • '+levelName;
+  document.getElementById('matchAgainBtn').onclick = ()=>startMatch(levelName, seconds);
+  matchCards = shuffleArr([...matchEmojis,...matchEmojis]).map((e,i)=>({id:i, emoji:e, open:false, matched:false}));
+  matchOpened=[]; matchMovesCount=0; matchFoundCount=0; matchLock=false;
+  matchTimeLeft = seconds;
+  document.getElementById('matchMoves').textContent='Langkah: 0';
+  document.getElementById('matchFound').textContent='Pasangan: 0/8';
+  document.getElementById('matchTime').textContent='⏱️ '+matchTimeLeft+'s';
+  renderMatchGrid();
+  matchTimer = setInterval(()=>{
+    if(session!==matchSessionId){ clearInterval(matchTimer); return; }
+    matchTimeLeft--;
+    document.getElementById('matchTime').textContent='⏱️ '+matchTimeLeft+'s';
+    if(matchTimeLeft<=0){ stopMatchTimer(); endMatch(false, session); }
+  },1000);
+}
+function stopMatchTimer(){ clearInterval(matchTimer); }
+function renderMatchGrid(){
+  const grid = document.getElementById('matchGrid');
+  grid.innerHTML='';
+  matchCards.forEach(c=>{
+    const div = document.createElement('div');
+    div.className = 'match-card' + (c.open||c.matched?' flipped':'') + (c.matched?' matched':'');
+    div.textContent = (c.open||c.matched) ? c.emoji : '❓';
+    div.onclick = ()=>matchClick(c.id);
+    grid.appendChild(div);
+  });
+}
+function matchClick(id){
+  if(matchLock) return;
+  const card = matchCards.find(c=>c.id===id);
+  if(card.open || card.matched) return;
+  card.open = true;
+  matchOpened.push(card);
+  renderMatchGrid();
+  if(matchOpened.length===2){
+    matchLock=true;
+    matchMovesCount++;
+    document.getElementById('matchMoves').textContent='Langkah: '+matchMovesCount;
+    const [a,b] = matchOpened;
+    if(a.emoji===b.emoji){
+      a.matched=true; b.matched=true;
+      matchFoundCount++;
+      document.getElementById('matchFound').textContent='Pasangan: '+matchFoundCount+'/8';
+      matchOpened=[]; matchLock=false;
+      renderMatchGrid();
+      if(matchFoundCount===8){ stopMatchTimer(); endMatch(true, matchSessionId); }
+    } else {
+      setTimeout(()=>{
+        a.open=false; b.open=false; matchOpened=[]; matchLock=false;
+        renderMatchGrid();
+      }, 700);
+    }
+  }
+}
+function endMatch(finished, session){
+  if(session!==matchSessionId) return;
+  if(finished){
+    const goodRun = matchMovesCount<=24;
+    showResult('resultBannerKotak', true, `Kamu menemukan semua pasangan dalam <strong>${matchMovesCount} langkah</strong> di tingkat ${matchLevelName}. ${goodRun?'Kamu jadi Mata Elang! 🏅':'Coba lagi untuk langkah lebih sedikit, ya!'}`);
+  } else {
+    showResult('resultBannerKotak', false, `Waktu habis di tingkat ${matchLevelName}! Kamu menemukan <strong>${matchFoundCount} dari 8 pasangan</strong>.`);
+  }
+  goTo('result-kotak');
+}
+
+/* ===================== MODUL 7: PUZZLE GESER ===================== */
+let puzzleSize=3, puzzleTiles=[], puzzleMovesCount=0;
+function startPuzzle(size){
+  puzzleSize=size;
+  goTo('game-puzzle');
+  document.getElementById('puzzleLabel').textContent = 'Puzzle • '+(size===3?'Mudah (3×3)':'Sulit (4×4)');
+  puzzleMovesCount=0;
+  document.getElementById('puzzleMoves').textContent='Langkah: 0';
+  const total = size*size;
+  puzzleTiles = Array.from({length:total-1},(_,i)=>i+1);
+  puzzleTiles.push(0); // 0 = kosong
+  do { shuffleArr(puzzleTiles); } while(!isPuzzleSolvable(puzzleTiles,size) || isPuzzleSolved(puzzleTiles));
+  renderPuzzle();
+  document.getElementById('puzzleAgainBtn').onclick = ()=>startPuzzle(size);
+}
+function isPuzzleSolved(tiles){
+  for(let i=0;i<tiles.length-1;i++){ if(tiles[i]!==i+1) return false; }
+  return tiles[tiles.length-1]===0;
+}
+function isPuzzleSolvable(tiles,size){
+  let inv=0;
+  const arr = tiles.filter(t=>t!==0);
+  for(let i=0;i<arr.length;i++) for(let j=i+1;j<arr.length;j++) if(arr[i]>arr[j]) inv++;
+  const blankRow = Math.floor(tiles.indexOf(0)/size);
+  if(size%2===1){ return inv%2===0; }
+  return (inv + blankRow) % 2 === 1;
+}
+function renderPuzzle(){
+  const grid = document.getElementById('puzzleGrid');
+  const cellSize = puzzleSize===3? 86 : 64;
+  grid.style.gridTemplateColumns = `repeat(${puzzleSize}, ${cellSize}px)`;
+  grid.innerHTML='';
+  puzzleTiles.forEach((t,idx)=>{
+    const div = document.createElement('div');
+    div.className='puzzle-tile'+(t===0?' empty':'');
+    div.style.width=cellSize+'px'; div.style.height=cellSize+'px';
+    div.textContent = t===0? '' : t;
+    div.onclick = ()=>puzzleMove(idx);
+    grid.appendChild(div);
+  });
+}
+function puzzleMove(idx){
+  const size = puzzleSize;
+  const blank = puzzleTiles.indexOf(0);
+  const r1=Math.floor(idx/size), c1=idx%size, r2=Math.floor(blank/size), c2=blank%size;
+  if(Math.abs(r1-r2)+Math.abs(c1-c2) === 1){
+    [puzzleTiles[idx], puzzleTiles[blank]] = [puzzleTiles[blank], puzzleTiles[idx]];
+    puzzleMovesCount++;
+    document.getElementById('puzzleMoves').textContent='Langkah: '+puzzleMovesCount;
+    renderPuzzle();
+    if(isPuzzleSolved(puzzleTiles)){ endPuzzle(); }
+  }
+}
+function endPuzzle(){
+  const isHard = puzzleSize===4;
+  showResult('resultBannerPuzzle', true, `Selamat! Kamu menyusun puzzle ${puzzleSize}×${puzzleSize} dalam <strong>${puzzleMovesCount} langkah</strong>. ${isHard?'Kamu jadi Penyusun Andal! 🏅':'Coba tingkat Sulit (4×4) untuk tantangan lebih!'}`);
+  goTo('result-puzzle');
+}
+
+/* ===================== MODUL 10: LOGIKA BERHITUNG (Mudah/Sulit tanpa waktu, Sangat Sulit dengan waktu, + kunci jawaban) ===================== */
+function buildMathQuestions(level){
+  if(level==='mudah'){
+    return [
+      {q:'7 + 8 = ?', opts:[15,16,14,17], correct:15, exp:'7 + 8 = 15. Caranya: 7 + 8 = 7 + 3 + 5 = 10 + 5 = 15.'},
+      {q:'15 − 6 = ?', opts:[9,8,10,7], correct:9, exp:'15 − 6 = 9. Caranya: 15 − 5 = 10, lalu 10 − 1 = 9.'},
+      {q:'6 × 4 = ?', opts:[24,20,28,18], correct:24, exp:'6 × 4 = 24. Caranya: 6 + 6 + 6 + 6 = 24.'},
+      {q:'36 ÷ 6 = ?', opts:[6,7,5,8], correct:6, exp:'36 ÷ 6 = 6, karena 6 × 6 = 36.'},
+      {q:'23 + 19 = ?', opts:[42,40,44,38], correct:42, exp:'23 + 19 = 42. Caranya: 23 + 20 = 43, lalu kurangi 1 → 42.'},
+      {q:'50 − 27 = ?', opts:[23,22,24,25], correct:23, exp:'50 − 27 = 23. Caranya: 50 − 30 = 20, lalu tambah 3 → 23.'},
+      {q:'9 × 7 = ?', opts:[63,56,72,54], correct:63, exp:'9 × 7 = 63. Caranya: 9 × 7 = 9 × 10 − 9 × 3 = 90 − 27 = 63.'},
+      {q:'72 ÷ 8 = ?', opts:[9,8,7,10], correct:9, exp:'72 ÷ 8 = 9, karena 8 × 9 = 72.'},
+      {q:'Budi punya 12 kelereng, diberi 5 lagi. Berapa kelerengnya sekarang?', opts:[17,16,18,15], correct:17, exp:'12 + 5 = 17 kelereng.'},
+      {q:'Ibu membeli 3 lusin telur. Berapa butir telur semuanya? (1 lusin = 12)', opts:[36,33,30,24], correct:36, exp:'3 lusin = 3 × 12 = 36 butir.'},
+      {q:'100 − 45 = ?', opts:[55,50,45,60], correct:55, exp:'100 − 45 = 55. Caranya: 100 − 40 = 60, lalu 60 − 5 = 55.'},
+      {q:'8 × 8 = ?', opts:[64,56,72,60], correct:64, exp:'8 × 8 = 64 (hafalan perkalian dasar).'},
+      {q:'144 ÷ 12 = ?', opts:[12,13,11,14], correct:12, exp:'144 ÷ 12 = 12, karena 12 × 12 = 144.'},
+      {q:'25 + 38 = ?', opts:[63,62,64,61], correct:63, exp:'25 + 38 = 63. Caranya: 25 + 40 = 65, lalu kurangi 2 → 63.'},
+      {q:'Satu kelas punya 32 siswa, 18 di antaranya laki-laki. Berapa siswa perempuan?', opts:[14,12,16,15], correct:14, exp:'32 − 18 = 14 siswa perempuan.'},
+      {q:'18 + 27 = ?', opts:[45,44,46,43], correct:45, exp:'18 + 27 = 45. Caranya: 18 + 20 = 38, lalu 38 + 7 = 45.'},
+      {q:'90 ÷ 9 = ?', opts:[10,9,11,12], correct:10, exp:'90 ÷ 9 = 10, karena 9 × 10 = 90.'},
+      {q:'7 × 9 = ?', opts:[63,56,72,54], correct:63, exp:'7 × 9 = 63. Caranya: 7 × 10 − 7 = 70 − 7 = 63.'},
+      {q:'Andi punya Rp25.000, membeli pensil Rp8.000. Berapa sisa uangnya?', opts:[17000,18000,15000,20000], correct:17000, exp:'25.000 − 8.000 = 17.000.'},
+      {q:'64 − 19 = ?', opts:[45,46,44,43], correct:45, exp:'64 − 19 = 45. Caranya: 64 − 20 = 44, lalu tambah 1 → 45.'}
+    ];
+  } else if(level==='sulit'){
+    return [
+      {q:'Lanjutkan pola: 5, 10, 20, 40, ?', opts:[80,70,60,90], correct:80, exp:'Pola dikali 2 setiap suku: 40 × 2 = 80.'},
+      {q:'Lanjutkan pola: 1, 3, 6, 10, 15, ?', opts:[21,18,20,24], correct:21, exp:'Pola bilangan segitiga, selisih bertambah 1: +2,+3,+4,+5,+6 → 15+6=21.'},
+      {q:'12² − 5² = ?', opts:[119,109,144,129], correct:119, exp:'12² = 144, 5² = 25, 144 − 25 = 119.'},
+      {q:'Jika 4x + 7 = 31, maka x = ?', opts:[6,7,5,8], correct:6, exp:'4x = 31 − 7 = 24, x = 24 ÷ 4 = 6.'},
+      {q:'Lanjutkan pola: 2, 6, 18, 54, ?', opts:[162,108,144,180], correct:162, exp:'Pola dikali 3 setiap suku: 54 × 3 = 162.'},
+      {q:'Lanjutkan pola: 100, 90, 81, 73, ?', opts:[66,65,70,64], correct:66, exp:'Selisih berkurang 1 setiap langkah: −10,−9,−8,−7 → 73−7=66.'},
+      {q:'Sebuah baju Rp150.000 didiskon 20%. Berapa harga setelah diskon?', opts:[120000,130000,135000,110000], correct:120000, exp:'Diskon = 20% × 150.000 = 30.000. Harga akhir = 150.000 − 30.000 = 120.000.'},
+      {q:'Mobil melaju 60 km/jam selama 2,5 jam. Berapa jarak yang ditempuh?', opts:[150,140,160,120], correct:150, exp:'Jarak = kecepatan × waktu = 60 × 2,5 = 150 km.'},
+      {q:'Lanjutkan pola Fibonacci: 1, 1, 2, 3, 5, 8, 13, ?', opts:[21,20,22,19], correct:21, exp:'Setiap suku = jumlah dua suku sebelumnya: 8+13=21.'},
+      {q:'Sebuah bus berisi 3/4 dari kapasitas 40 kursi. Berapa kursi yang terisi?', opts:[30,32,28,25], correct:30, exp:'3/4 × 40 = 30 kursi.'},
+      {q:'2 pekerja menyelesaikan pekerjaan dalam 6 hari. Jika ada 3 pekerja dengan kecepatan sama, berapa hari pekerjaan itu selesai?', opts:[4,3,5,6], correct:4, exp:'Total kerja = 2×6 = 12 orang-hari. Dengan 3 pekerja: 12÷3 = 4 hari.'},
+      {q:'Lanjutkan pola: 3, 9, 27, 81, ?', opts:[243,162,216,729], correct:243, exp:'Pola dikali 3 setiap suku: 81 × 3 = 243.'},
+      {q:'Jika x² = 169, dan x positif, maka x = ?', opts:[13,12,14,15], correct:13, exp:'√169 = 13, karena 13 × 13 = 169.'},
+      {q:'Berapa selisih antara 15% dari 200 dan 10% dari 150?', opts:[15,10,20,25], correct:15, exp:'15% × 200 = 30. 10% × 150 = 15. Selisih = 30 − 15 = 15.'},
+      {q:'Keran A mengisi kolam penuh dalam 4 jam, keran B dalam 12 jam. Jika dibuka bersamaan, berapa jam kolam penuh?', opts:[3,4,2,6], correct:3, exp:'Laju A=1/4, laju B=1/12 kolam/jam. Gabungan = 1/4+1/12 = 3/12+1/12 = 4/12 = 1/3 kolam/jam → waktu = 3 jam.'},
+      {q:'Lanjutkan pola: 4, 9, 16, 25, ?', opts:[36,35,30,40], correct:36, exp:'Pola bilangan kuadrat: 2²,3²,4²,5²,6² → 6²=36.'},
+      {q:'Jika 5x − 3 = 22, maka x = ?', opts:[5,4,6,7], correct:5, exp:'5x = 22+3 = 25, x = 25÷5 = 5.'},
+      {q:'Sebuah toko memberi diskon 15% dari harga Rp200.000. Berapa harga setelah diskon?', opts:[170000,180000,175000,160000], correct:170000, exp:'Diskon = 15% × 200.000 = 30.000. Harga akhir = 200.000 − 30.000 = 170.000.'},
+      {q:'Lanjutkan pola: 7, 14, 28, 56, ?', opts:[112,98,84,120], correct:112, exp:'Pola dikali 2 setiap suku: 56 × 2 = 112.'},
+      {q:'Sebuah kelas memiliki rasio siswa laki-laki:perempuan = 3:5. Jika total siswa 32, berapa siswa laki-laki?', opts:[12,15,10,18], correct:12, exp:'Total bagian = 3+5 = 8. Laki-laki = 3/8 × 32 = 12.'}
+    ];
+  } else {
+    // Sangat Sulit: soal cerita setingkat SMA/kuliah, dengan batas waktu, penjelasan, jenjang & perkiraan era
+    return [
+      {q:'Akar-akar persamaan x² − 5x + 6 = 0 adalah p dan q. Berapa hasil kali p × q?', opts:[6,5,-6,-5], correct:6, time:25, exp:'Untuk ax²+bx+c=0, hasil kali akar = c/a = 6/1 = 6.', jenjang:'SMA (Matematika Wajib/Peminatan)', era:'perkiraan sekitar 2015–2021 (gaya soal ilustratif, bukan soal asli)'},
+      {q:'Jika sin θ = 3/5 dan θ sudut lancip, berapa nilai cos θ?', opts:['4/5','3/4','5/4','2/5'], correct:'4/5', time:30, exp:'Gunakan identitas sin²+cos²=1: cos θ=√(1−9/25)=√(16/25)=4/5.', jenjang:'SMA (Trigonometri Kelas X)', era:'perkiraan sekitar 2016–2022 (ilustratif)'},
+      {q:'Nilai dari log₂8 adalah?', opts:[3,4,2,8], correct:3, time:20, exp:'log₂8 = log₂2³ = 3.', jenjang:'SMA (Matematika Kelas X)', era:'perkiraan sekitar 2014–2020 (ilustratif)'},
+      {q:'Nilai dari lim x→2 (x² − 4)/(x − 2) adalah?', opts:[4,2,0,6], correct:4, time:30, exp:'Faktorkan: (x−2)(x+2)/(x−2) = x+2, untuk x→2 hasilnya 2+2=4.', jenjang:'SMA/Kuliah (Limit & Kalkulus Awal)', era:'perkiraan sekitar 2017–2023 (ilustratif)'},
+      {q:'Sebuah dadu dilempar sekali. Berapa peluang muncul mata dadu genap?', opts:['1/2','1/3','2/3','1/6'], correct:'1/2', time:20, exp:'Mata genap: 2,4,6 → 3 dari 6 kemungkinan = 3/6 = 1/2.', jenjang:'SMA (Peluang Kelas XII)', era:'perkiraan sekitar 2015–2021 (ilustratif)'},
+      {q:'Modal Rp1.000.000 didepositokan dengan bunga majemuk 10% per tahun. Berapa nilainya setelah 2 tahun?', opts:['Rp1.210.000','Rp1.200.000','Rp1.100.000','Rp1.221.000'], correct:'Rp1.210.000', time:35, exp:'M(1+r)ⁿ = 1.000.000×(1,1)² = 1.000.000×1,21 = 1.210.000.', jenjang:'Kuliah (Matematika Keuangan/Ekonomi)', era:'perkiraan sekitar 2016–2022 (ilustratif)'},
+      {q:'Determinan dari matriks [[2,3],[1,4]] adalah?', opts:[5,8,11,-5], correct:5, time:25, exp:'det = (2×4)−(3×1) = 8−3 = 5.', jenjang:'SMA (Matriks Kelas XI)', era:'perkiraan sekitar 2014–2019 (ilustratif)'},
+      {q:'Median dari data 3, 7, 9, 12, 15 adalah?', opts:[9,7,12,10], correct:9, time:18, exp:'Data sudah urut, n=5 (ganjil), median = data tengah = 9.', jenjang:'SMA (Statistika Kelas XII)', era:'perkiraan sekitar 2015–2020 (ilustratif)'},
+      {q:'Suku ke-10 dari barisan aritmetika dengan suku awal 3 dan beda 4 adalah?', opts:[39,36,43,35], correct:39, time:25, exp:'Un = a+(n−1)b = 3+(10−1)×4 = 3+36 = 39.', jenjang:'SMA (Barisan & Deret Kelas XI)', era:'perkiraan sekitar 2013–2019 (ilustratif)'},
+      {q:'Dari 5 orang, berapa cara memilih ketua dan wakil ketua (jabatan berbeda)?', opts:[20,10,25,15], correct:20, time:30, exp:'Permutasi P(5,2) = 5×4 = 20 cara.', jenjang:'SMA (Kaidah Pencacahan Kelas XII)', era:'perkiraan sekitar 2016–2021 (ilustratif)'},
+      {q:'Dua mobil bergerak berlawanan arah dari titik sama, masing-masing 60 km/jam dan 80 km/jam. Setelah 1,5 jam, berapa jarak antara keduanya?', opts:[210,200,220,190], correct:210, time:30, exp:'Jarak gabungan = (60+80)×1,5 = 140×1,5 = 210 km.', jenjang:'SMA (Soal Cerita Kecepatan)', era:'perkiraan sekitar 2014–2020 (ilustratif)'},
+      {q:'Volume kubus dengan panjang sisi 5 cm adalah?', opts:[125,100,150,75], correct:125, time:18, exp:'V = s³ = 5³ = 125 cm³.', jenjang:'SMA (Geometri Ruang)', era:'perkiraan sekitar 2013–2018 (ilustratif)'},
+      {q:'Sebuah investasi memberi keuntungan tetap Rp200.000 per bulan selama setahun. Berapa total keuntungan setahun?', opts:['Rp2.400.000','Rp2.000.000','Rp2.200.000','Rp2.600.000'], correct:'Rp2.400.000', time:22, exp:'200.000 × 12 bulan = 2.400.000.', jenjang:'Kuliah (Ekonomi/Akuntansi Dasar)', era:'perkiraan sekitar 2017–2022 (ilustratif)'},
+      {q:'Turunan dari f(x) = 3x² + 5x adalah f\u2019(x) = ?', opts:['6x + 5','3x + 5','6x','5x + 3'], correct:'6x + 5', time:30, exp:'Turunan tiap suku: d/dx(3x²)=6x, d/dx(5x)=5, jadi f\u2019(x)=6x+5.', jenjang:'Kuliah (Kalkulus I)', era:'perkiraan sekitar 2018–2023 (ilustratif)'},
+      {q:'Kantong berisi 4 bola merah dan 6 bola biru. Berapa peluang terambil bola merah secara acak?', opts:['2/5','1/2','3/5','1/3'], correct:'2/5', time:25, exp:'Peluang = bola merah / total bola = 4/10 = 2/5.', jenjang:'SMA (Peluang Kelas XII)', era:'perkiraan sekitar 2015–2021 (ilustratif)'},
+      {q:'Sebuah perusahaan memiliki biaya tetap Rp2.000.000 dan biaya variabel Rp5.000/unit. Harga jual Rp15.000/unit. Berapa unit minimal terjual agar mencapai titik impas (BEP)?', opts:[200,150,250,180], correct:200, time:35, exp:'BEP = biaya tetap ÷ (harga jual − biaya variabel) = 2.000.000 ÷ (15.000−5.000) = 2.000.000 ÷ 10.000 = 200 unit.', jenjang:'Kuliah (Ekonomi/Akuntansi Manajemen)', era:'perkiraan sekitar 2017–2023 (ilustratif)'},
+      {q:'Dalam distribusi normal, sekitar berapa persen data berada dalam rentang ±1 standar deviasi dari rata-rata?', opts:['68%','95%','99%','50%'], correct:'68%', time:25, exp:'Aturan empiris 68-95-99,7%: ±1σ mencakup sekitar 68% data.', jenjang:'Kuliah (Statistika Dasar)', era:'perkiraan sekitar 2016–2022 (ilustratif)'},
+      {q:'Jika vektor a=(3,4) dan b=(1,2), berapa hasil kali titik (dot product) a·b?', opts:[11,10,12,14], correct:11, time:25, exp:'a·b = (3×1)+(4×2) = 3+8 = 11.', jenjang:'SMA (Vektor Kelas XI/XII)', era:'perkiraan sekitar 2017–2022 (ilustratif)'},
+      {q:'Sebuah benda jatuh bebas dari ketinggian 80 m (g=10 m/s²). Berapa lama waktu sampai ke tanah?', opts:['4 detik','3 detik','5 detik','8 detik'], correct:'4 detik', time:30, exp:'h=½gt² → 80=½×10×t² → t²=16 → t=4 detik.', jenjang:'SMA (Fisika Kelas X — Gerak Jatuh Bebas)', era:'perkiraan sekitar 2014–2021 (ilustratif)'},
+      {q:'Berapa nilai dari integral ∫₀² 2x dx?', opts:[4,2,8,6], correct:4, time:30, exp:'∫2x dx = x². Dihitung dari 0 sampai 2: 2² − 0² = 4.', jenjang:'Kuliah (Kalkulus I — Integral Dasar)', era:'perkiraan sekitar 2018–2023 (ilustratif)'}
+    ];
+  }
+}
+let mathQuestions=[], mathIdx=0, mathScoreCount=0, mathLevel='mudah', mathTimer=null, mathSessionId=0;
+const mathLevelNames = {mudah:'Mudah (Calistung)', sulit:'Sulit (Pola & Logika)', sangat_sulit:'Sangat Sulit (SMA/Kuliah)'};
+function startMath(level){
+  stopMathTimer();
+  mathSessionId++;
+  mathLevel = level;
+  goTo('game-hitung');
+  document.getElementById('mathLevelTag').textContent = 'Tingkat: '+mathLevelNames[level];
+  document.getElementById('mathTime').textContent = level==='sangat_sulit' ? '⏱️ -' : '⏱️ Tanpa batas';
+  document.getElementById('mathAgainBtn').onclick = ()=>startMath(level);
+  // Ambil 15 soal SECARA ACAK dari bank soal (lebih banyak dari 15) supaya setiap kali masuk lagi, soal benar-benar berbeda
+  const pool = shuffleArr(buildMathQuestions(level).slice());
+  mathQuestions = pool.slice(0,15);
+  mathIdx=0; mathScoreCount=0;
+  document.getElementById('mathScore').textContent='Skor: 0';
+  renderMath();
+}
+function stopMathTimer(){ clearInterval(mathTimer); }
+function renderMath(){
+  const session = mathSessionId;
+  const item = mathQuestions[mathIdx];
+  document.getElementById('mathLabel').textContent = `Soal ${mathIdx+1}/${mathQuestions.length}`;
+  document.getElementById('mathQuestion').textContent = item.q;
+  document.getElementById('mathFeedback').style.display='none';
+  document.getElementById('mathNextBtn').style.display='none';
+  const box = document.getElementById('mathOptions');
+  box.innerHTML='';
+  box.style.display='flex';
+  shuffleArr([...item.opts]).forEach(opt=>{
+    const b = document.createElement('button');
+    b.className='btn ghost'; b.textContent=opt;
+    b.onclick = ()=>mathAnswer(opt, item, session, b, box);
+    box.appendChild(b);
+  });
+  stopMathTimer();
+  if(mathLevel==='sangat_sulit'){
+    let t = item.time;
+    document.getElementById('mathTime').textContent='⏱️ '+t+'s';
+    mathTimer = setInterval(()=>{
+      if(session!==mathSessionId){ stopMathTimer(); return; }
+      t--;
+      document.getElementById('mathTime').textContent='⏱️ '+t+'s';
+      if(t<=0){ stopMathTimer(); mathAnswer(null, item, session, null, box); }
+    },1000);
+  } else {
+    document.getElementById('mathTime').textContent='⏱️ Tanpa batas';
+  }
+}
+function mathAnswer(picked, item, session, clickedBtn, box){
+  if(session!==mathSessionId) return;
+  stopMathTimer();
+  const correct = item.correct;
+  const isCorrect = picked===correct;
+  // Kunci semua tombol pilihan & tandai benar/salah
+  Array.from(box.querySelectorAll('button')).forEach(btn=>{
+    btn.disabled = true;
+    if(btn.textContent === String(correct)) btn.style.borderColor = 'var(--good)';
+    if(btn === clickedBtn && !isCorrect) btn.style.borderColor = 'var(--bad)';
+  });
+  if(isCorrect){ mathScoreCount++; document.getElementById('mathScore').textContent='Skor: '+mathScoreCount; }
+  // Tampilkan kunci jawaban & penjelasan
+  const banner = document.getElementById('mathFeedbackBanner');
+  banner.textContent = isCorrect ? '✅ Benar!' : `❌ Kurang tepat. Jawaban yang benar: ${correct}`;
+  banner.style.background = isCorrect ? 'rgba(63,143,95,0.25)' : 'rgba(194,80,63,0.25)';
+  banner.style.color = isCorrect ? 'var(--good)' : 'var(--bad)';
+  document.getElementById('mathExplanation').innerHTML = `💡 <strong>Cara penyelesaian:</strong> ${item.exp||'-'}`;
+  const meta = document.getElementById('mathMeta');
+  if(mathLevel==='sangat_sulit' && item.jenjang){
+    meta.textContent = `📚 Setingkat: ${item.jenjang} • Perkiraan era soal serupa: ${item.era}`;
+  } else {
+    meta.textContent='';
+  }
+  document.getElementById('mathFeedback').style.display='block';
+  document.getElementById('mathNextBtn').style.display='inline-flex';
+  document.getElementById('mathNextBtn').onclick = ()=>{
+    mathIdx++;
+    if(mathIdx>=mathQuestions.length){ endMath(); } else { renderMath(); }
+  };
+}
+function endMath(){
+  const win = mathScoreCount>=11;
+  showResult('resultBannerHitung', win, `Kamu menjawab benar <strong>${mathScoreCount} dari ${mathQuestions.length}</strong> soal tingkat ${mathLevelNames[mathLevel]}. ${win?'Kamu jadi Jagoan Logika! 🏅':''}`);
+  goTo('result-hitung');
+}
+
+/* ===================== INIT ===================== */
+document.getElementById('app').addEventListener('contextmenu', e => e.preventDefault());
+document.getElementById('app').addEventListener('selectstart', e => e.preventDefault());
+document.getElementById('app').addEventListener('dragstart', e => e.preventDefault());
+refreshCounter();
+</script>
+</body>
+</html>

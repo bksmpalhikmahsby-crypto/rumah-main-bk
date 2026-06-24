@@ -326,7 +326,7 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
     </div>
 
     <div class="card">
-      <p style="margin-bottom:10px;">8 permainan siap dimainkan. Selamat mencoba! 🌱</p>
+      <p style="margin-bottom:10px;">9 permainan siap dimainkan. Selamat mencoba! 🌱</p>
       <div class="grid">
         <div class="mod" onclick="goTo('instr-tembak')"><div class="emoji">🐦</div><div class="name">Tembak Burung</div><div class="tag">Kecepatan</div></div>
         <div class="mod" onclick="goTo('instr-ingat')"><div class="emoji">🔢</div><div class="name">Mengingat Deret</div><div class="tag">Daya Ingat</div></div>
@@ -337,6 +337,7 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
         <div class="mod" onclick="goTo('instr-kotak')"><div class="emoji">🔲</div><div class="name">Cari Kotak Sama</div><div class="tag">Tebakan</div></div>
         <div class="mod" onclick="goTo('instr-puzzle')"><div class="emoji">🧩</div><div class="name">Puzzle</div><div class="tag">Visual</div></div>
         <div class="mod" onclick="goTo('instr-hitung')"><div class="emoji">➗</div><div class="name">Logika Berhitung</div><div class="tag">Numerik</div></div>
+        <div class="mod" onclick="goTo('instr-fokus')"><div class="emoji">🎯</div><div class="name">Konsentrasi Jitu</div><div class="tag">Ketepatan Waktu</div></div>
       </div>
     </div>
   </section>
@@ -633,6 +634,48 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
     <div id="resultBannerHitung" class="result-banner"></div>
     <div class="btn-row" style="justify-content:center;">
       <button class="btn" id="mathAgainBtn">Main Lagi</button>
+      <button class="btn ghost" onclick="goTo('screen-menu')">Pilih Permainan Lain</button>
+    </div>
+  </section>
+
+  <!-- ============ MODUL 11: KONSENTRASI JITU ============ -->
+  <section class="screen" id="instr-fokus">
+    <div class="topbar"><div class="eyebrow">Modul 11 • Ketepatan Waktu</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="card">
+      <h2>🎯 Konsentrasi Jitu</h2>
+      <p>Permainan ini melatih konsentrasi dan kepekaan terhadap waktu — dimainkan berdua secara bergiliran, tanpa melihat jam berjalan, hanya mengandalkan firasat dan fokus!</p>
+      <ul class="instr">
+        <li>Dimainkan oleh <strong>2 pemain</strong> secara bergiliran dalam <strong>5 ronde</strong>.</li>
+        <li>Di setiap ronde, kedua pemain mencoba menebak waktu yang <strong>sama</strong> — siapa yang selisihnya paling kecil, menang di ronde itu.</li>
+        <li>Klik <strong>"Mulai Hitung"</strong>, lalu waktu berjalan secara <strong>tersembunyi</strong> (tidak ditampilkan).</li>
+        <li>Tekan <strong>"STOP!"</strong> tepat saat merasa waktu target sudah tercapai — jangan menghitung dengan jari, alat bantu, atau melihat jam lain.</li>
+        <li>Target waktu setiap ronde akan <strong>diacak ulang otomatis</strong> setiap kali permainan dimulai (termasuk setelah keluar lalu masuk lagi).</li>
+        <li><strong>Tantangan:</strong> menangkan minimal 3 dari 5 ronde untuk jadi "Juara Konsentrasi"!</li>
+      </ul>
+      <div class="btn-row" style="margin-top:14px; flex-direction:column; align-items:stretch; gap:10px;">
+        <input id="fokusName1" type="text" placeholder="Nama Pemain 1 (kosongkan jika ingin default)" style="padding:12px; border-radius:10px; border:1px solid rgba(212,168,87,0.35); background:rgba(250,243,226,0.08); color:var(--cream); font-family:var(--body);">
+        <input id="fokusName2" type="text" placeholder="Nama Pemain 2 (kosongkan jika ingin default)" style="padding:12px; border-radius:10px; border:1px solid rgba(212,168,87,0.35); background:rgba(250,243,226,0.08); color:var(--cream); font-family:var(--body);">
+      </div>
+    </div>
+    <div class="btn-row" style="justify-content:center;"><button class="btn" onclick="startFokus()">Mulai Bermain</button></div>
+  </section>
+
+  <section class="screen" id="game-fokus">
+    <div class="topbar"><div class="eyebrow" id="fokusRoundLabel">Ronde 1/5</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="game-area" style="align-items:center;">
+      <div class="hud" style="justify-content:center;"><span id="fokusTurnLabel" style="font-size:16px; font-weight:700; color:var(--gold);">Giliran: -</span></div>
+      <div class="hud" style="justify-content:center;"><span id="fokusTarget" style="font-size:18px;">🎯 Target: -</span></div>
+      <p style="text-align:center; color:#ece2c8; font-size:13px;">Waktu berjalan tersembunyi setelah klik mulai. Tekan STOP! tepat saat target dirasa tercapai.</p>
+      <button class="btn" id="fokusActionBtn" style="font-size:18px; padding:22px 50px;">Mulai Hitung</button>
+      <div id="fokusFeedback" class="card" style="display:none; width:100%; text-align:center;"></div>
+      <div class="btn-row" style="justify-content:center;"><button class="btn ghost" id="fokusNextBtn" style="display:none;">Lanjut →</button></div>
+    </div>
+  </section>
+
+  <section class="screen" id="result-fokus">
+    <div id="resultBannerFokus" class="result-banner"></div>
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn" onclick="startFokus()">Main Lagi</button>
       <button class="btn ghost" onclick="goTo('screen-menu')">Pilih Permainan Lain</button>
     </div>
   </section>
@@ -1531,6 +1574,103 @@ function endMath(){
   const win = mathScoreCount>=11;
   showResult('resultBannerHitung', win, `Kamu menjawab benar <strong>${mathScoreCount} dari ${mathQuestions.length}</strong> soal tingkat ${mathLevelNames[mathLevel]}. ${win?'Kamu jadi Jagoan Logika! 🏅':''}`);
   goTo('result-hitung');
+}
+
+/* ===================== MODUL 11: KONSENTRASI JITU (5 ronde, 2 pemain) ===================== */
+// Target waktu dalam detik: 4:10=250, 5:17=317, 7:40=460, 6:00=360, 3:10=190
+const fokusTargetsBase = [250, 317, 460, 360, 190];
+let fokusTargetsShuffled=[], fokusRoundIdx=0, fokusTurn=1, fokusStartTime=0, fokusRunning=false;
+let fokusName1='Pemain 1', fokusName2='Pemain 2', fokusRoundP1Diff=0, fokusRoundWins={p1:0,p2:0}, fokusAllDiffs={p1:[],p2:[]};
+function startFokus(){
+  fokusName1 = (document.getElementById('fokusName1').value || '').trim() || 'Pemain 1';
+  fokusName2 = (document.getElementById('fokusName2').value || '').trim() || 'Pemain 2';
+  goTo('game-fokus');
+  // Target diacak ulang OTOMATIS setiap kali permainan dimulai (termasuk setelah keluar lalu masuk lagi)
+  fokusTargetsShuffled = shuffleArr(fokusTargetsBase.slice());
+  fokusRoundIdx=0; fokusTurn=1; fokusRunning=false;
+  fokusRoundWins={p1:0,p2:0}; fokusAllDiffs={p1:[],p2:[]};
+  renderFokusTurn();
+}
+function fokusFormatTime(sec){
+  const mm = Math.floor(sec/60), ss = Math.round(sec%60);
+  return mm+':'+String(ss).padStart(2,'0');
+}
+function fokusCurrentName(){ return fokusTurn===1 ? fokusName1 : fokusName2; }
+function renderFokusTurn(){
+  const target = fokusTargetsShuffled[fokusRoundIdx];
+  document.getElementById('fokusRoundLabel').textContent = `Ronde ${fokusRoundIdx+1}/${fokusTargetsShuffled.length}`;
+  document.getElementById('fokusTurnLabel').textContent = `Giliran: ${fokusCurrentName()}`;
+  document.getElementById('fokusTarget').textContent = `🎯 Target: ${fokusFormatTime(target)}`;
+  document.getElementById('fokusFeedback').style.display='none';
+  const btn = document.getElementById('fokusActionBtn');
+  btn.textContent = 'Mulai Hitung';
+  btn.style.display='inline-flex';
+  btn.disabled=false;
+  btn.onclick = fokusStart;
+  document.getElementById('fokusNextBtn').style.display='none';
+}
+function fokusStart(){
+  fokusStartTime = performance.now();
+  fokusRunning = true;
+  const btn = document.getElementById('fokusActionBtn');
+  btn.textContent = 'STOP! ✋';
+  btn.onclick = fokusStop;
+}
+function fokusStop(){
+  if(!fokusRunning) return;
+  fokusRunning=false;
+  const elapsedSec = (performance.now() - fokusStartTime)/1000;
+  const target = fokusTargetsShuffled[fokusRoundIdx];
+  const diff = Math.abs(elapsedSec - target);
+  document.getElementById('fokusActionBtn').style.display='none';
+  const isGreat = diff<=0.5;
+  const isGood = diff<=2;
+  const fb = document.getElementById('fokusFeedback');
+  fb.style.display='block';
+
+  if(fokusTurn===1){
+    fokusRoundP1Diff = diff;
+    fokusAllDiffs.p1.push(diff);
+    fb.innerHTML = `<div style="font-weight:700; font-size:17px; color:${isGreat?'var(--good)':isGood?'var(--gold)':'var(--bad)'};">${isGreat?'🎯 Hampir sempurna!':isGood?'👍 Cukup dekat!':'💪 Masih jauh, tetap semangat!'}</div>
+      <p style="margin-top:8px;">${fokusName1} → Target: <strong>${fokusFormatTime(target)}</strong> &nbsp;|&nbsp; Waktunya: <strong>${fokusFormatTime(elapsedSec)}</strong> &nbsp;|&nbsp; Selisih: <strong>${diff.toFixed(2)} detik</strong></p>
+      <p style="margin-top:6px; color:var(--gold);">Sekarang giliran ${fokusName2}!</p>`;
+    document.getElementById('fokusNextBtn').textContent = `Giliran ${fokusName2} →`;
+    document.getElementById('fokusNextBtn').style.display='inline-flex';
+    document.getElementById('fokusNextBtn').onclick = ()=>{
+      fokusTurn=2;
+      renderFokusTurn();
+    };
+  } else {
+    fokusAllDiffs.p2.push(diff);
+    const p1diff = fokusRoundP1Diff;
+    let roundWinner;
+    if(p1diff < diff){ fokusRoundWins.p1++; roundWinner = fokusName1; }
+    else if(diff < p1diff){ fokusRoundWins.p2++; roundWinner = fokusName2; }
+    else { roundWinner = 'Seri'; }
+    fb.innerHTML = `<div style="font-weight:700; font-size:17px; color:${isGreat?'var(--good)':isGood?'var(--gold)':'var(--bad)'};">${isGreat?'🎯 Hampir sempurna!':isGood?'👍 Cukup dekat!':'💪 Masih jauh, tetap semangat!'}</div>
+      <p style="margin-top:8px;">${fokusName2} → Target: <strong>${fokusFormatTime(target)}</strong> &nbsp;|&nbsp; Waktunya: <strong>${fokusFormatTime(elapsedSec)}</strong> &nbsp;|&nbsp; Selisih: <strong>${diff.toFixed(2)} detik</strong></p>
+      <p style="margin-top:10px; padding-top:10px; border-top:1px solid rgba(212,168,87,0.3);">${fokusName1}: ${p1diff.toFixed(2)}s &nbsp;vs&nbsp; ${fokusName2}: ${diff.toFixed(2)}s</p>
+      <p style="margin-top:6px; font-weight:700; color:var(--gold);">${roundWinner==='Seri' ? '🤝 Ronde ini seri!' : '🏆 Pemenang ronde ini: '+roundWinner}</p>`;
+    document.getElementById('fokusNextBtn').textContent = (fokusRoundIdx+1 >= fokusTargetsShuffled.length) ? 'Lihat Hasil Akhir →' : 'Ronde Berikutnya →';
+    document.getElementById('fokusNextBtn').style.display='inline-flex';
+    document.getElementById('fokusNextBtn').onclick = ()=>{
+      fokusRoundIdx++;
+      if(fokusRoundIdx>=fokusTargetsShuffled.length){ endFokus(); } else { fokusTurn=1; renderFokusTurn(); }
+    };
+  }
+}
+function endFokus(){
+  const avg1 = fokusAllDiffs.p1.reduce((a,b)=>a+b,0)/fokusAllDiffs.p1.length;
+  const avg2 = fokusAllDiffs.p2.reduce((a,b)=>a+b,0)/fokusAllDiffs.p2.length;
+  let finalWinner, win;
+  if(fokusRoundWins.p1 > fokusRoundWins.p2){ finalWinner = fokusName1; win=true; }
+  else if(fokusRoundWins.p2 > fokusRoundWins.p1){ finalWinner = fokusName2; win=true; }
+  else { finalWinner = avg1 < avg2 ? fokusName1 : (avg2 < avg1 ? fokusName2 : 'Seri'); win = finalWinner!=='Seri'; }
+  showResult('resultBannerFokus', win,
+    `Skor ronde — <strong>${fokusName1}: ${fokusRoundWins.p1}</strong> vs <strong>${fokusName2}: ${fokusRoundWins.p2}</strong> (dari 5 ronde).<br>
+    Rata-rata selisih ${fokusName1}: ${avg1.toFixed(2)}s &nbsp;|&nbsp; ${fokusName2}: ${avg2.toFixed(2)}s.<br>
+    ${finalWinner==='Seri' ? '🤝 Hasil akhir seri! Sama-sama Konsentrasi Jitu!' : `🏆 Juara Konsentrasi: <strong>${finalWinner}</strong>! Selamat!`}`);
+  goTo('result-fokus');
 }
 
 /* ===================== INIT ===================== */

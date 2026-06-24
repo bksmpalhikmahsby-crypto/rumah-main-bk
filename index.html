@@ -649,7 +649,7 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
         <li>Di setiap ronde, kedua pemain mencoba menebak waktu yang <strong>sama</strong> — siapa yang selisihnya paling kecil, menang di ronde itu.</li>
         <li>Klik <strong>"Mulai Hitung"</strong>, lalu waktu berjalan secara <strong>tersembunyi</strong> (tidak ditampilkan).</li>
         <li>Tekan <strong>"STOP!"</strong> tepat saat merasa waktu target sudah tercapai — jangan menghitung dengan jari, alat bantu, atau melihat jam lain.</li>
-        <li>Target waktu setiap ronde akan <strong>diacak ulang otomatis</strong> setiap kali permainan dimulai (termasuk setelah keluar lalu masuk lagi).</li>
+        <li>Target waktu setiap ronde akan <strong>diacak ulang otomatis</strong> setiap kali permainan dimulai (termasuk setelah keluar lalu masuk lagi). Daftar target: 0:40, 1:30, 0:57, 1:42, 0:33.</li>
         <li><strong>Tantangan:</strong> menangkan minimal 3 dari 5 ronde untuk jadi "Juara Konsentrasi"!</li>
       </ul>
       <div class="btn-row" style="margin-top:14px; flex-direction:column; align-items:stretch; gap:10px;">
@@ -1577,8 +1577,8 @@ function endMath(){
 }
 
 /* ===================== MODUL 11: KONSENTRASI JITU (5 ronde, 2 pemain) ===================== */
-// Target waktu dalam detik: 4:10=250, 5:17=317, 7:40=460, 6:00=360, 3:10=190
-const fokusTargetsBase = [250, 317, 460, 360, 190];
+// Target waktu dalam detik: 0:40=40, 1:30=90, 0:57=57, 1:42=102, 0:33=33
+const fokusTargetsBase = [40, 90, 57, 102, 33];
 let fokusTargetsShuffled=[], fokusRoundIdx=0, fokusTurn=1, fokusStartTime=0, fokusRunning=false;
 let fokusName1='Pemain 1', fokusName2='Pemain 2', fokusRoundP1Diff=0, fokusRoundWins={p1:0,p2:0}, fokusAllDiffs={p1:[],p2:[]};
 function startFokus(){
@@ -1591,8 +1591,12 @@ function startFokus(){
   fokusRoundWins={p1:0,p2:0}; fokusAllDiffs={p1:[],p2:[]};
   renderFokusTurn();
 }
-function fokusFormatTime(sec){
-  const mm = Math.floor(sec/60), ss = Math.round(sec%60);
+// Konversi detik -> format menit:detik standar (60 detik = 1 menit, dibulatkan dengan benar
+// agar tidak pernah menghasilkan angka detik 60, mis. 89.6s harus jadi "1:30" bukan "1:60")
+function fokusFormatTime(totalSeconds){
+  let rounded = Math.round(totalSeconds);
+  let mm = Math.floor(rounded/60);
+  let ss = rounded % 60;
   return mm+':'+String(ss).padStart(2,'0');
 }
 function fokusCurrentName(){ return fokusTurn===1 ? fokusName1 : fokusName2; }

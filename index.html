@@ -654,26 +654,37 @@ function goTo(id){
   stopMathTimer(); // pastikan timer logika berhitung (tingkat Sangat Sulit) berhenti
 }
 
-/* ===================== COUNTER PENGGUNA (shared storage) ===================== */
+/* ===================== COUNTER PENGGUNA (versi GitHub: counter publik + fallback lokal) ===================== */
+// CATATAN: window.storage hanya tersedia di lingkungan Claude.ai, TIDAK berfungsi di GitHub Pages.
+// Layanan counter publik gratis (countapi.xyz) sudah TIDAK AKTIF lagi sejak 2026, jadi versi ini memakai
+// countapi.mileshilliard.com (alternatif yang masih aktif & open source). Jika suatu saat layanan ini
+// juga mati, kode otomatis pindah ke fallback lokal (localStorage) sehingga platform tetap berjalan normal.
 async function refreshCounter(){
+  const UNIQUE_KEY = 'bk_al_hikmah_surabaya_total_pemain'; // kunci unik, jangan sama dengan situs lain
+  const visited = sessionStorage.getItem('bk_counted');
   try{
-    let visited = sessionStorage.getItem('bk_counted');
-    let result = await window.storage.get('total_pemain', true);
-    let total = result ? parseInt(result.value) : 0;
+    const url = visited
+      ? `https://countapi.mileshilliard.com/api/v1/get/${UNIQUE_KEY}`
+      : `https://countapi.mileshilliard.com/api/v1/hit/${UNIQUE_KEY}`;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(()=>controller.abort(), 4000); // batas 4 detik, jangan sampai menggantung
+    const res = await fetch(url, { signal: controller.signal });
+    clearTimeout(timeoutId);
+    if(!res.ok) throw new Error('Layanan counter tidak merespons');
+    const data = await res.json();
+    document.getElementById('userCount').textContent = data.value;
+    if(!visited) sessionStorage.setItem('bk_counted','1');
+  } catch(e){
+    // Fallback: jika internet/layanan counter tidak tersedia, hitung lokal per perangkat saja
+    let total = parseInt(localStorage.getItem('bk_total_local')||'0');
     if(!visited){
       total += 1;
-      await window.storage.set('total_pemain', String(total), true);
+      localStorage.setItem('bk_total_local', String(total));
       sessionStorage.setItem('bk_counted','1');
     }
     document.getElementById('userCount').textContent = total;
-  }catch(e){
-    try{
-      await window.storage.set('total_pemain', '1', true);
-      document.getElementById('userCount').textContent = '1';
-      sessionStorage.setItem('bk_counted','1');
-    }catch(e2){
-      document.getElementById('userCount').textContent = '–';
-    }
+    const label = document.querySelector('.counter-box .label');
+    if(label) label.innerHTML = 'Total kunjungan<br>(lokal di perangkat ini)<br><span style="font-size:10px;opacity:.7;">*koneksi counter bersama gagal</span>';
   }
 }
 

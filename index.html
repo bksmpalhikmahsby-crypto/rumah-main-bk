@@ -242,6 +242,29 @@ ul.instr li{font-size:14.5px; color:#ece2c8; line-height:1.5;}
 }
 .puzzle-tile.empty{background:transparent; cursor:default;}
 
+/* pancing mania */
+.pancing-wrap{display:flex; align-items:flex-start; justify-content:center; gap:22px; flex-wrap:wrap;}
+.pancing-ruler{
+  position:relative; width:130px; height:460px;
+  background: linear-gradient(to bottom, #4fa9c9 0%, #2c7a96 33%, #1d6b66 66%, #0a2a2b 100%);
+  border-radius:14px; border:3px solid rgba(212,168,87,0.45); overflow:hidden;
+  box-shadow: inset 0 0 30px rgba(0,0,0,0.35);
+}
+.pancing-tick{
+  position:absolute; left:0; width:100%; height:1px; background:rgba(250,243,226,0.3);
+  display:flex; align-items:center; z-index:1;
+}
+.pancing-tick span{
+  position:absolute; left:5px; top:-7px; font-size:10.5px; color:#f5e9c8; font-weight:700;
+}
+.pancing-marker{
+  position:absolute; left:50%; transform:translate(-50%,-50%); font-size:24px;
+  transition: top .25s ease; z-index:3; filter: drop-shadow(0 0 4px rgba(0,0,0,0.7));
+}
+.pancing-controls{display:flex; flex-direction:column; gap:10px; min-width:220px;}
+.pancing-controls input[type=range]{width:100%;}
+.pancing-depth-label{font-family:var(--display); font-size:26px; color:var(--gold); text-align:center;}
+
 .result-banner{
   text-align:center; padding:20px; border-radius:16px;
 }
@@ -326,7 +349,7 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
     </div>
 
     <div class="card">
-      <p style="margin-bottom:10px;">9 permainan siap dimainkan. Selamat mencoba! 🌱</p>
+      <p style="margin-bottom:10px;">10 permainan siap dimainkan. Selamat mencoba! 🌱</p>
       <div class="grid">
         <div class="mod" onclick="goTo('instr-tembak')"><div class="emoji">🐦</div><div class="name">Tembak Burung</div><div class="tag">Kecepatan</div></div>
         <div class="mod" onclick="goTo('instr-ingat')"><div class="emoji">🔢</div><div class="name">Mengingat Deret</div><div class="tag">Daya Ingat</div></div>
@@ -338,6 +361,7 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
         <div class="mod" onclick="goTo('instr-puzzle')"><div class="emoji">🧩</div><div class="name">Puzzle</div><div class="tag">Visual</div></div>
         <div class="mod" onclick="goTo('instr-hitung')"><div class="emoji">➗</div><div class="name">Logika Berhitung</div><div class="tag">Numerik</div></div>
         <div class="mod" onclick="goTo('instr-fokus')"><div class="emoji">🎯</div><div class="name">Konsentrasi Jitu</div><div class="tag">Ketepatan Waktu</div></div>
+        <div class="mod" onclick="goTo('instr-pancing')"><div class="emoji">🎣</div><div class="name">Pancing Mania</div><div class="tag">Prediksi</div></div>
       </div>
     </div>
   </section>
@@ -452,31 +476,54 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
     <div class="topbar"><div class="eyebrow">Modul 9 • Kosa Kata</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
     <div class="card">
       <h2>🔤 Tebak Kata</h2>
-      <p>Permainan ini melatih kosa kata Bahasa Indonesia dan Bahasa Inggris.</p>
+      <p>Permainan ini melatih kosa kata sekaligus mengenalkanmu pada kata-kata seputar kehidupan sehari-hari siswa SMP dan istilah motivasi/psikologi.</p>
       <ul class="instr">
-        <li>Sebuah kata disembunyikan dalam bentuk garis bawah.</li>
-        <li>Tebak huruf satu per satu dengan mengklik papan huruf di bawah.</li>
-        <li>Kamu punya 6 kali kesempatan salah sebelum permainan berakhir.</li>
-        <li>Permainan dimulai dari level <strong>Mudah</strong>, lalu naik ke <strong>Sedang</strong> dan <strong>Sulit</strong> setiap kali kamu berhasil menebak.</li>
-        <li><strong>Tantangan:</strong> tebak kata dengan kesalahan kurang dari 3 untuk jadi "Pakar Kata"!</li>
+        <li>Ada <strong>3 ronde bertema</strong>: Ronde 1 "Kehidupan Sehari-hari", Ronde 2 "Karakter & Sikap", Ronde 3 "Psikologi" — masing-masing 5 soal.</li>
+        <li>Di setiap ronde, soalnya merupakan <strong>campuran tingkat kesulitan</strong> (Mudah-Sulit-Sangat Sulit) dan <strong>campuran Bahasa Indonesia & Inggris</strong>.</li>
+        <li>Sebelum setiap ronde dimulai, kamu akan diberi <strong>clue (petunjuk tema)</strong> agar lebih mudah menebak.</li>
+        <li>Setiap soal punya <strong>6 kali kesempatan salah</strong> sebelum dianggap gagal pada kata itu.</li>
+        <li>Di akhir setiap ronde, ada skor, kata motivasi, dan ayat Al-Qur'an — lalu tombol "Lanjut" untuk ronde berikutnya.</li>
+        <li>Kalau gagal menebak satu kata, jangan khawatir — kamu tetap bisa lanjut ke kata berikutnya!</li>
+        <li>Soal akan <strong>diacak otomatis dan berbeda</strong> setiap kamu keluar lalu masuk lagi, jadi tidak membosankan walau dimainkan berulang kali!</li>
+        <li><strong>Tantangan:</strong> selesaikan semua 3 ronde sampai akhir!</li>
       </ul>
     </div>
-    <div class="btn-row" style="justify-content:center;"><button class="btn" onclick="wordLevel=1; startWord();">Mulai Bermain</button></div>
+    <div class="btn-row" style="justify-content:center;"><button class="btn" onclick="startWordGame()">Mulai Bermain</button></div>
+  </section>
+
+  <section class="screen" id="clue-word">
+    <div class="topbar"><div class="eyebrow" id="clueRoundLabel">Ronde 1/3</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="card">
+      <h2 id="clueDiffTitle">🏫 Tema: Kehidupan Sehari-hari</h2>
+      <div class="ayat" id="clueText" style="margin-top:10px;"></div>
+      <p style="margin-top:14px; color:#ece2c8;">Ronde ini berisi 5 soal. Setiap soal punya 6 kali kesempatan salah. Siap?</p>
+    </div>
+    <div class="btn-row" style="justify-content:center;"><button class="btn" id="clueStartBtn">Mulai Ronde →</button></div>
   </section>
 
   <section class="screen" id="game-word">
-    <div class="topbar"><div class="eyebrow">Tebak Kata</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="topbar"><div class="eyebrow" id="wordRoundTag">Ronde 1/3 • Soal 1/5</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
     <div class="game-area">
-      <div class="hud"><span id="wordTries">Kesalahan: 0/6</span><span id="wordCategory">Kategori: -</span></div>
+      <div class="hud"><span id="wordTries">Kesalahan: 0/6</span><span id="wordCategory">Tingkat: -</span></div>
       <div class="word-letters" id="wordLetters"></div>
       <div class="keyboard" id="wordKeyboard"></div>
+      <div id="wordFeedback" class="card" style="display:none; width:100%; text-align:center;"></div>
+      <div class="btn-row" style="justify-content:center;"><button class="btn ghost" id="wordNextBtn" style="display:none;">Lanjut →</button></div>
+    </div>
+  </section>
+
+  <section class="screen" id="roundresult-word">
+    <div id="resultBannerRoundWord" class="result-banner"></div>
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn" id="roundWordNextBtn">Lanjut →</button>
+      <button class="btn ghost" onclick="goTo('screen-menu')">Berhenti di Sini</button>
     </div>
   </section>
 
   <section class="screen" id="result-word">
     <div id="resultBannerWord" class="result-banner"></div>
     <div class="btn-row" style="justify-content:center;">
-      <button class="btn" onclick="startWord()">Main Lagi</button>
+      <button class="btn" onclick="startWordGame()">Main Lagi</button>
       <button class="btn ghost" onclick="goTo('screen-menu')">Pilih Permainan Lain</button>
     </div>
   </section>
@@ -488,7 +535,7 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
       <h2>🚗 Mobil Rintangan</h2>
       <p>Permainan ini melatih konsentrasi dan refleks dalam menghindari halangan.</p>
       <ul class="instr">
-        <li>Gunakan tombol kiri/kanan (atau panah keyboard) untuk menggeser mobil.</li>
+        <li>Setiap <strong>1 kali tekan</strong> tombol ←/→ (atau panah keyboard), mobil akan geser <strong>1 langkah pasti</strong> ke kiri/kanan — bukan bergerak terus selama ditahan.</li>
         <li>Hindari rintangan yang jatuh dari atas — kamu punya 3 nyawa.</li>
         <li>Semakin lama bertahan, rintangan akan jatuh semakin cepat.</li>
         <li><strong>Tantangan:</strong> bertahan hingga 45 detik untuk jadi "Sopir Lincah"!</li>
@@ -503,8 +550,8 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
       <div class="hud"><span id="carTime">Waktu: 0s</span><span id="carLives">❤️❤️❤️</span></div>
       <canvas id="carCanvas" width="320" height="420"></canvas>
       <div class="btn-row">
-        <button class="btn ghost" onclick="carSetDir(-1)" onmousedown="carSetDir(-1)" onmouseup="carSetDir(0)" ontouchstart="carSetDir(-1)" ontouchend="carSetDir(0)">←</button>
-        <button class="btn ghost" onclick="carSetDir(1)" onmousedown="carSetDir(1)" onmouseup="carSetDir(0)" ontouchstart="carSetDir(1)" ontouchend="carSetDir(0)">→</button>
+        <button class="btn ghost" onclick="carStep(-1)">←</button>
+        <button class="btn ghost" onclick="carStep(1)">→</button>
       </div>
     </div>
   </section>
@@ -679,6 +726,55 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
       <button class="btn ghost" onclick="goTo('screen-menu')">Pilih Permainan Lain</button>
     </div>
   </section>
+
+  <!-- ============ MODUL 12: PANCING MANIA ============ -->
+  <section class="screen" id="instr-pancing">
+    <div class="topbar"><div class="eyebrow">Modul 12 • Prediksi</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="card">
+      <h2>🎣 Pancing Mania</h2>
+      <p>Permainan ini melatih kemampuan memprediksi dan estimasi kedalaman di laut. Santai saja, tidak ada batasan waktu!</p>
+      <ul class="instr">
+        <li>Setiap ronde, ada <strong>3 ikan tersembunyi</strong> di laut: 🐟 Kecil, 🐠 Sedang, dan 🐡 Besar — masing-masing berada di kedalaman acak yang berbeda dan <strong>tidak terlihat di awal</strong>.</li>
+        <li>Gunakan garis ukuran (penggaris) di samping, geser slider untuk membidik kedalaman yang kamu rasa tepat, lalu klik <strong>"Lempar Pancing!"</strong>.</li>
+        <li>Begitu pancing dilempar, <strong>ketiga ikan langsung terlihat sekaligus</strong> di posisi sebenarnya — ikan mana pun yang posisinya <strong>paling dekat</strong> dengan titik pancingmu, itulah yang tertangkap!</li>
+        <li>Jadi kamu tidak hanya menebak satu ikan, tapi memilih posisi terbaik di antara 3 kemungkinan ikan kecil/sedang/besar.</li>
+        <li>Berat ikan ditampilkan dalam satuan <strong>ons/kg</strong>, dan akan diakumulasikan dari <strong>5 ronde</strong> pancinganmu.</li>
+        <li><strong>Tantangan:</strong> kumpulkan total berat 7 kg atau lebih untuk jadi "Master Pemancing"!</li>
+      </ul>
+    </div>
+    <div class="btn-row" style="justify-content:center;"><button class="btn" onclick="startPancing()">Mulai Memancing</button></div>
+  </section>
+
+  <section class="screen" id="game-pancing">
+    <div class="topbar"><div class="eyebrow" id="pancingRoundLabel">Ronde 1/5</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="game-area" style="align-items:center;">
+      <div class="hud" style="justify-content:center;"><span id="pancingTotalTag" style="font-size:14px;">⚖️ Total: 0 ons</span><span style="font-size:13px; color:#ece2c8;">Tanpa batas waktu — santai saja</span></div>
+      <div class="pancing-wrap">
+        <div class="pancing-ruler" id="pancingRuler">
+          <div class="pancing-marker" id="pancingGuessMarker">🎣</div>
+          <div class="pancing-marker" id="pancingFishMarkerKecil" style="display:none;">🐟</div>
+          <div class="pancing-marker" id="pancingFishMarkerSedang" style="display:none;">🐠</div>
+          <div class="pancing-marker" id="pancingFishMarkerBesar" style="display:none;">🐡</div>
+        </div>
+        <div class="pancing-controls">
+          <div class="pancing-depth-label" id="pancingDepthLabel">15 meter</div>
+          <input type="range" id="pancingSlider" min="0" max="30" value="15" step="1">
+          <button class="btn" id="pancingThrowBtn">Lempar Pancing! 🎣</button>
+        </div>
+      </div>
+      <div id="pancingFeedback" class="card" style="display:none; width:100%; text-align:center;"></div>
+      <div class="btn-row" style="justify-content:center;"><button class="btn ghost" id="pancingNextBtn" style="display:none;">Lanjut →</button></div>
+    </div>
+  </section>
+
+  <section class="screen" id="result-pancing">
+    <div id="resultBannerPancing" class="result-banner"></div>
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn" onclick="startPancing()">Main Lagi</button>
+      <button class="btn ghost" onclick="goTo('screen-menu')">Pilih Permainan Lain</button>
+    </div>
+  </section>
+
 
   <footer>Rumah Main BK • SMP Al Hikmah Surabaya — Bermain untuk Bahagia 🌿</footer>
 </div>
@@ -1134,30 +1230,88 @@ function drawMaze(){
   ctx.fill();
 }
 
-/* ===================== MODUL 9: TEBAK KATA ===================== */
-const wordBank = [
-  {word:'TEMAN', cat:'Bahasa Indonesia • Mudah', level:1},
-  {word:'BUKU', cat:'Bahasa Indonesia • Mudah', level:1},
-  {word:'FRIEND', cat:'English • Easy', level:1},
-  {word:'BOOK', cat:'English • Easy', level:1},
-  {word:'SEKOLAH', cat:'Bahasa Indonesia • Sedang', level:2},
-  {word:'PERCAYA DIRI', cat:'Bahasa Indonesia • Sedang', level:2},
-  {word:'CONFIDENCE', cat:'English • Medium', level:2},
-  {word:'COURAGE', cat:'English • Medium', level:2},
-  {word:'TANGGUNG JAWAB', cat:'Bahasa Indonesia • Sulit', level:3},
-  {word:'PENGENDALIAN DIRI', cat:'Bahasa Indonesia • Sulit', level:3},
-  {word:'RESPONSIBILITY', cat:'English • Hard', level:3},
-  {word:'PERSEVERANCE', cat:'English • Hard', level:3},
+/* ===================== MODUL 9: TEBAK KATA (3 tema, tiap ronde campuran Mudah-Sulit-Sangat Sulit & ID-EN, diacak tiap main) ===================== */
+const wordRounds = [
+  {
+    theme:'Kehidupan Sehari-hari', themeEmoji:'🏫',
+    clue:'Clue: Kata-kata di ronde ini berkaitan dengan kehidupan sehari-harimu sebagai siswa SMP — sekolah, belajar, dan rutinitas harian. Ada campuran Bahasa Indonesia & Inggris, dari yang mudah sampai sangat sulit!',
+    ayat:'"Maka sesungguhnya bersama kesulitan ada kemudahan." — QS. Al-Insyirah (94): 6',
+    pool:[
+      {word:'TEMAN', diff:'Mudah', lang:'ID'},
+      {word:'SCHOOL', diff:'Mudah', lang:'EN'},
+      {word:'BUKU', diff:'Mudah', lang:'ID'},
+      {word:'SARAPAN', diff:'Sulit', lang:'ID'},
+      {word:'HOMEWORK', diff:'Sulit', lang:'EN'},
+      {word:'JADWAL', diff:'Sulit', lang:'ID'},
+      {word:'EKSTRAKURIKULER', diff:'Sangat Sulit', lang:'ID'},
+      {word:'TRANSPORTATION', diff:'Sangat Sulit', lang:'EN'},
+      {word:'KEDISIPLINAN', diff:'Sangat Sulit', lang:'ID'}
+    ]
+  },
+  {
+    theme:'Karakter & Sikap', themeEmoji:'🌟',
+    clue:'Clue: Kata-kata di ronde ini tentang sikap dan karakter yang penting kamu kembangkan sebagai remaja. Ada campuran Bahasa Indonesia & Inggris, dari yang mudah sampai sangat sulit!',
+    ayat:'"Sesungguhnya Allah tidak akan mengubah keadaan suatu kaum sehingga mereka mengubah diri mereka sendiri." — QS. Ar-Ra\u2019d (13): 11',
+    pool:[
+      {word:'JUJUR', diff:'Mudah', lang:'ID'},
+      {word:'KIND', diff:'Mudah', lang:'EN'},
+      {word:'RAJIN', diff:'Mudah', lang:'ID'},
+      {word:'PERCAYA DIRI', diff:'Sulit', lang:'ID'},
+      {word:'RESPONSIBLE', diff:'Sulit', lang:'EN'},
+      {word:'KERJA SAMA', diff:'Sulit', lang:'ID'},
+      {word:'PENGENDALIAN DIRI', diff:'Sangat Sulit', lang:'ID'},
+      {word:'PERSEVERANCE', diff:'Sangat Sulit', lang:'EN'},
+      {word:'KEMANDIRIAN', diff:'Sangat Sulit', lang:'ID'}
+    ]
+  },
+  {
+    theme:'Psikologi', themeEmoji:'🧠',
+    clue:'Clue: Kata-kata di ronde ini adalah istilah psikologi tentang pikiran dan emosi. Ada campuran Bahasa Indonesia & Inggris, dari yang mudah sampai sangat sulit!',
+    ayat:'"Allah tidak akan membebani seseorang melainkan sesuai dengan kesanggupannya." — QS. Al-Baqarah (2): 286',
+    pool:[
+      {word:'EMOSI', diff:'Mudah', lang:'ID'},
+      {word:'MOOD', diff:'Mudah', lang:'EN'},
+      {word:'FOKUS', diff:'Mudah', lang:'ID'},
+      {word:'MOTIVASI', diff:'Sulit', lang:'ID'},
+      {word:'CONFIDENCE', diff:'Sulit', lang:'EN'},
+      {word:'RESILIENSI', diff:'Sulit', lang:'ID'},
+      {word:'AKTUALISASI DIRI', diff:'Sangat Sulit', lang:'ID'},
+      {word:'KECERDASAN EMOSIONAL', diff:'Sangat Sulit', lang:'ID'},
+      {word:'MINDFULNESS', diff:'Sangat Sulit', lang:'EN'}
+    ]
+  }
 ];
-let wordTarget='', wordCategory='', wordGuessed=[], wordWrong=0, wordLevel=1;
-function startWord(){
-  const pool = wordBank.filter(w=>w.level===wordLevel);
-  const pick = pool[Math.floor(Math.random()*pool.length)];
-  wordTarget = pick.word.toUpperCase();
-  wordCategory = pick.cat;
+const QUESTIONS_PER_ROUND = 5;
+let wordRoundIdx=0, wordQIdx=0, wordCurrentRoundWords=[], wordTarget='', wordGuessed=[], wordWrong=0, wordRoundScore=0, wordOverallCorrect=0, wordOverallTotal=0;
+function startWordGame(){
+  wordRoundIdx=0; wordOverallCorrect=0; wordOverallTotal=0;
+  showWordClue();
+}
+function showWordClue(){
+  const r = wordRounds[wordRoundIdx];
+  // Acak ulang & ambil 5 soal BARU dari pool setiap kali ronde ini dimulai —
+  // termasuk setiap kali keluar lalu masuk lagi ke permainan, supaya tidak membosankan.
+  wordCurrentRoundWords = shuffleArr(r.pool.slice()).slice(0, QUESTIONS_PER_ROUND);
+  goTo('clue-word');
+  document.getElementById('clueRoundLabel').textContent = `Ronde ${wordRoundIdx+1}/${wordRounds.length}`;
+  document.getElementById('clueDiffTitle').textContent = `${r.themeEmoji} Tema: ${r.theme}`;
+  document.getElementById('clueText').textContent = r.clue;
+  document.getElementById('clueStartBtn').onclick = ()=>{
+    wordQIdx=0; wordRoundScore=0;
+    startWordQuestion();
+  };
+}
+function startWordQuestion(){
+  const r = wordRounds[wordRoundIdx];
+  const item = wordCurrentRoundWords[wordQIdx];
+  wordTarget = item.word.toUpperCase();
   wordGuessed = []; wordWrong = 0;
+  document.getElementById('wordRoundTag').textContent = `Ronde ${wordRoundIdx+1}/${wordRounds.length} (${r.theme}) • Soal ${wordQIdx+1}/${wordCurrentRoundWords.length}`;
   document.getElementById('wordTries').textContent='Kesalahan: 0/6';
-  document.getElementById('wordCategory').textContent='Kategori: '+wordCategory;
+  const diffEmoji = item.diff==='Mudah' ? '🟢' : item.diff==='Sulit' ? '🟠' : '🔴';
+  document.getElementById('wordCategory').textContent = `${diffEmoji} ${item.diff} • ${item.lang==='ID'?'Bahasa Indonesia':'English'}`;
+  document.getElementById('wordFeedback').style.display='none';
+  document.getElementById('wordNextBtn').style.display='none';
   renderWordLetters();
   renderKeyboard();
   goTo('game-word');
@@ -1189,26 +1343,73 @@ function wordGuess(ch, btn){
     btn.classList.add('correct');
     renderWordLetters();
     const remaining = [...wordTarget].some(c=> c!==' ' && !wordGuessed.includes(c));
-    if(!remaining){ endWord(true); }
+    if(!remaining){ endWordQuestion(true); }
   } else {
     wordWrong++;
     btn.classList.add('wrong');
     document.getElementById('wordTries').textContent='Kesalahan: '+wordWrong+'/6';
-    if(wordWrong>=6){ endWord(false); }
+    if(wordWrong>=6){ endWordQuestion(false); }
   }
 }
-function endWord(win){
-  const goodRun = win && wordWrong<3;
+function endWordQuestion(win){
+  wordOverallTotal++;
+  if(win){ wordRoundScore++; wordOverallCorrect++; }
+  // Kunci papan huruf
+  document.querySelectorAll('#wordKeyboard .key').forEach(k=>k.disabled=true);
+
+  const isEarlyRound = wordRoundIdx < 2; // ronde 1 (idx 0) atau ronde 2 (idx 1)
+  const fb = document.getElementById('wordFeedback');
+  fb.style.display='block';
+  if(win){
+    fb.innerHTML = `<div style="font-weight:700; font-size:17px; color:var(--good);">✅ Benar! Kata: <strong>${wordTarget}</strong></div>
+      <p style="margin-top:6px;">Kesalahan: ${wordWrong}/6</p>`;
+  } else {
+    const semangat = isEarlyRound
+      ? `💪 <strong>Jangan menyerah!</strong> Ronde ini belum selesai, ayo lanjut ke soal berikutnya!`
+      : `🌟 Ini level paling menantang — kamu sudah berjuang keras sampai sini, hebat!`;
+    fb.innerHTML = `<div style="font-weight:700; font-size:17px; color:var(--bad);">❌ Belum tepat. Kata yang benar: <strong>${wordTarget}</strong></div>
+      <p style="margin-top:6px; color:var(--gold);">${semangat}</p>`;
+  }
+  const nextBtn = document.getElementById('wordNextBtn');
+  nextBtn.textContent = (wordQIdx+1 >= wordCurrentRoundWords.length) ? 'Lihat Hasil Ronde →' : 'Lanjut →';
+  nextBtn.style.display='inline-flex';
+  nextBtn.onclick = ()=>{
+    wordQIdx++;
+    if(wordQIdx>=wordCurrentRoundWords.length){ endWordRound(); } else { startWordQuestion(); }
+  };
+}
+function endWordRound(){
+  const r = wordRounds[wordRoundIdx];
+  const isLastRound = wordRoundIdx >= wordRounds.length-1;
+  const win = wordRoundScore >= 3;
+  goTo('roundresult-word');
+  const banner = document.getElementById('resultBannerRoundWord');
+  banner.className = 'result-banner ' + (win?'win':'lose');
+  banner.innerHTML = `<h2>${win?'🎉 Ronde Selesai!':'💪 Tetap Semangat!'}</h2>
+    <p>Skor Ronde ${wordRoundIdx+1} (${r.theme}): <strong>${wordRoundScore} dari ${wordCurrentRoundWords.length}</strong> benar.</p>
+    <div class="quote">"${randomQuote(win?winQuotes:loseQuotes)}"</div>
+    <div class="ayat" style="margin-top:14px; text-align:left;">${r.ayat}</div>`;
+  const nextBtn = document.getElementById('roundWordNextBtn');
+  if(isLastRound){
+    nextBtn.textContent = 'Lihat Hasil Akhir →';
+    nextBtn.onclick = ()=>endWordGameFinal();
+  } else {
+    nextBtn.textContent = 'Lanjut ke Ronde Berikutnya →';
+    nextBtn.onclick = ()=>{ wordRoundIdx++; showWordClue(); };
+  }
+}
+function endWordGameFinal(){
+  const win = wordOverallCorrect >= 9; // minimal 9 dari 15 soal
   showResult('resultBannerWord', win,
-    win ? `Kamu menebak kata <strong>${wordTarget}</strong> dengan ${wordWrong} kesalahan. ${goodRun? 'Kamu jadi Pakar Kata! 🏅':''}`
-        : `Kata yang benar adalah <strong>${wordTarget}</strong>. Yuk coba kata lain!`);
-  if(win && wordLevel<3){ wordLevel++; }
+    `Kamu menyelesaikan ketiga ronde Tebak Kata dengan total <strong>${wordOverallCorrect} dari ${wordOverallTotal} soal</strong> benar. ${win?'Kamu jadi Pakar Kata! 🏅':'Terus berlatih kosa kata, kamu pasti makin hebat!'}`);
   goTo('result-word');
 }
 
 /* ===================== MODUL 3: MOBIL RINTANGAN ===================== */
 let carCtx, carCanvas, carLoop, carTimerSec, carSessionId=0;
-let carX=0, carDir=0, carObstacles=[], carLives=3, carElapsed=0, carSpeed=2.2;
+let carX=0, carTargetX=0, carObstacles=[], carLives=3, carElapsed=0, carSpeed=2.2;
+const CAR_STEP = 36; // jarak geser tetap untuk setiap 1 kali tekan tombol/panah
+const CAR_RADIUS = 17; // radius hitbox mobil, disesuaikan dengan ukuran visual emoji 🚓
 function startCar(){
   stopCar();
   carSessionId++;
@@ -1216,15 +1417,17 @@ function startCar(){
   goTo('game-mobil');
   carCanvas = document.getElementById('carCanvas');
   carCtx = carCanvas.getContext('2d');
-  carX = carCanvas.width/2 - 20; carDir=0; carObstacles=[]; carLives=3; carElapsed=0; carSpeed=2.2;
+  carCtx.textAlign = 'center';
+  carCtx.textBaseline = 'middle';
+  carX = carCanvas.width/2; carTargetX = carX; carObstacles=[]; carLives=3; carElapsed=0; carSpeed=2.2;
   document.getElementById('carTime').textContent='Waktu: 0s';
   document.getElementById('carLives').textContent='❤️❤️❤️';
+  // e.repeat dicek agar menahan tombol panah tidak memicu banyak langkah beruntun —
+  // benar-benar 1 kali tekan = 1 kali langkah geser, bukan gerak terus menerus
   document.onkeydown = (e)=>{
-    if(e.key==='ArrowLeft') carDir=-1;
-    if(e.key==='ArrowRight') carDir=1;
-  };
-  document.onkeyup = (e)=>{
-    if(e.key==='ArrowLeft'||e.key==='ArrowRight') carDir=0;
+    if(e.repeat) return;
+    if(e.key==='ArrowLeft') carStep(-1);
+    if(e.key==='ArrowRight') carStep(1);
   };
   carTimerSec = setInterval(()=>{
     if(session!==carSessionId){ clearInterval(carTimerSec); return; }
@@ -1235,16 +1438,21 @@ function startCar(){
   },1000);
   carLoopFn(session);
 }
-function carSetDir(d){ carDir = d; }
+function carStep(d){
+  if(!carCanvas) return;
+  carTargetX = Math.max(CAR_RADIUS, Math.min(carCanvas.width-CAR_RADIUS, carTargetX + d*CAR_STEP));
+}
 function carLoopFn(session){
   if(session!==carSessionId) return;
   if(!carCtx) return;
   const w = carCanvas.width, h = carCanvas.height;
-  carX += carDir*4.5;
-  carX = Math.max(4, Math.min(w-44, carX));
+  // Geser halus menuju posisi target (hasil dari 1 kali tekan), bukan gerak bebas terus-menerus
+  carX += (carTargetX - carX) * 0.35;
   if(Math.random() < 0.035 + carElapsed*0.001){
-    carObstacles.push({x: 10+Math.random()*(w-50), y:-30, w:34+Math.random()*14});
+    const r = 14+Math.random()*7; // radius rintangan, sesuai variasi ukuran emoji 🪵
+    carObstacles.push({x: r+Math.random()*(w-2*r), y:-30, r});
   }
+  const carCenterY = h-26; // titik tengah visual mobil (disesuaikan dengan font 34px, baseline 'middle')
   carCtx.clearRect(0,0,w,h);
   carCtx.fillStyle = '#173f40';
   carCtx.fillRect(0,0,w,h);
@@ -1253,10 +1461,13 @@ function carLoopFn(session){
   for(let i=carObstacles.length-1;i>=0;i--){
     const o = carObstacles[i];
     o.y += carSpeed;
-    carCtx.font='28px serif';
+    carCtx.font=(o.r*2)+'px serif';
     carCtx.fillText('🪵', o.x, o.y);
     if(o.y > h+30){ carObstacles.splice(i,1); continue; }
-    if(o.y > h-60 && o.y < h-10 && o.x < carX+40 && o.x+o.w > carX){
+    // Deteksi tabrakan berdasarkan JARAK ANTAR TITIK TENGAH (lingkaran), bukan baseline teks —
+    // supaya "kena" benar-benar sesuai dengan tampilan visualnya, tidak meleset.
+    const dist = Math.hypot(carX - o.x, carCenterY - o.y);
+    if(dist < CAR_RADIUS + o.r){
       carObstacles.splice(i,1);
       carLives--;
       document.getElementById('carLives').textContent = '❤️'.repeat(Math.max(carLives,0)) + '🖤'.repeat(3-Math.max(carLives,0));
@@ -1264,13 +1475,12 @@ function carLoopFn(session){
     }
   }
   carCtx.font='34px serif';
-  carCtx.fillText('🚓', carX, h-20);
+  carCtx.fillText('🚓', carX, carCenterY);
   carLoop = requestAnimationFrame(()=>carLoopFn(session));
 }
 function stopCar(){
   clearInterval(carTimerSec);
   cancelAnimationFrame(carLoop);
-  document.onkeyup = null;
   carCtx = null;
 }
 function endCar(win, session){
@@ -1675,6 +1885,119 @@ function endFokus(){
     Rata-rata selisih ${fokusName1}: ${avg1.toFixed(2)}s &nbsp;|&nbsp; ${fokusName2}: ${avg2.toFixed(2)}s.<br>
     ${finalWinner==='Seri' ? '🤝 Hasil akhir seri! Sama-sama Konsentrasi Jitu!' : `🏆 Juara Konsentrasi: <strong>${finalWinner}</strong>! Selamat!`}`);
   goTo('result-fokus');
+}
+
+/* ===================== MODUL 12: PANCING MANIA (5 ronde, 3 ikan tersembunyi muncul saat melempar pancing) ===================== */
+const PANCING_MAX_DEPTH = 30;
+const PANCING_TOTAL_ROUNDS = 5;
+// 3 ukuran ikan dengan rentang berat masing-masing (gram). Kedalaman setiap ikan diacak ulang tiap ronde,
+// dan TIDAK ditampilkan sebelum pancing dilempar.
+const pancingSizeDefs = [
+  { key:'kecil',  name:'Ikan Kecil',  emoji:'🐟', minG:100,  maxG:800  },
+  { key:'sedang', name:'Ikan Sedang', emoji:'🐠', minG:900,  maxG:2200 },
+  { key:'besar',  name:'Ikan Besar',  emoji:'🐡', minG:2300, maxG:5500 }
+];
+let pancingRoundIdx=0, pancingSessionId=0, pancingCatches=[], pancingTotalGrams=0, pancingRulerBuilt=false, pancingRoundFish=[];
+function startPancing(){
+  pancingSessionId++;
+  goTo('game-pancing');
+  pancingRoundIdx=0; pancingCatches=[]; pancingTotalGrams=0;
+  document.getElementById('pancingTotalTag').textContent = '⚖️ Total: 0 ons';
+  if(!pancingRulerBuilt){ buildPancingRuler(); pancingRulerBuilt=true; }
+  renderPancingRound();
+}
+function buildPancingRuler(){
+  const ruler = document.getElementById('pancingRuler');
+  // Garis ukuran tiap 5 meter (ini saja yang terlihat sejak awal, ikan-ikan masih tersembunyi)
+  for(let d=0; d<=PANCING_MAX_DEPTH; d+=5){
+    const tick = document.createElement('div');
+    tick.className='pancing-tick';
+    tick.style.top = (d/PANCING_MAX_DEPTH*100)+'%';
+    tick.innerHTML = `<span>${d}m</span>`;
+    ruler.appendChild(tick);
+  }
+}
+function pancingDepthToPercent(depth){ return (depth/PANCING_MAX_DEPTH*100); }
+// Format berat: di bawah 1000 gram tampil dalam ons (1 ons = 100 gram), 1000 gram ke atas tampil dalam kg
+function pancingFormatWeight(grams){
+  if(grams < 1000){
+    return parseFloat((grams/100).toFixed(1)) + ' ons';
+  }
+  return parseFloat((grams/1000).toFixed(2)) + ' kg';
+}
+function renderPancingRound(){
+  const session = pancingSessionId;
+  document.getElementById('pancingRoundLabel').textContent = `Ronde ${pancingRoundIdx+1}/${PANCING_TOTAL_ROUNDS}`;
+  document.getElementById('pancingFeedback').style.display='none';
+  document.getElementById('pancingNextBtn').style.display='none';
+
+  // Sembunyikan ketiga ikan dulu, dan acak ulang kedalaman masing-masing untuk ronde ini
+  pancingRoundFish = pancingSizeDefs.map(def => ({...def, depth: Math.floor(Math.random()*(PANCING_MAX_DEPTH+1))}));
+  ['Kecil','Sedang','Besar'].forEach(k=>{
+    document.getElementById('pancingFishMarker'+k).style.display='none';
+  });
+
+  const slider = document.getElementById('pancingSlider');
+  slider.value = 15;
+  slider.disabled = false;
+  slider.oninput = ()=>{
+    document.getElementById('pancingDepthLabel').textContent = slider.value+' meter';
+    document.getElementById('pancingGuessMarker').style.top = pancingDepthToPercent(slider.value)+'%';
+  };
+  document.getElementById('pancingDepthLabel').textContent = slider.value+' meter';
+  document.getElementById('pancingGuessMarker').style.top = pancingDepthToPercent(slider.value)+'%';
+
+  const throwBtn = document.getElementById('pancingThrowBtn');
+  throwBtn.disabled = false;
+  throwBtn.textContent = 'Lempar Pancing! 🎣';
+  throwBtn.onclick = ()=>pancingSubmit(session, parseInt(slider.value));
+}
+function pancingSubmit(session, chosenDepth){
+  if(session!==pancingSessionId) return;
+  document.getElementById('pancingSlider').disabled = true;
+  document.getElementById('pancingThrowBtn').disabled = true;
+
+  // Begitu pancing dilempar, ketiga ikan langsung terlihat sekaligus di posisi sebenarnya
+  const markerIdByKey = {kecil:'pancingFishMarkerKecil', sedang:'pancingFishMarkerSedang', besar:'pancingFishMarkerBesar'};
+  pancingRoundFish.forEach(f=>{
+    const el = document.getElementById(markerIdByKey[f.key]);
+    el.style.display='block';
+    el.style.top = pancingDepthToPercent(f.depth)+'%';
+  });
+
+  // Ikan yang posisinya PALING DEKAT dengan titik pancing itulah yang tertangkap
+  let caught = pancingRoundFish[0];
+  let bestDiff = Math.abs(chosenDepth - caught.depth);
+  for(const f of pancingRoundFish){
+    const d = Math.abs(chosenDepth - f.depth);
+    if(d < bestDiff){ bestDiff = d; caught = f; }
+  }
+  const weightG = Math.round(caught.minG + Math.random()*(caught.maxG - caught.minG));
+  pancingTotalGrams += weightG;
+  pancingCatches.push({round: pancingRoundIdx+1, size: caught.name, emoji: caught.emoji, weightG, depth: caught.depth});
+
+  document.getElementById('pancingTotalTag').textContent = '⚖️ Total: '+pancingFormatWeight(pancingTotalGrams);
+
+  const lainnya = pancingRoundFish.filter(f=>f!==caught).map(f=>`${f.emoji} ${f.name} di ${f.depth}m`).join(' &nbsp;dan&nbsp; ');
+  const fb = document.getElementById('pancingFeedback');
+  fb.style.display='block';
+  fb.innerHTML = `<div style="font-weight:700; font-size:18px; color:var(--good);">${caught.emoji} Kamu menangkap ${caught.name}!</div>
+    <p style="margin-top:8px;">Berat ikan: <strong>${pancingFormatWeight(weightG)}</strong></p>
+    <p style="margin-top:8px; color:#ece2c8;">Titik pancingmu: <strong>${chosenDepth} meter</strong> &nbsp;|&nbsp; Ikan ini berada di: <strong>${caught.depth} meter</strong></p>
+    <p style="margin-top:8px; color:#ece2c8; font-size:13px;">Yang lolos kali ini: ${lainnya}</p>`;
+  const nextBtn = document.getElementById('pancingNextBtn');
+  nextBtn.textContent = (pancingRoundIdx+1 >= PANCING_TOTAL_ROUNDS) ? 'Lihat Hasil Akhir →' : 'Ronde Berikutnya →';
+  nextBtn.style.display='inline-flex';
+  nextBtn.onclick = ()=>{
+    pancingRoundIdx++;
+    if(pancingRoundIdx>=PANCING_TOTAL_ROUNDS){ endPancing(); } else { renderPancingRound(); }
+  };
+}
+function endPancing(){
+  const win = pancingTotalGrams >= 7000;
+  const rincian = pancingCatches.map(c=>`Ronde ${c.round}: ${c.emoji} ${c.size} di ${c.depth}m (${pancingFormatWeight(c.weightG)})`).join('<br>');
+  showResult('resultBannerPancing', win, `Total berat tangkapanmu dari 5 ronde: <strong>${pancingFormatWeight(pancingTotalGrams)}</strong>.<br><br>${rincian}<br><br>${win?'Kamu jadi Master Pemancing! 🏅':'Terus berlatih membidik kedalaman yang tepat, makin jeli makin besar ikannya!'}`);
+  goTo('result-pancing');
 }
 
 /* ===================== INIT ===================== */

@@ -1195,7 +1195,8 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
       <h2>🚢 Tebak Posisi Kapal</h2>
       <p>Permainan strategi pencarian sistematis — temukan dan tenggelamkan semua kapal komputer sebelum kapalmu sendiri habis ditembak!</p>
       <ul class="instr">
-        <li>Setiap pemain (kamu & komputer) punya 3 kapal tersembunyi (ukuran 3, 2, dan 2 kotak) di papan 6×6.</li>
+        <li>Sebelum bertempur, kamu akan <strong>menempatkan sendiri</strong> 3 kapalmu (ukuran 3, 2, dan 2 kotak) di papan 6×6.</li>
+        <li>Komputer juga punya 3 kapal tersembunyi di papannya sendiri.</li>
         <li>Klik kotak di "Papan Lawan" untuk menembak. Merah = kena, abu-abu = meleset.</li>
         <li>Setelah giliranmu, komputer otomatis menembak balik ke papanmu.</li>
         <li>Komputer akan "memburu" area sekitar tembakan yang kena, jadi makin pintar setelah mendapat 1 hit!</li>
@@ -1203,6 +1204,25 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
       </ul>
     </div>
     <div class="btn-row" style="justify-content:center;"><button class="btn" onclick="startBattleship()">Mulai Bermain</button></div>
+  </section>
+
+  <section class="screen" id="battleship-setup">
+    <div class="topbar"><div class="eyebrow">Tempatkan Kapalmu</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="game-area">
+      <p class="sambung-hint" id="bsSetupHint">Tempatkan kapal ukuran 3 kotak</p>
+      <div class="btn-row" style="justify-content:center;">
+        <button class="btn ghost" id="bsOrientBtn">Arah: Horizontal ↔️</button>
+      </div>
+      <div class="bs-board-wrap">
+        <div class="bs-grid" id="bsSetupGrid" style="width:fit-content;"></div>
+      </div>
+      <div id="bsSetupError" style="display:none; color:var(--bad); font-weight:700; font-size:13px;"></div>
+      <div class="btn-row" style="justify-content:center;">
+        <button class="btn ghost" id="bsRandomizeBtn">🎲 Acak Otomatis</button>
+        <button class="btn ghost" id="bsClearBtn">Hapus Semua</button>
+      </div>
+      <button class="btn" id="bsConfirmBtn" disabled>Mulai Pertempuran! ⚔️</button>
+    </div>
   </section>
 
   <section class="screen" id="game-battleship">
@@ -3658,9 +3678,83 @@ function bsCellKey(r,c){ return r+'_'+c; }
 function bsFindShipAt(ships, r, c){
   return ships.find(s => s.cells.some(([rr,cc])=>rr===r&&cc===c));
 }
+let bsSetupShips=[], bsSetupSizesRemaining=[], bsSetupOrientation='horizontal', bsSetupOccupied=new Set();
 function startBattleship(){
+  goTo('battleship-setup');
+  bsSetupShips = [];
+  bsSetupSizesRemaining = BS_SHIP_SIZES.slice();
+  bsSetupOrientation = 'horizontal';
+  bsSetupOccupied = new Set();
+  document.getElementById('bsSetupError').style.display='none';
+  document.getElementById('bsOrientBtn').onclick = bsSetupToggleOrientation;
+  document.getElementById('bsRandomizeBtn').onclick = bsSetupRandomize;
+  document.getElementById('bsClearBtn').onclick = bsSetupClear;
+  document.getElementById('bsConfirmBtn').onclick = bsSetupConfirm;
+  renderBattleshipSetup();
+}
+function bsSetupToggleOrientation(){
+  bsSetupOrientation = bsSetupOrientation==='horizontal' ? 'vertical' : 'horizontal';
+  document.getElementById('bsOrientBtn').textContent = 'Arah: '+(bsSetupOrientation==='horizontal'?'Horizontal ↔️':'Vertikal ↕️');
+}
+function renderBattleshipSetup(){
+  const grid = document.getElementById('bsSetupGrid');
+  grid.style.gridTemplateColumns = `repeat(${BS_SIZE}, 30px)`;
+  grid.innerHTML='';
+  for(let r=0;r<BS_SIZE;r++) for(let c=0;c<BS_SIZE;c++){
+    const cell = document.createElement('div');
+    cell.className='bs-cell';
+    if(bsSetupOccupied.has(bsCellKey(r,c))) cell.classList.add('ship');
+    if(bsSetupSizesRemaining.length>0){ cell.onclick = ()=>bsSetupPlaceAt(r,c); }
+    else { cell.classList.add('no-click'); }
+    grid.appendChild(cell);
+  }
+  const hint = document.getElementById('bsSetupHint');
+  if(bsSetupSizesRemaining.length>0){
+    hint.textContent = `Tempatkan kapal ukuran ${bsSetupSizesRemaining[0]} kotak — klik kotak awal kapal (arah memanjang ke ${bsSetupOrientation==='horizontal'?'kanan':'bawah'})`;
+  } else {
+    hint.textContent = 'Semua kapal sudah ditempatkan! Klik "Mulai Pertempuran!" untuk lanjut.';
+  }
+  document.getElementById('bsConfirmBtn').disabled = bsSetupSizesRemaining.length>0;
+}
+function bsSetupShowError(msg){
+  const errBox = document.getElementById('bsSetupError');
+  errBox.style.display='block';
+  errBox.textContent = '⚠️ '+msg;
+  setTimeout(()=>{ errBox.style.display='none'; }, 1800);
+}
+function bsSetupPlaceAt(r,c){
+  if(bsSetupSizesRemaining.length===0) return;
+  const len = bsSetupSizesRemaining[0];
+  const cells = [];
+  for(let k=0;k<len;k++){
+    const rr = bsSetupOrientation==='horizontal' ? r : r+k;
+    const cc = bsSetupOrientation==='horizontal' ? c+k : c;
+    if(rr>=BS_SIZE || cc>=BS_SIZE){ bsSetupShowError('Kapal keluar dari papan! Coba posisi atau arah lain.'); return; }
+    if(bsSetupOccupied.has(bsCellKey(rr,cc))){ bsSetupShowError('Kotak itu sudah ditempati kapal lain!'); return; }
+    cells.push([rr,cc]);
+  }
+  cells.forEach(([rr,cc])=> bsSetupOccupied.add(bsCellKey(rr,cc)));
+  bsSetupShips.push({cells, sunk:false});
+  bsSetupSizesRemaining.shift();
+  renderBattleshipSetup();
+}
+function bsSetupRandomize(){
+  bsSetupShips = bsPlaceShips(BS_SIZE, BS_SHIP_SIZES);
+  bsSetupOccupied = new Set();
+  bsSetupShips.forEach(s=>s.cells.forEach(([r,c])=> bsSetupOccupied.add(bsCellKey(r,c))));
+  bsSetupSizesRemaining = [];
+  renderBattleshipSetup();
+}
+function bsSetupClear(){
+  bsSetupShips = [];
+  bsSetupOccupied = new Set();
+  bsSetupSizesRemaining = BS_SHIP_SIZES.slice();
+  renderBattleshipSetup();
+}
+function bsSetupConfirm(){
+  if(bsSetupSizesRemaining.length>0) return;
   bsGameOver=false;
-  bsPlayerShips = bsPlaceShips(BS_SIZE, BS_SHIP_SIZES);
+  bsPlayerShips = bsSetupShips;
   bsAiShips = bsPlaceShips(BS_SIZE, BS_SHIP_SIZES);
   bsPlayerHits = []; // tembakan PEMAIN ke papan AI: {r,c,result}
   bsAiHits = [];     // tembakan AI ke papan PEMAIN: {r,c,result}

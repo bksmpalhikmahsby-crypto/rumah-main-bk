@@ -341,6 +341,33 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
   .seq-pad{grid-template-columns:repeat(3,58px);}
   .seq-btn{width:58px; height:58px; font-size:18px;}
 }
+/* lampu padam (lights out) */
+.lightsout-grid{display:grid; gap:6px; justify-content:center;}
+.lightsout-cell{
+  border-radius:8px; cursor:pointer; transition:background .15s, box-shadow .15s;
+  background:#173f40; border:2px solid rgba(212,168,87,0.25);
+}
+.lightsout-cell.on{background:#f0d77b; box-shadow:0 0 16px 4px rgba(240,215,123,0.7); border-color:#f0d77b;}
+
+/* penyeberangan sungai */
+.river-banks{display:flex; justify-content:space-between; align-items:flex-start; gap:10px; width:100%; max-width:520px;}
+.river-bank{flex:1; min-height:120px; background:rgba(212,168,87,0.08); border:1px dashed rgba(212,168,87,0.3); border-radius:12px; padding:10px; display:flex; flex-wrap:wrap; gap:6px; align-items:flex-start; justify-content:center;}
+.river-boat{
+  display:flex; flex-direction:column; align-items:center; gap:6px; padding:10px 14px;
+  background:rgba(79,169,201,0.15); border:1px dashed rgba(79,169,201,0.5); border-radius:12px; min-width:90px;
+}
+.river-item{
+  width:46px; height:46px; border-radius:10px; background:var(--sand); display:flex; align-items:center; justify-content:center;
+  font-size:22px; cursor:pointer; border:2px solid transparent; transition:border-color .15s;
+}
+.river-item.selected{border-color:var(--gold);}
+.river-item.disabled{opacity:0.35; cursor:not-allowed;}
+
+/* jika menjadi detektif */
+.detektif-clue{
+  background:rgba(250,243,226,0.06); border-left:3px solid var(--gold); border-radius:8px;
+  padding:10px 14px; font-size:14px; color:#ece2c8; margin-bottom:8px; text-align:left;
+}
 </style>
 </head>
 <body>
@@ -413,7 +440,7 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
     </div>
 
     <div class="card">
-      <p style="margin-bottom:10px;">14 permainan siap dimainkan. Selamat mencoba! 🌱</p>
+      <p style="margin-bottom:10px;">17 permainan siap dimainkan. Selamat mencoba! 🌱</p>
       <div class="grid">
         <div class="mod" onclick="goTo('instr-tembak')"><div class="emoji">🐦</div><div class="name">Tembak Burung</div><div class="tag">Kecepatan</div></div>
         <div class="mod" onclick="goTo('instr-ingat')"><div class="emoji">🔢</div><div class="name">Mengingat Deret</div><div class="tag">Daya Ingat</div></div>
@@ -430,6 +457,9 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
         <div class="mod" onclick="goTo('instr-hanoi')"><div class="emoji">🗽</div><div class="name">Menara Hanoi</div><div class="tag">Strategi & Logika</div></div>
         <div class="mod" onclick="goTo('instr-othello')"><div class="emoji">⚪</div><div class="name">Othello/Reversi</div><div class="tag">Strategi vs Komputer</div></div>
         <div class="mod" onclick="goTo('instr-connect4')"><div class="emoji">🔴</div><div class="name">Susun 4</div><div class="tag">Strategi vs Komputer</div></div>
+        <div class="mod" onclick="showLightsoutInstr()"><div class="emoji">💡</div><div class="name">Lampu Padam</div><div class="tag">Logika Terbalik</div></div>
+        <div class="mod" onclick="goTo('instr-river')"><div class="emoji">🛶</div><div class="name">Penyeberangan Sungai</div><div class="tag">Pemecahan Masalah</div></div>
+        <div class="mod" onclick="goTo('instr-detektif')"><div class="emoji">🕵️</div><div class="name">Jika Menjadi Detektif</div><div class="tag">Deduksi & Misteri</div></div>
       </div>
     </div>
   </section>
@@ -1006,6 +1036,138 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
     <div id="resultBannerConnect4" class="result-banner"></div>
     <div class="btn-row" style="justify-content:center;">
       <button class="btn" onclick="startConnect4()">Main Lagi</button>
+      <button class="btn ghost" onclick="goTo('screen-menu')">Pilih Permainan Lain</button>
+    </div>
+  </section>
+
+  <!-- ============ MODUL 17: LAMPU PADAM (LIGHTS OUT) ============ -->
+  <section class="screen" id="instr-lightsout">
+    <div class="topbar"><div class="eyebrow">Modul 17 • Logika Terbalik</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="card">
+      <h2>💡 Lampu Padam</h2>
+      <p>Permainan ini melatih logika terbalik dan perencanaan langkah — matikan semua lampu yang menyala!</p>
+      <ul class="instr">
+        <li><strong>Tujuan:</strong> matikan <strong>SEMUA</strong> lampu (kotak kuning menyala) sampai papan gelap total.</li>
+        <li>Setiap kotak yang kamu klik akan <strong>"membalik"</strong> nyala/padamnya — kotak yang tadinya menyala jadi padam, dan yang padam jadi menyala.</li>
+        <li><strong>Yang sering bikin bingung:</strong> saat kamu klik 1 kotak, bukan cuma kotak itu yang berubah — kotak <strong>tepat di atas, bawah, kiri, dan kanannya</strong> (4 kotak tetangga) juga ikut berubah bersamaan. Jadi 1 klik = sampai 5 kotak berubah sekaligus (kotak yang diklik + 4 tetangganya, atau lebih sedikit kalau posisinya di pinggir/pojok papan).</li>
+        <li>Contoh: kalau kamu klik kotak di tengah papan, bentuknya seperti tanda plus (➕) — kotak itu sendiri, lalu yang atas, bawah, kiri, dan kanannya, semua ikut berubah.</li>
+        <li>Karena efeknya menyebar begitu, klik sembarangan bisa membuat lampu lain ikut menyala lagi — coba pikirkan urutan klik yang tepat, jangan asal klik!</li>
+        <li>Pilih tingkat: Mudah (3×3), Sedang (4×4), atau Sulit (5×5) — semakin besar papan, semakin banyak yang harus dipikirkan.</li>
+        <li><strong>Tantangan:</strong> selesaikan tingkat Sulit untuk jadi "Master Logika Terbalik"!</li>
+      </ul>
+      <p style="margin-top:14px; font-size:13px; color:var(--gold); text-align:center;">👇 Coba dulu di bawah ini (cuma latihan, tidak dinilai) — klik kotak mana saja untuk merasakan efeknya:</p>
+      <div class="lightsout-grid" id="lightsoutDemoGrid" style="margin:10px auto 0;"></div>
+    </div>
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn" onclick="startLightsOut(3)">Mudah (3×3)</button>
+      <button class="btn" onclick="startLightsOut(4)">Sedang (4×4)</button>
+      <button class="btn" onclick="startLightsOut(5)">Sulit (5×5)</button>
+    </div>
+  </section>
+
+  <section class="screen" id="game-lightsout">
+    <div class="topbar"><div class="eyebrow" id="lightsoutLabel">Lampu Padam • Mudah</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="game-area">
+      <div class="hud"><span id="lightsoutMoves">Langkah: 0</span><span id="lightsoutRemaining">Lampu nyala: 0</span></div>
+      <div class="lightsout-grid" id="lightsoutGrid"></div>
+      <button class="btn ghost" id="lightsoutRestartBtn">Acak Ulang</button>
+    </div>
+  </section>
+
+  <section class="screen" id="result-lightsout">
+    <div id="resultBannerLightsout" class="result-banner"></div>
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn" id="lightsoutAgainBtn">Main Lagi</button>
+      <button class="btn ghost" onclick="goTo('screen-menu')">Pilih Permainan Lain</button>
+    </div>
+  </section>
+
+  <!-- ============ MODUL 18: TEKA-TEKI PENYEBERANGAN SUNGAI ============ -->
+  <section class="screen" id="instr-river">
+    <div class="topbar"><div class="eyebrow">Modul 18 • Pemecahan Masalah</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="card">
+      <h2>🛶 Teka-Teki Penyeberangan Sungai</h2>
+      <p>Kumpulan teka-teki klasik pemecahan masalah — pindahkan semua dari sisi kiri ke sisi kanan sungai dengan perahu, tanpa melanggar aturan!</p>
+      <ul class="instr">
+        <li><strong>Level 1 — Serigala, Kambing, Kubis:</strong> perahu hanya muat 1 barang. Jangan tinggalkan serigala+kambing atau kambing+kubis sendirian tanpamu.</li>
+        <li><strong>Level 2 — 3 Pasangan Suami-Istri:</strong> perahu muat 2 orang. Seorang istri tidak boleh berada bersama pria lain (bukan suaminya) tanpa suaminya hadir.</li>
+        <li><strong>Level 3 — Misionaris & Kanibal:</strong> perahu muat 2 orang. Di sisi manapun, jumlah kanibal tidak boleh melebihi misionaris (kecuali tidak ada misionaris sama sekali).</li>
+        <li><strong>Level 4 — Jembatan & Senter:</strong> 4 orang dengan kecepatan beda menyeberang jembatan gelap, hanya ada 1 senter. Selesaikan secepat mungkin!</li>
+        <li><strong>Tantangan:</strong> selesaikan keempat level untuk jadi "Pemecah Masalah Sejati"!</li>
+      </ul>
+    </div>
+    <div class="btn-row" style="justify-content:center; flex-wrap:wrap;">
+      <button class="btn" onclick="startRiverPuzzle(1)">Level 1</button>
+      <button class="btn" onclick="startRiverPuzzle(2)">Level 2</button>
+      <button class="btn" onclick="startRiverPuzzle(3)">Level 3</button>
+      <button class="btn" onclick="startRiverPuzzle(4)">Level 4</button>
+    </div>
+  </section>
+
+  <section class="screen" id="game-river">
+    <div class="topbar"><div class="eyebrow" id="riverLevelLabel">Level 1</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="game-area">
+      <div class="hud"><span id="riverMoves">Langkah: 0</span><span id="riverStatus">-</span></div>
+      <p class="sambung-hint" id="riverStory"></p>
+      <div class="river-banks">
+        <div class="river-bank" id="riverBankLeft"></div>
+        <div class="river-boat" id="riverBoat">
+          <div style="font-size:11px; color:var(--gold); font-weight:700;">🚣 PERAHU</div>
+          <div id="riverBoatItems" style="display:flex; gap:4px; flex-wrap:wrap; justify-content:center;"></div>
+          <button class="btn" id="riverCrossBtn" style="font-size:12px; padding:8px 14px;">Sebrang! →</button>
+        </div>
+        <div class="river-bank" id="riverBankRight"></div>
+      </div>
+      <div id="riverFeedback" class="card" style="display:none; width:100%; text-align:center;"></div>
+      <div class="btn-row" style="justify-content:center;"><button class="btn" id="riverContinueBtn" style="display:none;">Lihat Hasil →</button></div>
+    </div>
+  </section>
+
+  <section class="screen" id="result-river">
+    <div id="resultBannerRiver" class="result-banner"></div>
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn" id="riverAgainBtn">Main Lagi</button>
+      <button class="btn ghost" onclick="goTo('screen-menu')">Pilih Permainan Lain</button>
+    </div>
+  </section>
+
+  <!-- ============ MODUL 19: JIKA MENJADI DETEKTIF ============ -->
+  <section class="screen" id="instr-detektif">
+    <div class="topbar"><div class="eyebrow">Modul 19 • Deduksi & Misteri</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="card">
+      <h2>🕵️ Jika Menjadi Detektif</h2>
+      <p>Permainan ini melatih kemampuan deduksi, analisis petunjuk silang, dan berpikir kritis tingkat tinggi — selesaikan kasus rumit seperti detektif sungguhan!</p>
+      <ul class="instr">
+        <li>Baca cerita kasus dengan teliti, lalu periksa <strong>semua petunjuk</strong> sebelum menjawab — kasusnya cukup rumit, butuh menghubungkan beberapa petunjuk sekaligus.</li>
+        <li>Pilih jawaban yang paling didukung oleh petunjuk-petunjuk tersebut. Pikirkan baik-baik, tidak ada yang akan memberitahumu benar atau salah — ini latihan menganalisis sendiri.</li>
+        <li>Setiap kamu menjawab, akan muncul kata-kata penyemangat untuk terus berpikir kritis, lalu klik "Lanjut" sendiri untuk ke kasus berikutnya — kamu tidak langsung tahu benar/salah di tiap kasus.</li>
+        <li><strong>Skor akhirmu (jumlah jawaban benar dari 5 kasus) akan ditampilkan di halaman hasil</strong> setelah semua kasus selesai.</li>
+        <li>Ada <strong>5 kasus acak</strong> dari bank soal yang lebih besar — setiap kali main, kombinasinya bisa berbeda!</li>
+        <li><strong>Tantangan:</strong> selesaikan semua 5 kasus dengan penuh ketelitian untuk jadi "Detektif Ulung"!</li>
+      </ul>
+    </div>
+    <div class="btn-row" style="justify-content:center;"><button class="btn" onclick="startDetektif()">Mulai Investigasi</button></div>
+  </section>
+
+  <section class="screen" id="game-detektif">
+    <div class="topbar"><div class="eyebrow" id="detektifCaseLabel">Kasus 1/5</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="game-area" style="align-items:stretch;">
+      <div class="card" style="width:100%;">
+        <h2 id="detektifTitle" style="font-size:18px; color:var(--gold);">Judul Kasus</h2>
+        <p id="detektifStory" style="margin-top:8px; color:#ece2c8;"></p>
+        <div id="detektifClues" style="margin-top:14px;"></div>
+        <p style="margin-top:14px; font-weight:700; color:var(--cream);">Menurutmu, apa yang sebenarnya terjadi?</p>
+        <div class="btn-row" id="detektifOptions" style="flex-direction:column; gap:10px; margin-top:8px;"></div>
+        <div id="detektifFeedback" style="display:none; margin-top:14px;"></div>
+        <div class="btn-row" style="justify-content:center; margin-top:14px;"><button class="btn ghost" id="detektifNextBtn" style="display:none;">Lanjut →</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="result-detektif">
+    <div id="resultBannerDetektif" class="result-banner"></div>
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn" onclick="startDetektif()">Main Lagi</button>
       <button class="btn ghost" onclick="goTo('screen-menu')">Pilih Permainan Lain</button>
     </div>
   </section>
@@ -2748,6 +2910,657 @@ function endConnect4(result){
   else { win=true; msg='Papan penuh, hasilnya seri! Permainan yang seru dan ketat!'; }
   showResult('resultBannerConnect4', win, msg);
   goTo('result-connect4');
+}
+
+/* ===================== MODUL 17: LAMPU PADAM (LIGHTS OUT) ===================== */
+let lightsoutDemoGrid = [];
+function showLightsoutInstr(){
+  goTo('instr-lightsout');
+  // Reset demo selalu ke kondisi padam total setiap kali halaman instruksi dibuka,
+  // supaya pengalaman demonya konsisten dan tidak membingungkan.
+  lightsoutDemoGrid = Array.from({length:3}, ()=>Array(3).fill(0));
+  renderLightsoutDemo();
+}
+function renderLightsoutDemo(){
+  const grid = document.getElementById('lightsoutDemoGrid');
+  grid.style.gridTemplateColumns = 'repeat(3, 44px)';
+  grid.innerHTML='';
+  for(let r=0;r<3;r++) for(let c=0;c<3;c++){
+    const cell = document.createElement('div');
+    cell.className = 'lightsout-cell'+(lightsoutDemoGrid[r][c]===1?' on':'');
+    cell.style.width='44px'; cell.style.height='44px';
+    cell.onclick = ()=>{ lightsoutToggle(lightsoutDemoGrid, r, c, 3); renderLightsoutDemo(); };
+    grid.appendChild(cell);
+  }
+}
+let lightsoutGrid=[], lightsoutSize=3, lightsoutMoves=0;
+function startLightsOut(n){
+  lightsoutSize = n;
+  goTo('game-lightsout');
+  const label = n===3?'Mudah':n===4?'Sedang':'Sulit';
+  document.getElementById('lightsoutLabel').textContent = `Lampu Padam • ${label} (${n}×${n})`;
+  document.getElementById('lightsoutRestartBtn').onclick = ()=>startLightsOut(n);
+  document.getElementById('lightsoutAgainBtn').onclick = ()=>startLightsOut(n);
+  generateLightsOut(n);
+}
+function lightsoutToggle(grid, r, c, n){
+  const dirs = [[0,0],[0,-1],[0,1],[-1,0],[1,0]];
+  dirs.forEach(([dr,dc])=>{
+    const rr=r+dr, cc=c+dc;
+    if(rr>=0 && rr<n && cc>=0 && cc<n){ grid[rr][cc] = grid[rr][cc]===1 ? 0 : 1; }
+  });
+}
+function generateLightsOut(n){
+  lightsoutGrid = Array.from({length:n}, ()=>Array(n).fill(0));
+  const clickCount = n===3?4:n===4?6:8;
+  for(let i=0;i<clickCount;i++){
+    const r = Math.floor(Math.random()*n), c = Math.floor(Math.random()*n);
+    lightsoutToggle(lightsoutGrid, r, c, n);
+  }
+  lightsoutMoves = 0;
+  if(lightsoutGrid.flat().every(v=>v===0)){ return generateLightsOut(n); } // pastikan ada tantangan, jangan langsung selesai
+  renderLightsOut();
+}
+function renderLightsOut(){
+  const grid = document.getElementById('lightsoutGrid');
+  const cellSize = lightsoutSize===3?70:lightsoutSize===4?58:48;
+  grid.style.gridTemplateColumns = `repeat(${lightsoutSize}, ${cellSize}px)`;
+  grid.innerHTML='';
+  let onCount=0;
+  for(let r=0;r<lightsoutSize;r++) for(let c=0;c<lightsoutSize;c++){
+    const cell = document.createElement('div');
+    cell.className = 'lightsout-cell'+(lightsoutGrid[r][c]===1?' on':'');
+    cell.style.width=cellSize+'px'; cell.style.height=cellSize+'px';
+    if(lightsoutGrid[r][c]===1) onCount++;
+    cell.onclick = ()=>lightsoutClick(r,c);
+    grid.appendChild(cell);
+  }
+  document.getElementById('lightsoutMoves').textContent='Langkah: '+lightsoutMoves;
+  document.getElementById('lightsoutRemaining').textContent='Lampu nyala: '+onCount;
+  if(onCount===0){ endLightsOut(); }
+}
+function lightsoutClick(r,c){
+  lightsoutToggle(lightsoutGrid, r, c, lightsoutSize);
+  lightsoutMoves++;
+  renderLightsOut();
+}
+function endLightsOut(){
+  const efficient = lightsoutMoves <= lightsoutSize*4;
+  showResult('resultBannerLightsout', true, `Selamat! Kamu memadamkan semua lampu dalam <strong>${lightsoutMoves} langkah</strong>. ${efficient?'Strategimu efisien — kamu jadi Master Logika Terbalik! 🏅':'Coba lagi dengan langkah yang lebih sedikit untuk strategi yang lebih efisien!'}`);
+  goTo('result-lightsout');
+}
+
+/* ===================== MODUL 18: TEKA-TEKI PENYEBERANGAN SUNGAI (4 level cerita) ===================== */
+const riverLevelConfigs = {
+  1: {
+    story: 'Seorang petani harus menyeberangkan serigala, kambing, dan kubis. Perahu hanya muat petani + 1 barang. Tanpa pengawasan petani, serigala akan memangsa kambing, dan kambing akan memakan kubis!',
+    capacity: 1,
+    autoInclude: 'petani',
+    items: [
+      { id:'petani', emoji:'🧑‍🌾', name:'Petani' },
+      { id:'serigala', emoji:'🐺', name:'Serigala' },
+      { id:'kambing', emoji:'🐐', name:'Kambing' },
+      { id:'kubis', emoji:'🥬', name:'Kubis' }
+    ],
+    checkBank(ids){
+      if(ids.includes('petani')) return true;
+      const w=ids.includes('serigala'), g=ids.includes('kambing'), c=ids.includes('kubis');
+      if(w&&g) return false;
+      if(g&&c) return false;
+      return true;
+    },
+    violationMsg: 'Tanpa pengawasan petani, serigala memangsa kambing atau kambing memakan kubis!'
+  },
+  2: {
+    story: '3 pasangan suami-istri harus menyeberang. Perahu muat maksimal 2 orang. Seorang istri tidak boleh berada di satu sisi bersama pria lain (bukan suaminya) tanpa suaminya hadir di sisi itu.',
+    capacity: 2,
+    autoInclude: null,
+    items: [
+      { id:'h1', emoji:'🤵', name:'Suami 1', type:'husband' },
+      { id:'w1', emoji:'👰', name:'Istri 1', type:'wife', husband:'h1' },
+      { id:'h2', emoji:'🤵', name:'Suami 2', type:'husband' },
+      { id:'w2', emoji:'👰', name:'Istri 2', type:'wife', husband:'h2' },
+      { id:'h3', emoji:'🤵', name:'Suami 3', type:'husband' },
+      { id:'w3', emoji:'👰', name:'Istri 3', type:'wife', husband:'h3' }
+    ],
+    checkBank(ids, itemsById){
+      for(const id of ids){
+        const item = itemsById[id];
+        if(item.type==='wife' && !ids.includes(item.husband)){
+          const otherMen = ids.some(oid => itemsById[oid].type==='husband' && oid!==item.husband);
+          if(otherMen) return false;
+        }
+      }
+      return true;
+    },
+    violationMsg: 'Ada istri yang berada bersama pria lain (bukan suaminya) tanpa suaminya hadir!'
+  },
+  3: {
+    story: '3 misionaris dan 3 kanibal harus menyeberang. Perahu muat maksimal 2 orang. Di sisi manapun, jumlah kanibal tidak boleh melebihi misionaris (kecuali tidak ada misionaris sama sekali di sisi itu).',
+    capacity: 2,
+    autoInclude: null,
+    items: [
+      { id:'m1', emoji:'🧑‍🦱', name:'Misionaris 1', type:'misionaris' },
+      { id:'m2', emoji:'🧑‍🦱', name:'Misionaris 2', type:'misionaris' },
+      { id:'m3', emoji:'🧑‍🦱', name:'Misionaris 3', type:'misionaris' },
+      { id:'c1', emoji:'🧟', name:'Kanibal 1', type:'kanibal' },
+      { id:'c2', emoji:'🧟', name:'Kanibal 2', type:'kanibal' },
+      { id:'c3', emoji:'🧟', name:'Kanibal 3', type:'kanibal' }
+    ],
+    checkBank(ids, itemsById){
+      const mCount = ids.filter(id=>itemsById[id].type==='misionaris').length;
+      const cCount = ids.filter(id=>itemsById[id].type==='kanibal').length;
+      if(mCount>0 && cCount>mCount) return false;
+      return true;
+    },
+    violationMsg: 'Jumlah kanibal melebihi misionaris di satu sisi — itu berbahaya bagi misionaris!'
+  }
+};
+let riverLevel=1, riverItems=[], riverItemsById={}, riverBoatSide='left', riverSelected=[], riverMoves=0;
+function startRiverPuzzle(level){
+  riverLevel = level;
+  goTo('game-river');
+  document.getElementById('riverContinueBtn').style.display='none';
+  document.getElementById('riverLevelLabel').textContent = 'Level '+level;
+  document.getElementById('riverAgainBtn').onclick = ()=>startRiverPuzzle(level);
+  if(level===4){ startRiverBridge(); return; }
+  const cfg = riverLevelConfigs[level];
+  document.getElementById('riverStory').textContent = cfg.story;
+  riverItems = cfg.items.map(it=>({...it, side:'left'}));
+  riverItemsById = {}; riverItems.forEach(it=> riverItemsById[it.id]=it);
+  riverBoatSide = 'left';
+  riverSelected = [];
+  riverMoves = 0;
+  document.getElementById('riverMoves').textContent='Langkah: 0';
+  document.getElementById('riverStatus').textContent='Giliran memuat perahu di sisi Kiri';
+  document.getElementById('riverFeedback').style.display='none';
+  document.getElementById('riverFeedback').innerHTML='';
+  document.getElementById('riverCrossBtn').disabled = false;
+  document.getElementById('riverCrossBtn').onclick = riverDoCross;
+  renderRiver();
+}
+function renderRiver(){
+  const leftBank = document.getElementById('riverBankLeft');
+  const rightBank = document.getElementById('riverBankRight');
+  const boatItemsBox = document.getElementById('riverBoatItems');
+  leftBank.innerHTML=''; rightBank.innerHTML=''; boatItemsBox.innerHTML='';
+  const cfg = riverLevelConfigs[riverLevel];
+  riverItems.forEach(it=>{
+    if(it.id===cfg.autoInclude) return; // petani digambar otomatis, tidak perlu dipilih manual
+    if(riverSelected.includes(it.id)) return; // sudah "naik perahu" — jangan digambar dobel di tepi sungai
+    const chip = document.createElement('div');
+    chip.className = 'river-item';
+    chip.textContent = it.emoji;
+    chip.title = it.name;
+    if(it.side===riverBoatSide){
+      chip.onclick = ()=>riverToggleSelect(it.id);
+      (it.side==='left'?leftBank:rightBank).appendChild(chip);
+    } else {
+      chip.classList.add('disabled');
+      (it.side==='left'?leftBank:rightBank).appendChild(chip);
+    }
+  });
+  // tampilkan petani di bank sesuai posisinya (untuk level 1)
+  if(cfg.autoInclude){
+    const farmer = riverItemsById[cfg.autoInclude];
+    const fChip = document.createElement('div');
+    fChip.className='river-item disabled';
+    fChip.textContent = farmer.emoji;
+    fChip.title = farmer.name;
+    (farmer.side==='left'?leftBank:rightBank).appendChild(fChip);
+  }
+  riverSelected.forEach(id=>{
+    const it = riverItemsById[id];
+    const chip = document.createElement('div');
+    chip.className='river-item selected';
+    chip.textContent = it.emoji;
+    chip.onclick = ()=>riverToggleSelect(id);
+    boatItemsBox.appendChild(chip);
+  });
+  document.getElementById('riverStatus').textContent = 'Perahu di sisi ' + (riverBoatSide==='left'?'Kiri':'Kanan');
+}
+function riverToggleSelect(id){
+  const cfg = riverLevelConfigs[riverLevel];
+  const item = riverItemsById[id];
+  if(!item || item.side !== riverBoatSide) return; // hanya boleh pilih barang yang ada di sisi perahu saat ini
+  if(riverSelected.includes(id)){
+    riverSelected = riverSelected.filter(x=>x!==id);
+  } else {
+    if(riverSelected.length >= cfg.capacity) return; // sudah penuh
+    riverSelected.push(id);
+  }
+  renderRiver();
+}
+function riverDoCross(){
+  const cfg = riverLevelConfigs[riverLevel];
+  const minNeeded = cfg.autoInclude ? 0 : 1; // level1 boleh nyebrang tanpa barang tambahan (petani sendiri)
+  if(riverSelected.length < minNeeded){
+    riverShowFeedback('Pilih minimal 1 orang untuk mendayung perahu!', false, false);
+    return;
+  }
+  const newSide = riverBoatSide==='left' ? 'right' : 'left';
+  riverSelected.forEach(id=>{ riverItemsById[id].side = newSide; });
+  if(cfg.autoInclude){ riverItemsById[cfg.autoInclude].side = newSide; }
+  riverBoatSide = newSide;
+  riverSelected = [];
+  riverMoves++;
+  document.getElementById('riverMoves').textContent = 'Langkah: '+riverMoves;
+
+  const leftIds = riverItems.filter(it=>it.side==='left').map(it=>it.id);
+  const rightIds = riverItems.filter(it=>it.side==='right').map(it=>it.id);
+  const safeLeft = cfg.checkBank(leftIds, riverItemsById);
+  const safeRight = cfg.checkBank(rightIds, riverItemsById);
+  if(!safeLeft || !safeRight){
+    riverLockBoard();
+    renderRiver();
+    const detail = riverDescribeViolation(riverLevel, safeLeft?rightIds:leftIds, safeLeft?'kanan':'kiri');
+    riverShowFeedback('💥 Gagal! '+detail, false, true);
+    return;
+  }
+  const allAcrossNonFarmer = riverItems.filter(it=>it.id!==cfg.autoInclude).every(it=>it.side==='right');
+  const farmerAcross = cfg.autoInclude ? riverItemsById[cfg.autoInclude].side==='right' : true;
+  if(allAcrossNonFarmer && farmerAcross){
+    riverLockBoard();
+    renderRiver();
+    riverShowFeedback(`🎉 Berhasil! Semua menyeberang dengan aman dalam ${riverMoves} langkah.`, true, true);
+    return;
+  }
+  renderRiver();
+}
+// Jelaskan SECARA SPESIFIK kombinasi mana yang melanggar di sisi yang bermasalah, bukan pesan generik,
+// supaya pemain tahu pasti apa yang sebenarnya terjadi pada langkahnya.
+function riverDescribeViolation(level, badBankIds, sideName){
+  if(level===1){
+    const w=badBankIds.includes('serigala'), g=badBankIds.includes('kambing'), c=badBankIds.includes('kubis');
+    if(w&&g) return `Di sisi ${sideName}, serigala dan kambing ditinggal bersama tanpa petani — serigala memangsa kambing!`;
+    if(g&&c) return `Di sisi ${sideName}, kambing dan kubis ditinggal bersama tanpa petani — kambing memakan kubis!`;
+    return `Ada kombinasi berbahaya di sisi ${sideName} tanpa pengawasan petani!`;
+  }
+  if(level===2){
+    for(const id of badBankIds){
+      const item = riverItemsById[id];
+      if(item.type==='wife' && !badBankIds.includes(item.husband)){
+        const otherMan = badBankIds.find(oid=>riverItemsById[oid].type==='husband' && oid!==item.husband);
+        if(otherMan){
+          return `Di sisi ${sideName}, ${item.name} berada bersama ${riverItemsById[otherMan].name} tanpa suaminya hadir!`;
+        }
+      }
+    }
+    return `Ada istri yang tidak terlindungi di sisi ${sideName}!`;
+  }
+  if(level===3){
+    const mCount = badBankIds.filter(id=>riverItemsById[id].type==='misionaris').length;
+    const cCount = badBankIds.filter(id=>riverItemsById[id].type==='kanibal').length;
+    return `Di sisi ${sideName}, ada ${cCount} kanibal berbanding ${mCount} misionaris — kanibal terlalu banyak, misionaris dalam bahaya!`;
+  }
+  return 'Kombinasi ini melanggar aturan!';
+}
+// Kunci papan (cegah klik lanjutan) begitu permainan berakhir, supaya tidak ada langkah tambahan
+// yang membingungkan sebelum berpindah ke halaman hasil.
+function riverLockBoard(){
+  document.getElementById('riverCrossBtn').disabled = true;
+  document.getElementById('riverCrossBtn').onclick = null;
+}
+function riverShowFeedback(msg, win, terminal){
+  const fb = document.getElementById('riverFeedback');
+  fb.style.display='block';
+  fb.innerHTML = `<div style="font-weight:700; font-size:16px; color:${win?'var(--good)':'var(--bad)'};">${msg}</div>`;
+  if(terminal){
+    showResult('resultBannerRiver', win, win
+      ? `Selamat! Kamu berhasil menyelesaikan Level ${riverLevel} dengan baik. Kamu Pemecah Masalah Sejati! 🏅`
+      : `${msg} Coba lagi dengan strategi yang berbeda!`);
+    // Tombol manual, BUKAN transisi otomatis — beri waktu siswa membaca pesan kegagalan/kemenangan
+    // selama yang mereka butuhkan sebelum pindah ke halaman hasil.
+    const continueBtn = document.getElementById('riverContinueBtn');
+    continueBtn.style.display='inline-flex';
+    continueBtn.onclick = ()=>{
+      continueBtn.style.display='none';
+      goTo('result-river');
+    };
+  }
+}
+
+/* ----- Level 4: Jembatan & Senter (mekanisme waktu, berbeda dari level 1-3) ----- */
+const riverBridgePeople = [
+  { id:'adi', emoji:'🧒', name:'Adi', time:1 },
+  { id:'budi', emoji:'👦', name:'Budi', time:2 },
+  { id:'citra', emoji:'👩', name:'Citra', time:5 },
+  { id:'dedi', emoji:'👴', name:'Dedi', time:10 }
+];
+const RIVER_BRIDGE_TIME_LIMIT = 17;
+let riverBridgeState=[], riverBridgeFlashlightSide='left', riverBridgeElapsed=0, riverBridgeSelected=[];
+function startRiverBridge(){
+  document.getElementById('riverStory').textContent = `4 orang harus menyeberangi jembatan gelap dengan kecepatan berbeda (Adi 1 menit, Budi 2 menit, Citra 5 menit, Dedi 10 menit). Jembatan hanya muat 2 orang sekaligus, dan butuh 1 senter untuk menyeberang (harus dibawa bolak-balik). Total waktu tidak boleh lebih dari ${RIVER_BRIDGE_TIME_LIMIT} menit!`;
+  riverBridgeState = riverBridgePeople.map(p=>({...p, side:'left'}));
+  riverBridgeFlashlightSide = 'left';
+  riverBridgeElapsed = 0;
+  riverBridgeSelected = [];
+  document.getElementById('riverMoves').textContent = 'Waktu: 0 menit';
+  document.getElementById('riverStatus').textContent = `🔦 Senter di sisi Kiri (batas waktu: ${RIVER_BRIDGE_TIME_LIMIT} menit)`;
+  document.getElementById('riverFeedback').style.display='none';
+  document.getElementById('riverFeedback').innerHTML='';
+  document.getElementById('riverCrossBtn').disabled = false;
+  document.getElementById('riverCrossBtn').onclick = riverBridgeDoCross;
+  renderRiverBridge();
+}
+function renderRiverBridge(){
+  const leftBank = document.getElementById('riverBankLeft');
+  const rightBank = document.getElementById('riverBankRight');
+  const boatItemsBox = document.getElementById('riverBoatItems');
+  leftBank.innerHTML=''; rightBank.innerHTML=''; boatItemsBox.innerHTML='';
+  riverBridgeState.forEach(p=>{
+    if(riverBridgeSelected.includes(p.id)) return; // sudah "naik" — jangan digambar dobel di tepi
+    const chip = document.createElement('div');
+    chip.className = 'river-item';
+    chip.textContent = p.emoji;
+    chip.title = p.name+' ('+p.time+' menit)';
+    if(p.side===riverBridgeFlashlightSide){
+      chip.onclick = ()=>riverBridgeToggleSelect(p.id);
+    } else {
+      chip.classList.add('disabled');
+    }
+    (p.side==='left'?leftBank:rightBank).appendChild(chip);
+  });
+  riverBridgeSelected.forEach(id=>{
+    const p = riverBridgeState.find(x=>x.id===id);
+    const chip = document.createElement('div');
+    chip.className='river-item selected';
+    chip.textContent = p.emoji;
+    chip.onclick = ()=>riverBridgeToggleSelect(id);
+    boatItemsBox.appendChild(chip);
+  });
+  document.getElementById('riverStatus').textContent = `🔦 Senter di sisi ${riverBridgeFlashlightSide==='left'?'Kiri':'Kanan'} • Waktu terpakai: ${riverBridgeElapsed} menit`;
+}
+function riverBridgeToggleSelect(id){
+  const p = riverBridgeState.find(x=>x.id===id);
+  if(!p || p.side !== riverBridgeFlashlightSide) return; // hanya boleh pilih orang yang di sisi senter saat ini
+  if(riverBridgeSelected.includes(id)){
+    riverBridgeSelected = riverBridgeSelected.filter(x=>x!==id);
+  } else {
+    if(riverBridgeSelected.length>=2) return;
+    riverBridgeSelected.push(id);
+  }
+  renderRiverBridge();
+}
+function riverBridgeDoCross(){
+  if(riverBridgeSelected.length===0){
+    riverShowFeedback('Pilih minimal 1 orang untuk menyeberang!', false, false);
+    return;
+  }
+  const selectedPeople = riverBridgeState.filter(p=>riverBridgeSelected.includes(p.id));
+  const crossTime = Math.max(...selectedPeople.map(p=>p.time));
+  riverBridgeElapsed += crossTime;
+  const newSide = riverBridgeFlashlightSide==='left' ? 'right' : 'left';
+  selectedPeople.forEach(p=>{ p.side = newSide; });
+  riverBridgeFlashlightSide = newSide;
+  riverBridgeSelected = [];
+  document.getElementById('riverMoves').textContent = 'Waktu: '+riverBridgeElapsed+' menit';
+  renderRiverBridge();
+
+  if(riverBridgeElapsed > RIVER_BRIDGE_TIME_LIMIT){
+    riverLockBoard();
+    riverShowFeedback(`⏰ Waktu habis! Total waktu sudah ${riverBridgeElapsed} menit, melebihi batas ${RIVER_BRIDGE_TIME_LIMIT} menit.`, false, true);
+    return;
+  }
+  const allAcross = riverBridgeState.every(p=>p.side==='right');
+  if(allAcross){
+    riverLockBoard();
+    riverShowFeedback(`🎉 Berhasil! Semua menyeberang dalam ${riverBridgeElapsed} menit (batas: ${RIVER_BRIDGE_TIME_LIMIT} menit).`, true, true);
+  }
+}
+
+/* ===================== MODUL 19: JIKA MENJADI DETEKTIF (bank 15 kasus, 5 acak per main, tanpa bocoran jawaban) ===================== */
+const detektifCasePool = [
+  {
+    title: 'Uang Kas Kelas yang Berkurang',
+    story: 'Uang kas kelas berkurang Rp50.000 dari kotak di laci meja guru. Yang punya akses: Wati (bendahara, pegang kunci), Hadi (ketua kelas), serta Joko dan Lina (petugas piket hari itu).',
+    clues: [
+      'Uang kas terakhir dihitung lengkap oleh Wati kemarin sore sebelum laci ditutup.',
+      'Pagi ini, Wati membuka laci pukul 07.20 dan langsung mendapati uang sudah berkurang.',
+      'Hadi membuka laci sebentar pukul 07.10 untuk mengambil spidol, disaksikan beberapa teman yang sudah datang — dia tidak menyentuh kotak uang.',
+      'Joko piket sendirian membersihkan kelas pukul 06.30-07.00, sebelum siswa lain datang. Laci memang tidak dikunci di pagi hari (kunci hanya dipasang semalam, dibuka kembali petugas piket pertama untuk keperluan kebersihan).',
+      'Lina baru tiba di kelas pukul 07.15.'
+    ],
+    options: ['Wati', 'Hadi', 'Joko', 'Lina'],
+    correct: 2
+  },
+  {
+    title: 'Vas Kristal Pecah di Ruang Kepala Sekolah',
+    story: 'Vas kristal mahal di ruang Kepala Sekolah ditemukan pecah saat istirahat siang. Ruangan biasanya terkunci, tapi pagi itu dibuka untuk pertemuan singkat bersama 4 perwakilan OSIS: Bagas, Citra, Dimas, Erika.',
+    clues: [
+      'Pertemuan OSIS berlangsung pukul 09.00-09.20, lalu Kepala Sekolah menutup dan mengunci ruangan kembali.',
+      'Vas ditemukan pecah pukul 12.00 saat petugas kebersihan masuk menggunakan kunci cadangan.',
+      'Petugas kebersihan mencatat jendela ruangan terbuka kecil sejak pagi untuk ventilasi, cukup untuk seekor kucing masuk.',
+      'Satu-satunya yang kembali ke ruangan setelah pertemuan adalah Dimas, mengambil tasnya yang tertinggal sekitar pukul 09.25, hanya semenit di dalam.',
+      'Petugas kebersihan menemukan bekas cakaran kecil dan bulu kucing di dekat pecahan vas.'
+    ],
+    options: ['Salah satu siswa OSIS sengaja merusak vas', 'Kucing yang masuk lewat jendela menjatuhkan vas', 'Petugas kebersihan tidak sengaja menjatuhkannya', 'Vas pecah karena gempa kecil tak terasa'],
+    correct: 1
+  },
+  {
+    title: 'Laptop Sekolah Hilang dari Lab Komputer',
+    story: 'Satu laptop sekolah hilang dari lab komputer. Tiga kelas memakai lab itu hari itu: 7A (08.00-09.00), 8B (09.00-10.00), 9C (10.00-11.00). Laptop terakhir terlihat lengkap saat kelas 7A selesai.',
+    clues: [
+      'Guru kelas 7A menghitung jumlah laptop sebelum keluar pukul 09.00 dan semuanya masih lengkap.',
+      'Kelas 8B pukul 09.00-10.00 dipakai untuk ujian praktik, posisi siswa berjauhan dan diawasi penuh oleh 2 guru sepanjang jam.',
+      'Kelas 9C pukul 10.00-11.00 dipakai untuk kerja kelompok bebas, guru hanya sesekali mengawasi dari depan.',
+      'Penjaga sekolah mencatat ada siswa berseragam terlihat keluar dari lab sendirian sekitar pukul 10.40, padahal jam pelajaran belum usai.',
+      'Saat dicek ulang pukul 11.00, jumlah laptop sudah berkurang satu.'
+    ],
+    options: ['Siswa kelas 7A', 'Siswa kelas 8B', 'Siswa kelas 9C', 'Penjaga sekolah sendiri'],
+    correct: 2
+  },
+  {
+    title: 'Coretan Spidol Permanen di Papan Tulis Baru',
+    story: 'Papan tulis baru di kelas 8C dicoret spidol permanen semalam sebelum acara perpisahan. CCTV koridor sedang rusak malam itu. Empat siswa tinggal untuk dekorasi pukul 15.00-16.00: Fani, Galih, Hesti, Ical.',
+    clues: [
+      'Fani dan Hesti menghabiskan waktu di luar kelas memasang balon di koridor, tidak masuk kelas sama sekali.',
+      'Galih membantu menata kursi di dalam kelas sepanjang waktu, terlihat oleh teman-temannya.',
+      'Ical sempat menghilang dari pandangan teman-temannya selama sekitar 15 menit, mengaku ke toilet — padahal toilet yang biasa dipakai sedang direnovasi dan ditutup.',
+      'Bau spidol permanen baru tercium kuat di sekitar meja guru, dekat tempat Ical biasa menyimpan tasnya.'
+    ],
+    options: ['Fani', 'Galih', 'Hesti', 'Ical'],
+    correct: 3
+  },
+  {
+    title: 'Tanaman Hias Sekolah Layu Mendadak',
+    story: 'Tanaman hias kebanggaan sekolah layu serempak dalam semalam, diduga tersiram cairan yang salah. Empat siswa piket taman bertugas sore itu: Joni, Kiki, Lala, Made.',
+    clues: [
+      'Joni dan Kiki menyiram menggunakan air dari kran taman seperti biasa, dengan ember yang sudah dicuci bersih sebelumnya.',
+      'Lala memupuk menggunakan pupuk cair sesuai dosis standar yang dikonfirmasi guru pembimbing sudah benar dan biasa dipakai bertahun-tahun.',
+      'Made ditugaskan membersihkan gudang alat dan tidak sengaja menumpahkan sisa cairan pembersih kolam ke ember yang belum dicuci, lalu ember itu terpakai menyiram tanpa sepengetahuan yang lain.',
+      'Tanaman yang layu hanya yang berada di dekat titik penyiraman terakhir sore itu.'
+    ],
+    options: ['Joni dan Kiki (air kran)', 'Lala (pupuk cair)', 'Made (ember tercampur cairan pembersih kolam)', 'Cuaca panas berlebihan'],
+    correct: 2
+  },
+  {
+    title: 'Status Medsos Anonim yang Menghina Guru',
+    story: 'Akun anonim memposting komentar menghina seorang guru. Diduga pelakunya salah satu dari 4 siswa yang baru ditegur guru itu minggu ini: Naya, Oki, Putri, Qori.',
+    clues: [
+      'Postingan dibuat pukul 20.15 malam memakai data seluler pribadi (bukan wifi sekolah yang otomatis mati di luar jam sekolah).',
+      'Naya mengaku les piano pukul 19.30-21.00, dikonfirmasi oleh guru lesnya.',
+      'Oki bermain game online bersama 3 temannya secara daring sejak pukul 19.00, log waktu daringnya berlanjut tanpa putus melewati pukul 20.15.',
+      'Putri tidak memiliki media sosial sama sekali menurut pengakuan teman-teman dekatnya.',
+      'Qori tidak memberikan keterangan jelas tentang aktivitasnya malam itu dan terlihat gelisah saat ditanya.'
+    ],
+    options: ['Naya', 'Oki', 'Putri', 'Qori'],
+    correct: 3
+  },
+  {
+    title: 'Jam Tangan Hilang di Ruang Ganti Olahraga',
+    story: 'Jam tangan seorang siswa hilang dari ruang ganti saat pelajaran olahraga. Empat siswa terakhir keluar dari ruang ganti: Rian, Sandi, Tomi, Umar.',
+    clues: [
+      'Petugas kantin melihat Rian terburu-buru menuju lapangan tanpa membawa apa pun selain botol minum.',
+      'Sandi terlihat memasukkan sesuatu yang berkilau ke saku celananya sesaat sebelum keluar ruang ganti, menurut siswa lain yang masih di sana.',
+      'Tomi adalah orang PERTAMA yang keluar ruang ganti, jauh sebelum yang lain.',
+      'Umar mengaku menemukan ruang ganti sudah kosong saat ia masuk terakhir untuk mengambil tasnya yang tertinggal.'
+    ],
+    options: ['Rian', 'Sandi', 'Tomi', 'Umar'],
+    correct: 1
+  },
+  {
+    title: 'Bola Basket Sekolah Kempes Disengaja',
+    story: 'Bola basket tim sekolah ditemukan kempes dengan lubang kecil bekas tusukan sebelum pertandingan persahabatan. Empat anggota tim lawan berkunjung ke gudang olahraga sehari sebelumnya: Vino, Wira, Yoga, Zaki.',
+    clues: [
+      'Gudang olahraga dikunci sepanjang malam, kuncinya selalu dipegang pelatih.',
+      'Saat latihan bersama, Vino dan Wira hanya berada di lapangan, tidak pernah masuk ke gudang.',
+      'Yoga sempat membantu pelatih memindahkan beberapa bola ke gudang, termasuk bola yang akhirnya kempes, sambil memegang gunting kecil untuk memotong tali sepatunya yang putus saat itu.',
+      'Zaki menunggu di luar gudang sepanjang waktu sambil bermain ponsel.'
+    ],
+    options: ['Vino', 'Wira', 'Yoga', 'Zaki'],
+    correct: 2
+  },
+  {
+    title: 'Kunci Loker Hilang dan Loker Dibongkar',
+    story: 'Loker seorang siswa dibongkar paksa saat jam olahraga siang, ketika lorong loker sepi. Empat siswa izin tidak ikut olahraga: Anton, Bayu, Candra, Doni.',
+    clues: [
+      'Anton sakit perut, berada di UKS sejak pukul 12.50, dikonfirmasi petugas UKS.',
+      'Bayu izin pulang lebih awal sejak pukul 12.30, dikonfirmasi satpam gerbang.',
+      'Candra izin ke perpustakaan, terlihat petugas perpustakaan sepanjang pukul 13.00-13.30.',
+      'Doni mengaku di kelas mengerjakan tugas sendirian, tidak ada yang bisa memastikan.',
+      'Gembok yang rusak menunjukkan bekas congkelan benda pipih seperti penggaris besi — dan Doni dikenal sering meminjam penggaris besi, dengan teman sebangkunya yang kebetulan tidak masuk hari itu (ada penggaris besi tergeletak di mejanya).'
+    ],
+    options: ['Anton', 'Bayu', 'Candra', 'Doni'],
+    correct: 3
+  },
+  {
+    title: 'Nilai Ujian yang Diubah di Sistem Komputer Guru',
+    story: 'Nilai ujian online seorang siswa berubah misterius, naik drastis. Sistem hanya bisa diakses dari komputer ruang TU dengan akun guru berpassword. Berpotensi tahu/akses: Eli (asisten guru), Fajar (siswa magang TU), Gita (operator sistem), dan Hari (si pemilik nilai).',
+    clues: [
+      'Log sistem menunjukkan perubahan nilai dilakukan pukul 14.05 dari komputer ruang TU.',
+      'Eli sedang rapat guru di ruang lain pukul 13.30-15.00, dikonfirmasi banyak guru yang hadir.',
+      'Fajar izin tidak masuk karena urusan keluarga, dikonfirmasi surat izin yang telah diverifikasi.',
+      'Gita menangani gangguan jaringan di ruang server lantai 2 sepanjang siang, dikonfirmasi rekan kerjanya.',
+      'Hari terlihat keluar dari ruang TU sekitar pukul 14.00, mengaku hanya numpang mengisi air minum — padahal dispenser terdekat justru ada di ruang guru, bukan ruang TU.'
+    ],
+    options: ['Eli', 'Fajar', 'Gita', 'Hari (pemilik nilai sendiri)'],
+    correct: 3
+  },
+  {
+    title: 'Poster Lomba Sekolah Dirobek',
+    story: 'Poster pengumuman lomba debat di kantin dirobek separuh sehingga info pendaftaran tak terbaca. Empat siswa yang juga mendaftar lomba itu terlihat di kantin: Indra, Jihan, Kirana, Lutfi.',
+    clues: [
+      'Poster terakhir terlihat masih utuh oleh penjaga kantin pukul 09.45.',
+      'Indra terlihat oleh 3 siswa lain sedang membaca buku sendirian di pojok kantin sepanjang pukul 09.30-10.15.',
+      'Jihan tidak masuk sekolah hari itu karena sakit, dikonfirmasi surat dokter.',
+      'Kirana terlihat berdiri tepat di depan poster sekitar pukul 10.00, tampak kesal sambil bicara sendiri — kuota timnya untuk lomba itu ternyata sudah penuh duluan oleh tim lain yang namanya tertera di poster.',
+      'Lutfi baru tiba di kantin pukul 10.10, terlihat banyak orang turun dari angkot di depan gerbang sekolah tepat saat itu.'
+    ],
+    options: ['Indra', 'Jihan', 'Kirana', 'Lutfi'],
+    correct: 2
+  },
+  {
+    title: 'Air Keran Kamar Mandi Sengaja Dibiarkan Mengalir',
+    story: 'Air keran kamar mandi lantai 2 dibiarkan mengalir terus sejak pagi, membuat lantai becek dan boros air. Empat siswa tercatat masuk pagi itu: Mira, Nadia, Oscar, Putu.',
+    clues: [
+      'Mira masuk pukul 07.00, keluar pukul 07.03; petugas kebersihan yang membersihkan area depan sepanjang waktu itu memastikan keran masih tertutup rapat saat Mira keluar.',
+      'Petugas kebersihan memeriksa pukul 07.15 dan mendapati air sudah mengalir deras.',
+      'Oscar masuk pukul 07.10, agak lama (sekitar 8 menit), mengaku keran di tempatnya macet/sulit ditutup rapat, tapi tidak melaporkannya ke siapa pun.',
+      'Nadia masuk pukul 07.20, terburu-buru karena hampir terlambat, langsung lari ke kelas begitu keluar.',
+      'Putu masuk pukul 07.25, hanya numpang ganti sepatu olahraga, tidak menyentuh area keran sama sekali (dikonfirmasi temannya yang menunggu di depan pintu).'
+    ],
+    options: ['Mira', 'Nadia', 'Oscar', 'Putu'],
+    correct: 2
+  },
+  {
+    title: 'Buku Perpustakaan Langka Rusak (Halaman Hilang)',
+    story: 'Sebuah buku referensi langka ditemukan rusak, beberapa halaman penting robek hilang. Buku hanya boleh dibaca di tempat, tercatat dipakai berurutan oleh 4 siswa sore itu: Qila, Rama, Sinta, Tia.',
+    clues: [
+      'Petugas perpustakaan mencatat buku masih utuh saat diberikan ke Qila pukul 14.00.',
+      'Qila membaca 20 menit lalu mengembalikan dalam kondisi baik — petugas memeriksa ulang sebelum diberikan ke peminjam berikutnya (kebijakan baku).',
+      'Rama membaca pukul 14.20-14.35; saat mengembalikan, petugas TIDAK memeriksa ulang karena sedang sibuk melayani antrean panjang siswa lain.',
+      'Sinta meminjam pukul 14.35, mengembalikan pukul 14.50 dalam kondisi yang menurutnya "sama seperti saat diterima" — petugas memeriksa dan baru saat itu mendapati halaman sudah hilang.',
+      'Tia belum sempat meminjam karena jam pelajaran dimulai sebelum gilirannya.'
+    ],
+    options: ['Qila', 'Rama', 'Sinta', 'Tia'],
+    correct: 1
+  },
+  {
+    title: 'Sepeda Motor Guru Kempes Bannya di Parkiran',
+    story: 'Ban sepeda motor seorang guru kempes (ada bekas tusukan kecil) di parkiran. Empat siswa yang baru ditegur guru itu minggu sebelumnya: Umar, Vera, Wawan, Xena.',
+    clues: [
+      'Parkiran guru diawasi CCTV yang berfungsi normal, namun sudut kameranya hanya mencakup setengah area (ada titik buta di pojok, tempat motor itu terparkir).',
+      'Umar terlihat jelas di rekaman CCTV berjalan ke parkiran siswa (area berbeda) sepanjang istirahat, tidak pernah masuk titik buta.',
+      'Vera tidak masuk sekolah hari itu karena sakit, dikonfirmasi surat izin.',
+      'Wawan terlihat di rekaman CCTV masuk ke titik buta parkiran guru sekitar 2 menit, lalu keluar lagi, pada waktu yang diperkirakan sesuai kejadian.',
+      'Xena sepanjang istirahat berada di ruang BK untuk konseling rutin, dikonfirmasi guru BK.'
+    ],
+    options: ['Umar', 'Vera', 'Wawan', 'Xena'],
+    correct: 2
+  },
+  {
+    title: 'Pesan Berantai Hoax yang Disebar dari Akun Kelas',
+    story: 'Pesan hoax (info libur mendadak yang tidak benar) tersebar dari akun salah satu admin grup chat kelas. Ada 4 admin grup: Yusuf, Zahra, Bima, Cinta.',
+    clues: [
+      'Pesan terkirim pukul 21.40 malam, tercatat "terkirim dari perangkat baru yang belum pernah login sebelumnya" pada akun pengirim.',
+      'Yusuf mengaku ponselnya mati total sejak pukul 20.00 karena baterai habis, baru dicas pagi harinya, dikonfirmasi adiknya yang sekamar.',
+      'Zahra sedang video call dengan sepupunya pukul 21.00-22.30, dikonfirmasi riwayat panggilan dan kesaksian sepupunya.',
+      'Bima mengaku akunnya pernah "dipinjam sebentar" oleh adik kecilnya untuk main game sore itu di ponsel LAMA miliknya, dan lupa logout — tapi tidak yakin kapan tepatnya.',
+      'Cinta baru mengganti ponsel barunya minggu itu dan mengaku belum sempat login ulang ke semua akunnya, termasuk grup kelas, di ponsel barunya.'
+    ],
+    options: ['Yusuf', 'Zahra', 'Bima', 'Cinta'],
+    correct: 3
+  }
+];
+const detektifMotivationQuotes = [
+  '🧠 Bagus! Kamu sudah menganalisis petunjuk dengan cermat — teruskan kebiasaan berpikir kritis ini!',
+  '🔍 Detektif sejati tidak buru-buru menyimpulkan — kamu sudah melatih kesabaran dalam berpikir!',
+  '💡 Setiap petunjuk yang kamu baca melatih otakmu menghubungkan informasi — kerja bagus!',
+  '🌟 Proses berpikirmu lebih penting daripada sekadar benar atau salah — kamu sedang melatih logika yang berguna seumur hidup!',
+  '🧩 Menyusun potongan informasi jadi satu kesimpulan itu tidak mudah — kamu sudah berani mencoba!',
+  '🎯 Ketelitian membaca petunjuk adalah kunci utama deduksi — kamu sudah melatihnya dengan baik!',
+  '🚀 Teruslah berlatih, kemampuan berpikir kritismu akan makin tajam setiap kali bermain!'
+];
+const DETEKTIF_TOTAL = 5;
+let detektifCasesActive=[], detektifIdx=0, detektifCorrectCount=0;
+function startDetektif(){
+  goTo('game-detektif');
+  // Acak ulang & ambil 5 kasus BARU dari bank 15 setiap kali main — termasuk setelah keluar lalu masuk lagi
+  detektifCasesActive = shuffleArr(detektifCasePool.slice()).slice(0, DETEKTIF_TOTAL);
+  detektifIdx=0; detektifCorrectCount=0;
+  renderDetektifCase();
+}
+function renderDetektifCase(){
+  const c = detektifCasesActive[detektifIdx];
+  document.getElementById('detektifCaseLabel').textContent = `Kasus ${detektifIdx+1}/${detektifCasesActive.length}`;
+  document.getElementById('detektifTitle').textContent = c.title;
+  document.getElementById('detektifStory').textContent = c.story;
+  const cluesBox = document.getElementById('detektifClues');
+  cluesBox.innerHTML = '<p style="font-weight:700; color:var(--gold); margin-bottom:6px;">🔍 Petunjuk:</p>' +
+    c.clues.map(cl=>`<div class="detektif-clue">${cl}</div>`).join('');
+  document.getElementById('detektifFeedback').style.display='none';
+  document.getElementById('detektifNextBtn').style.display='none';
+  const optBox = document.getElementById('detektifOptions');
+  optBox.innerHTML='';
+  // Acak posisi pilihan jawaban setiap kali, supaya jawaban benar tidak selalu di urutan yang sama
+  const shuffledOpts = shuffleArr(c.options.map((opt,i)=>({text:opt, isCorrect:i===c.correct})));
+  shuffledOpts.forEach(o=>{
+    const b = document.createElement('button');
+    b.className='btn ghost'; b.style.textAlign='left'; b.textContent=o.text;
+    b.onclick=()=>detektifAnswer(o.isCorrect, b, optBox);
+    optBox.appendChild(b);
+  });
+}
+function detektifAnswer(isCorrect, btn, optBox){
+  Array.from(optBox.querySelectorAll('button')).forEach(b=>b.disabled=true);
+  if(isCorrect) detektifCorrectCount++;
+  // Sesuai permintaan: TIDAK membocorkan jawaban benar/salah — hanya kata-kata motivasi netral
+  const fb = document.getElementById('detektifFeedback');
+  fb.style.display='block';
+  fb.innerHTML = `<div style="font-weight:700; color:var(--gold);">${randomQuote(detektifMotivationQuotes)}</div>`;
+  const nextBtn = document.getElementById('detektifNextBtn');
+  nextBtn.textContent = (detektifIdx+1>=detektifCasesActive.length) ? 'Lihat Hasil Akhir →' : 'Kasus Berikutnya →';
+  nextBtn.style.display='inline-flex';
+  nextBtn.onclick = ()=>{
+    detektifIdx++;
+    if(detektifIdx>=detektifCasesActive.length){ endDetektif(); } else { renderDetektifCase(); }
+  };
+}
+function endDetektif(){
+  const win = detektifCorrectCount >= 3;
+  showResult('resultBannerDetektif', win, `Kamu berhasil memecahkan <strong>${detektifCorrectCount} dari ${detektifCasesActive.length} kasus</strong> dengan benar. ${win?'Kamu jadi Detektif Ulung! 🏅':'Teruslah berlatih menganalisis petunjuk, kemampuan berpikir kritismu akan makin tajam!'}`);
+  goTo('result-detektif');
 }
 
 /* ===================== INIT ===================== */

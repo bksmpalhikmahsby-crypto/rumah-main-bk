@@ -299,6 +299,36 @@ ul.instr li{font-size:14.5px; color:#ece2c8; line-height:1.5;}
 .hanoi-peg-label{margin-top:8px; font-weight:700; color:var(--gold); font-family:var(--display); font-size:16px;}
 #hanoiFeedback{min-height:20px; text-align:center; font-size:13px; color:var(--bad); font-weight:700;}
 
+/* othello / reversi */
+.othello-board{
+  display:grid; grid-template-columns:repeat(8,1fr); gap:3px; width:100%; max-width:340px;
+  aspect-ratio:1/1; background:#0a2a2b; padding:6px; border-radius:10px; border:2px solid rgba(212,168,87,0.3);
+}
+.othello-cell{position:relative; background:#1d6b66; border-radius:4px; display:flex; align-items:center; justify-content:center; cursor:default;}
+.othello-cell.valid{cursor:pointer;}
+.othello-cell.valid::after{content:''; width:20%; height:20%; border-radius:50%; background:rgba(212,168,87,0.7); position:absolute;}
+.othello-disc{width:82%; height:82%; border-radius:50%;}
+.othello-disc.black{background:#1b2a2a; box-shadow:0 2px 4px rgba(0,0,0,0.5);}
+.othello-disc.white{background:#f5e9c8; box-shadow:0 2px 4px rgba(0,0,0,0.3);}
+
+/* connect four / susun 4 */
+.connect4-board{
+  display:grid; grid-template-columns:repeat(7,1fr); gap:5px; width:100%; max-width:380px;
+  background:#0f3d3e; padding:8px; border-radius:12px; border:2px solid rgba(212,168,87,0.3);
+}
+.connect4-cell{aspect-ratio:1/1; background:#173f40; border-radius:50%; display:flex; align-items:center; justify-content:center;}
+.connect4-disc{width:85%; height:85%; border-radius:50%; box-shadow:0 2px 4px rgba(0,0,0,0.4);}
+.connect4-disc.player{background:#e0664f;}
+.connect4-disc.ai{background:#d4a857;}
+.connect4-cell.winner{box-shadow:0 0 0 3px var(--cream), 0 0 18px 6px rgba(212,168,87,0.9); animation:c4pulse 1s ease-in-out infinite;}
+@keyframes c4pulse{0%,100%{transform:scale(1);} 50%{transform:scale(1.08);}}
+.connect4-colbtns{display:grid; grid-template-columns:repeat(7,1fr); gap:5px; width:100%; max-width:380px;}
+.connect4-colbtns button{
+  padding:8px 0; border-radius:8px; border:none; background:var(--sand); color:var(--teal-deep);
+  font-weight:700; cursor:pointer; font-size:13px;
+}
+.connect4-colbtns button:disabled{opacity:0.4; cursor:not-allowed;}
+
 .result-banner{
   text-align:center; padding:20px; border-radius:16px;
 }
@@ -383,7 +413,7 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
     </div>
 
     <div class="card">
-      <p style="margin-bottom:10px;">12 permainan siap dimainkan. Selamat mencoba! 🌱</p>
+      <p style="margin-bottom:10px;">14 permainan siap dimainkan. Selamat mencoba! 🌱</p>
       <div class="grid">
         <div class="mod" onclick="goTo('instr-tembak')"><div class="emoji">🐦</div><div class="name">Tembak Burung</div><div class="tag">Kecepatan</div></div>
         <div class="mod" onclick="goTo('instr-ingat')"><div class="emoji">🔢</div><div class="name">Mengingat Deret</div><div class="tag">Daya Ingat</div></div>
@@ -398,6 +428,8 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
         <div class="mod" onclick="goTo('instr-pancing')"><div class="emoji">🎣</div><div class="name">Pancing Mania</div><div class="tag">Prediksi</div></div>
         <div class="mod" onclick="goTo('instr-sambung')"><div class="emoji">🗣️</div><div class="name">Sambung Kata Beruntun</div><div class="tag">Asosiasi Verbal</div></div>
         <div class="mod" onclick="goTo('instr-hanoi')"><div class="emoji">🗽</div><div class="name">Menara Hanoi</div><div class="tag">Strategi & Logika</div></div>
+        <div class="mod" onclick="goTo('instr-othello')"><div class="emoji">⚪</div><div class="name">Othello/Reversi</div><div class="tag">Strategi vs Komputer</div></div>
+        <div class="mod" onclick="goTo('instr-connect4')"><div class="emoji">🔴</div><div class="name">Susun 4</div><div class="tag">Strategi vs Komputer</div></div>
       </div>
     </div>
   </section>
@@ -902,6 +934,82 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
     </div>
   </section>
 
+  <!-- ============ MODUL 15: OTHELLO / REVERSI ============ -->
+  <section class="screen" id="instr-othello">
+    <div class="topbar"><div class="eyebrow">Modul 15 • Strategi vs Komputer</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="card">
+      <h2>⚪ Othello / Reversi</h2>
+      <p>Permainan strategi klasik melawan komputer. Lawan keping Hitam (kamu) melawan Putih (komputer).</p>
+      <ul class="instr">
+        <li>Klik kotak yang punya titik kuning — itu langkah yang sah untukmu.</li>
+        <li>Kepingmu akan "menjepit" keping lawan di antara dua kepingmu (segaris), lalu keping lawan berubah warna jadi milikmu.</li>
+        <li>Kalau tidak ada langkah sah, giliranmu otomatis dilewati.</li>
+        <li>Permainan berakhir saat papan penuh atau kedua pihak tidak bisa bergerak — yang punya keping terbanyak menang!</li>
+        <li><strong>Tantangan:</strong> kalahkan komputer dengan keping lebih banyak!</li>
+      </ul>
+    </div>
+    <div class="btn-row" style="justify-content:center;"><button class="btn" onclick="startOthello()">Mulai Bermain</button></div>
+  </section>
+
+  <section class="screen" id="game-othello">
+    <div class="topbar"><div class="eyebrow" id="othelloTurnLabel">Giliranmu (Hitam)</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="game-area">
+      <div class="hud"><span id="othelloScoreBlack">⚫ Kamu: 2</span><span id="othelloScoreWhite">⚪ Komputer: 2</span></div>
+      <div class="othello-board" id="othelloBoard"></div>
+    </div>
+  </section>
+
+  <section class="screen" id="result-othello">
+    <div id="resultBannerOthello" class="result-banner"></div>
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn" onclick="startOthello()">Main Lagi</button>
+      <button class="btn ghost" onclick="goTo('screen-menu')">Pilih Permainan Lain</button>
+    </div>
+  </section>
+
+  <!-- ============ MODUL 16: SUSUN 4 (CONNECT FOUR) ============ -->
+  <section class="screen" id="instr-connect4">
+    <div class="topbar"><div class="eyebrow">Modul 16 • Strategi vs Komputer</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="card">
+      <h2>🔴 Susun 4 (Connect Four)</h2>
+      <p>Permainan strategi melawan komputer yang benar-benar "berpikir" beberapa langkah ke depan.</p>
+      <ul class="instr">
+        <li>Klik salah satu tombol kolom di atas papan untuk menjatuhkan kepingmu (oranye).</li>
+        <li>Keping akan jatuh ke posisi paling bawah yang kosong di kolom itu.</li>
+        <li>Susun <strong>4 keping sejajar</strong> — mendatar, tegak, atau diagonal — untuk menang.</li>
+        <li>Komputer (kuning) akan membalas setelah giliranmu, jadi perhatikan juga langkahnya!</li>
+        <li><strong>Tantangan:</strong> kalahkan komputer sebelum dia menyusun 4 keping lebih dulu!</li>
+      </ul>
+    </div>
+    <div class="btn-row" style="justify-content:center;"><button class="btn" onclick="startConnect4()">Mulai Bermain</button></div>
+  </section>
+
+  <section class="screen" id="game-connect4">
+    <div class="topbar"><div class="eyebrow" id="connect4TurnLabel">Giliranmu</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="game-area">
+      <div class="connect4-colbtns" id="connect4ColBtns">
+        <button onclick="c4PlayerDrop(0)">↓</button>
+        <button onclick="c4PlayerDrop(1)">↓</button>
+        <button onclick="c4PlayerDrop(2)">↓</button>
+        <button onclick="c4PlayerDrop(3)">↓</button>
+        <button onclick="c4PlayerDrop(4)">↓</button>
+        <button onclick="c4PlayerDrop(5)">↓</button>
+        <button onclick="c4PlayerDrop(6)">↓</button>
+      </div>
+      <div class="connect4-board" id="connect4Board"></div>
+      <div id="connect4EndMessage" class="card" style="display:none; width:100%; text-align:center;"></div>
+      <div class="btn-row" style="justify-content:center;"><button class="btn" id="connect4ContinueBtn" style="display:none;">Lihat Hasil →</button></div>
+    </div>
+  </section>
+
+  <section class="screen" id="result-connect4">
+    <div id="resultBannerConnect4" class="result-banner"></div>
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn" onclick="startConnect4()">Main Lagi</button>
+      <button class="btn ghost" onclick="goTo('screen-menu')">Pilih Permainan Lain</button>
+    </div>
+  </section>
+
   <footer>Rumah Main BK • SMP Al Hikmah Surabaya — Bermain untuk Bahagia 🌿</footer>
 </div>
 
@@ -918,6 +1026,8 @@ function goTo(id){
   stopMatchTimer(); // pastikan timer cari kotak sama berhenti
   stopMathTimer(); // pastikan timer logika berhitung (tingkat Sangat Sulit) berhenti
   stopSambungTimer(); // pastikan timer sambung kata beruntun berhenti
+  stopOthello(); // pastikan timer "AI berpikir" Othello berhenti
+  stopConnect4(); // pastikan timer "AI berpikir" Susun 4 berhenti
 }
 
 /* ===================== COUNTER PENGGUNA (versi GitHub: counter publik + fallback lokal) ===================== */
@@ -2320,6 +2430,324 @@ function checkHanoiWin(){
     showResult('resultBannerHanoi', true, `Selamat! Kamu memindahkan semua ${hanoiDiskCount} keping ke Titik C dalam <strong>${hanoiMoves} langkah</strong> (minimal: ${optimal} langkah). ${efficient?'Strategimu efisien — kamu jadi Master Strategi! 🏅':'Coba lagi dengan langkah lebih sedikit untuk strategi yang lebih efisien!'}`);
     goTo('result-hanoi');
   }
+}
+
+/* ===================== MODUL 15: OTHELLO / REVERSI (vs Komputer) ===================== */
+const OTHELLO_DIRS = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+const OTHELLO_WEIGHTS = [
+  [100,-20,10,5,5,10,-20,100],
+  [-20,-50,1,1,1,1,-50,-20],
+  [10,1,5,2,2,5,1,10],
+  [5,1,2,1,1,2,1,5],
+  [5,1,2,1,1,2,1,5],
+  [10,1,5,2,2,5,1,10],
+  [-20,-50,1,1,1,1,-50,-20],
+  [100,-20,10,5,5,10,-20,100]
+];
+let othelloBoard=[], othelloTurn=1, othelloSessionId=0, othelloAiTimeout=null;
+function startOthello(){
+  othelloSessionId++;
+  stopOthello();
+  goTo('game-othello');
+  othelloBoard = Array.from({length:8},()=>Array(8).fill(0));
+  othelloBoard[3][3]=2; othelloBoard[3][4]=1; othelloBoard[4][3]=1; othelloBoard[4][4]=2;
+  othelloTurn = 1;
+  renderOthello();
+}
+function stopOthello(){ clearTimeout(othelloAiTimeout); }
+function othelloGetFlips(board, r, c, player){
+  if(board[r][c]!==0) return [];
+  const opponent = player===1?2:1;
+  let allFlips=[];
+  for(const [dr,dc] of OTHELLO_DIRS){
+    let rr=r+dr, cc=c+dc, line=[];
+    while(rr>=0&&rr<8&&cc>=0&&cc<8&&board[rr][cc]===opponent){
+      line.push([rr,cc]); rr+=dr; cc+=dc;
+    }
+    if(line.length>0 && rr>=0&&rr<8&&cc>=0&&cc<8&&board[rr][cc]===player){
+      allFlips = allFlips.concat(line);
+    }
+  }
+  return allFlips;
+}
+function othelloValidMoves(board, player){
+  const moves=[];
+  for(let r=0;r<8;r++) for(let c=0;c<8;c++){
+    const flips = othelloGetFlips(board,r,c,player);
+    if(flips.length>0) moves.push({r,c,flips});
+  }
+  return moves;
+}
+function othelloApplyMove(board, move, player){
+  board[move.r][move.c]=player;
+  move.flips.forEach(([r,c])=>{ board[r][c]=player; });
+}
+function renderOthello(){
+  const session = othelloSessionId;
+  const boardEl = document.getElementById('othelloBoard');
+  boardEl.innerHTML='';
+  const validMoves = othelloTurn===1 ? othelloValidMoves(othelloBoard,1) : [];
+  let blackCount=0, whiteCount=0;
+  for(let r=0;r<8;r++) for(let c=0;c<8;c++){
+    const cell = document.createElement('div');
+    cell.className='othello-cell';
+    const val = othelloBoard[r][c];
+    if(val===1){ blackCount++; const d=document.createElement('div'); d.className='othello-disc black'; cell.appendChild(d); }
+    else if(val===2){ whiteCount++; const d=document.createElement('div'); d.className='othello-disc white'; cell.appendChild(d); }
+    else {
+      const isValid = validMoves.some(m=>m.r===r&&m.c===c);
+      if(isValid){ cell.classList.add('valid'); cell.onclick=()=>othelloPlayerMove(r,c); }
+    }
+    boardEl.appendChild(cell);
+  }
+  document.getElementById('othelloScoreBlack').textContent='⚫ Kamu: '+blackCount;
+  document.getElementById('othelloScoreWhite').textContent='⚪ Komputer: '+whiteCount;
+
+  const playerMoves = othelloValidMoves(othelloBoard,1);
+  const aiMoves = othelloValidMoves(othelloBoard,2);
+  if(playerMoves.length===0 && aiMoves.length===0){
+    endOthello(blackCount, whiteCount);
+    return;
+  }
+  if(othelloTurn===1 && playerMoves.length===0){
+    document.getElementById('othelloTurnLabel').textContent='Kamu tidak punya langkah, lewati...';
+    othelloTurn=2;
+    othelloAiTimeout = setTimeout(()=>{ if(session===othelloSessionId) othelloAiMove(); }, 700);
+    return;
+  }
+  if(othelloTurn===2){
+    document.getElementById('othelloTurnLabel').textContent='Komputer berpikir...';
+    if(aiMoves.length===0){
+      othelloTurn=1;
+      othelloAiTimeout = setTimeout(()=>{ if(session===othelloSessionId) renderOthello(); }, 500);
+      return;
+    }
+    othelloAiTimeout = setTimeout(()=>{ if(session===othelloSessionId) othelloAiMove(); }, 700);
+  } else {
+    document.getElementById('othelloTurnLabel').textContent='Giliranmu (Hitam)';
+  }
+}
+function othelloPlayerMove(r,c){
+  const flips = othelloGetFlips(othelloBoard,r,c,1);
+  if(flips.length===0) return;
+  othelloApplyMove(othelloBoard, {r,c,flips}, 1);
+  othelloTurn=2;
+  renderOthello();
+}
+function othelloAiMove(){
+  const moves = othelloValidMoves(othelloBoard,2);
+  if(moves.length===0){ othelloTurn=1; renderOthello(); return; }
+  let best=moves[0], bestScore=-Infinity;
+  moves.forEach(m=>{
+    const score = OTHELLO_WEIGHTS[m.r][m.c]*10 + m.flips.length;
+    if(score>bestScore){ bestScore=score; best=m; }
+  });
+  othelloApplyMove(othelloBoard, best, 2);
+  othelloTurn=1;
+  renderOthello();
+}
+function endOthello(blackCount, whiteCount){
+  const win = blackCount>whiteCount;
+  const draw = blackCount===whiteCount;
+  showResult('resultBannerOthello', win, `Skor akhir — Kamu (Hitam): <strong>${blackCount}</strong> vs Komputer (Putih): <strong>${whiteCount}</strong>. ${draw?'Hasilnya seri! 🤝':win?'Kamu menang melawan komputer! 🏅':'Komputer menang kali ini, coba lagi!'}`);
+  goTo('result-othello');
+}
+
+/* ===================== MODUL 16: SUSUN 4 / CONNECT FOUR (vs Komputer, minimax) ===================== */
+let c4Board=[], c4SessionId=0, c4GameOver=false, c4AiTimeout=null;
+function startConnect4(){
+  c4SessionId++;
+  stopConnect4();
+  goTo('game-connect4');
+  c4Board = Array.from({length:6},()=>Array(7).fill(0));
+  c4GameOver=false;
+  document.getElementById('connect4TurnLabel').textContent='Giliranmu';
+  document.getElementById('connect4EndMessage').style.display='none';
+  document.getElementById('connect4ContinueBtn').style.display='none';
+  Array.from(document.getElementById('connect4ColBtns').children).forEach(b=>b.disabled=false);
+  renderConnect4();
+}
+function stopConnect4(){ clearTimeout(c4AiTimeout); }
+function c4DropRow(board, col){
+  for(let r=5;r>=0;r--){ if(board[r][col]===0) return r; }
+  return -1;
+}
+function c4CheckWin(board, piece){
+  for(let r=0;r<6;r++) for(let c=0;c<4;c++){
+    if(board[r][c]===piece&&board[r][c+1]===piece&&board[r][c+2]===piece&&board[r][c+3]===piece) return true;
+  }
+  for(let c=0;c<7;c++) for(let r=0;r<3;r++){
+    if(board[r][c]===piece&&board[r+1][c]===piece&&board[r+2][c]===piece&&board[r+3][c]===piece) return true;
+  }
+  for(let r=0;r<3;r++) for(let c=0;c<4;c++){
+    if(board[r][c]===piece&&board[r+1][c+1]===piece&&board[r+2][c+2]===piece&&board[r+3][c+3]===piece) return true;
+  }
+  for(let r=3;r<6;r++) for(let c=0;c<4;c++){
+    if(board[r][c]===piece&&board[r-1][c+1]===piece&&board[r-2][c+2]===piece&&board[r-3][c+3]===piece) return true;
+  }
+  return false;
+}
+function c4IsBoardFull(board){ return board[0].every(v=>v!==0); }
+function c4FindWinningCells(board, piece){
+  for(let r=0;r<6;r++) for(let c=0;c<4;c++){
+    if(board[r][c]===piece&&board[r][c+1]===piece&&board[r][c+2]===piece&&board[r][c+3]===piece)
+      return { cells:[[r,c],[r,c+1],[r,c+2],[r,c+3]], arah:'mendatar (horizontal)' };
+  }
+  for(let c=0;c<7;c++) for(let r=0;r<3;r++){
+    if(board[r][c]===piece&&board[r+1][c]===piece&&board[r+2][c]===piece&&board[r+3][c]===piece)
+      return { cells:[[r,c],[r+1,c],[r+2,c],[r+3,c]], arah:'tegak (vertikal)' };
+  }
+  for(let r=0;r<3;r++) for(let c=0;c<4;c++){
+    if(board[r][c]===piece&&board[r+1][c+1]===piece&&board[r+2][c+2]===piece&&board[r+3][c+3]===piece)
+      return { cells:[[r,c],[r+1,c+1],[r+2,c+2],[r+3,c+3]], arah:'diagonal' };
+  }
+  for(let r=3;r<6;r++) for(let c=0;c<4;c++){
+    if(board[r][c]===piece&&board[r-1][c+1]===piece&&board[r-2][c+2]===piece&&board[r-3][c+3]===piece)
+      return { cells:[[r,c],[r-1,c+1],[r-2,c+2],[r-3,c+3]], arah:'diagonal' };
+  }
+  return null;
+}
+function c4ValidCols(board){
+  const cols=[];
+  for(let c=0;c<7;c++){ if(board[0][c]===0) cols.push(c); }
+  return cols;
+}
+function c4ScoreWindow(window, piece){
+  const opp = piece===1?2:1;
+  const countPiece = window.filter(v=>v===piece).length;
+  const countEmpty = window.filter(v=>v===0).length;
+  const countOpp = window.filter(v=>v===opp).length;
+  let score=0;
+  if(countPiece===4) score+=100;
+  else if(countPiece===3 && countEmpty===1) score+=5;
+  else if(countPiece===2 && countEmpty===2) score+=2;
+  if(countOpp===3 && countEmpty===1) score-=4;
+  return score;
+}
+function c4EvaluatePosition(board, piece){
+  let score=0;
+  for(let r=0;r<6;r++){ if(board[r][3]===piece) score+=3; }
+  for(let r=0;r<6;r++) for(let c=0;c<4;c++){ score += c4ScoreWindow([board[r][c],board[r][c+1],board[r][c+2],board[r][c+3]], piece); }
+  for(let c=0;c<7;c++) for(let r=0;r<3;r++){ score += c4ScoreWindow([board[r][c],board[r+1][c],board[r+2][c],board[r+3][c]], piece); }
+  for(let r=0;r<3;r++) for(let c=0;c<4;c++){ score += c4ScoreWindow([board[r][c],board[r+1][c+1],board[r+2][c+2],board[r+3][c+3]], piece); }
+  for(let r=3;r<6;r++) for(let c=0;c<4;c++){ score += c4ScoreWindow([board[r][c],board[r-1][c+1],board[r-2][c+2],board[r-3][c+3]], piece); }
+  return score;
+}
+function c4Minimax(board, depth, alpha, beta, maximizing){
+  const validCols = c4ValidCols(board);
+  const isTerminal = c4CheckWin(board,1) || c4CheckWin(board,2) || validCols.length===0;
+  if(depth===0 || isTerminal){
+    if(isTerminal){
+      if(c4CheckWin(board,2)) return {score:1000000};
+      if(c4CheckWin(board,1)) return {score:-1000000};
+      return {score:0};
+    }
+    return {score:c4EvaluatePosition(board,2)};
+  }
+  if(maximizing){
+    let value=-Infinity, bestCol=validCols[0];
+    for(const col of validCols){
+      const row = c4DropRow(board,col);
+      const newBoard = board.map(r=>r.slice());
+      newBoard[row][col]=2;
+      const result = c4Minimax(newBoard, depth-1, alpha, beta, false);
+      if(result.score>value){ value=result.score; bestCol=col; }
+      alpha=Math.max(alpha,value);
+      if(alpha>=beta) break;
+    }
+    return {score:value, col:bestCol};
+  } else {
+    let value=Infinity, bestCol=validCols[0];
+    for(const col of validCols){
+      const row = c4DropRow(board,col);
+      const newBoard = board.map(r=>r.slice());
+      newBoard[row][col]=1;
+      const result = c4Minimax(newBoard, depth-1, alpha, beta, true);
+      if(result.score<value){ value=result.score; bestCol=col; }
+      beta=Math.min(beta,value);
+      if(alpha>=beta) break;
+    }
+    return {score:value, col:bestCol};
+  }
+}
+function renderConnect4(winningCells){
+  const boardEl = document.getElementById('connect4Board');
+  boardEl.innerHTML='';
+  for(let r=0;r<6;r++) for(let c=0;c<7;c++){
+    const cell = document.createElement('div');
+    cell.className='connect4-cell';
+    if(winningCells && winningCells.some(([wr,wc])=>wr===r&&wc===c)){
+      cell.classList.add('winner');
+    }
+    const val=c4Board[r][c];
+    if(val===1){ const d=document.createElement('div'); d.className='connect4-disc player'; cell.appendChild(d); }
+    else if(val===2){ const d=document.createElement('div'); d.className='connect4-disc ai'; cell.appendChild(d); }
+    boardEl.appendChild(cell);
+  }
+}
+function c4PlayerDrop(col){
+  if(c4GameOver) return;
+  const row = c4DropRow(c4Board, col);
+  if(row===-1) return;
+  const session = c4SessionId;
+  c4Board[row][col]=1;
+  renderConnect4();
+  if(c4CheckWin(c4Board,1)){ c4GameOver=true; c4ShowEndState('player'); return; }
+  if(c4IsBoardFull(c4Board)){ c4GameOver=true; c4ShowEndState('draw'); return; }
+  document.getElementById('connect4TurnLabel').textContent='Komputer berpikir...';
+  Array.from(document.getElementById('connect4ColBtns').children).forEach(b=>b.disabled=true);
+  c4AiTimeout = setTimeout(()=>{
+    if(session!==c4SessionId) return;
+    const result = c4Minimax(c4Board, 4, -Infinity, Infinity, true);
+    const aiCol = result.col;
+    const aiRow = c4DropRow(c4Board, aiCol);
+    if(aiRow!==-1){ c4Board[aiRow][aiCol]=2; }
+    if(c4CheckWin(c4Board,2)){ c4GameOver=true; c4ShowEndState('ai'); return; }
+    renderConnect4();
+    if(c4IsBoardFull(c4Board)){ c4GameOver=true; c4ShowEndState('draw'); return; }
+    document.getElementById('connect4TurnLabel').textContent='Giliranmu';
+    Array.from(document.getElementById('connect4ColBtns').children).forEach(b=>b.disabled=false);
+  }, 500);
+}
+// Tampilkan dulu papan akhir (dengan keping pemenang disorot & keterangan arahnya),
+// JANGAN langsung pindah ke halaman hasil — biarkan pemain melihat & memahami kalah/menangnya karena apa,
+// baru lanjut secara manual lewat tombol "Lihat Hasil →".
+function c4ShowEndState(result){
+  Array.from(document.getElementById('connect4ColBtns').children).forEach(b=>b.disabled=true);
+  const msgBox = document.getElementById('connect4EndMessage');
+  msgBox.style.display='block';
+
+  if(result==='draw'){
+    renderConnect4();
+    document.getElementById('connect4TurnLabel').textContent='Papan Penuh';
+    msgBox.innerHTML = `<h2 style="color:var(--gold);">🤝 Seri!</h2><p>Papan penuh tanpa ada yang menyusun 4 sejajar. Permainan yang ketat!</p>`;
+  } else {
+    const piece = result==='player' ? 1 : 2;
+    const winInfo = c4FindWinningCells(c4Board, piece);
+    renderConnect4(winInfo ? winInfo.cells : null);
+    if(result==='player'){
+      document.getElementById('connect4TurnLabel').textContent='Kamu Menang!';
+      msgBox.innerHTML = `<h2 style="color:var(--good);">🎉 Kamu Menang!</h2><p>Lihat keping yang berkedip — kamu berhasil menyusun 4 sejajar secara <strong>${winInfo?winInfo.arah:'-'}</strong>!</p>`;
+    } else {
+      document.getElementById('connect4TurnLabel').textContent='Komputer Menang';
+      msgBox.innerHTML = `<h2 style="color:var(--bad);">💪 Komputer Menang</h2><p>Perhatikan keping kuning yang berkedip — komputer menyusun 4 sejajar secara <strong>${winInfo?winInfo.arah:'-'}</strong>. Lihat baik-baik posisinya supaya kamu bisa mencegahnya lain kali!</p>`;
+    }
+  }
+  const continueBtn = document.getElementById('connect4ContinueBtn');
+  continueBtn.style.display='inline-flex';
+  continueBtn.onclick = ()=>{
+    msgBox.style.display='none';
+    continueBtn.style.display='none';
+    endConnect4(result);
+  };
+}
+function endConnect4(result){
+  let win, msg;
+  if(result==='player'){ win=true; msg='Kamu berhasil menyusun 4 keping sejajar! Kamu menang melawan komputer! 🏅'; }
+  else if(result==='ai'){ win=false; msg='Komputer berhasil menyusun 4 keping sejajar lebih dulu. Coba lagi, kamu pasti bisa mengalahkannya!'; }
+  else { win=true; msg='Papan penuh, hasilnya seri! Permainan yang seru dan ketat!'; }
+  showResult('resultBannerConnect4', win, msg);
+  goTo('result-connect4');
 }
 
 /* ===================== INIT ===================== */

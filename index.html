@@ -265,6 +265,22 @@ ul.instr li{font-size:14.5px; color:#ece2c8; line-height:1.5;}
 .pancing-controls input[type=range]{width:100%;}
 .pancing-depth-label{font-family:var(--display); font-size:26px; color:var(--gold); text-align:center;}
 
+/* sambung kata beruntun */
+.sambung-current{
+  font-family:var(--display); font-size:30px; color:var(--gold); text-align:center;
+  padding:14px; border:2px dashed rgba(212,168,87,0.4); border-radius:14px;
+}
+.sambung-hint{text-align:center; font-size:13px; color:#ece2c8;}
+.sambung-options{display:grid; grid-template-columns:repeat(2,1fr); gap:10px; width:100%; max-width:420px;}
+.sambung-options .btn{width:100%;}
+.sambung-chain{
+  display:flex; flex-wrap:wrap; gap:6px; justify-content:center; max-width:520px;
+}
+.sambung-chain span{
+  background:rgba(212,168,87,0.15); border:1px solid rgba(212,168,87,0.3); border-radius:999px;
+  padding:4px 10px; font-size:12px; color:#f5e9c8;
+}
+
 .result-banner{
   text-align:center; padding:20px; border-radius:16px;
 }
@@ -349,7 +365,7 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
     </div>
 
     <div class="card">
-      <p style="margin-bottom:10px;">10 permainan siap dimainkan. Selamat mencoba! 🌱</p>
+      <p style="margin-bottom:10px;">11 permainan siap dimainkan. Selamat mencoba! 🌱</p>
       <div class="grid">
         <div class="mod" onclick="goTo('instr-tembak')"><div class="emoji">🐦</div><div class="name">Tembak Burung</div><div class="tag">Kecepatan</div></div>
         <div class="mod" onclick="goTo('instr-ingat')"><div class="emoji">🔢</div><div class="name">Mengingat Deret</div><div class="tag">Daya Ingat</div></div>
@@ -362,6 +378,7 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
         <div class="mod" onclick="goTo('instr-hitung')"><div class="emoji">➗</div><div class="name">Logika Berhitung</div><div class="tag">Numerik</div></div>
         <div class="mod" onclick="goTo('instr-fokus')"><div class="emoji">🎯</div><div class="name">Konsentrasi Jitu</div><div class="tag">Ketepatan Waktu</div></div>
         <div class="mod" onclick="goTo('instr-pancing')"><div class="emoji">🎣</div><div class="name">Pancing Mania</div><div class="tag">Prediksi</div></div>
+        <div class="mod" onclick="goTo('instr-sambung')"><div class="emoji">🗣️</div><div class="name">Sambung Kata Beruntun</div><div class="tag">Asosiasi Verbal</div></div>
       </div>
     </div>
   </section>
@@ -776,6 +793,43 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
   </section>
 
 
+  <!-- ============ MODUL 13: SAMBUNG KATA BERUNTUN ============ -->
+  <section class="screen" id="instr-sambung">
+    <div class="topbar"><div class="eyebrow">Modul 13 • Asosiasi Verbal</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="card">
+      <h2>🗣️ Sambung Kata Beruntun</h2>
+      <p>Permainan ini melatih kelancaran berpikir dan kreativitas dalam menyambung kata, dengan tema motivasi, psikologi, dan kehidupan sekolah.</p>
+      <ul class="instr">
+        <li>Sistem memberi satu kata awal. Kamu harus menyambungnya dengan kata baru yang <strong>diawali huruf terakhir</strong> dari kata sebelumnya.</li>
+        <li>Pilih jawaban yang benar dari 4 pilihan yang tersedia — kata yang sudah dipakai tidak boleh diulang.</li>
+        <li><strong>Hati-hati!</strong> Beberapa pilihan yang salah punya huruf awal yang sama dengan kata yang sedang ditampilkan — pastikan kamu cek <strong>huruf AKHIR</strong> kata itu, bukan huruf awalnya.</li>
+        <li>Permainan ini <strong>lawan waktu</strong>: kamu punya 60 detik untuk menyambung sebanyak mungkin kata.</li>
+        <li>Kamu boleh salah maksimal <strong>3 kali</strong> sepanjang permainan sebelum permainan berakhir.</li>
+        <li><strong>Tantangan:</strong> sambung minimal 8 kata berturut-turut untuk jadi "Master Asosiasi Kata"!</li>
+      </ul>
+    </div>
+    <div class="btn-row" style="justify-content:center;"><button class="btn" onclick="startSambung()">Mulai Bermain</button></div>
+  </section>
+
+  <section class="screen" id="game-sambung">
+    <div class="topbar"><div class="eyebrow">Sambung Kata Beruntun</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="game-area">
+      <div class="hud"><span id="sambungScore">Rantai: 0</span><span id="sambungMistakes">Kesalahan: 0/3</span><span id="sambungTime">⏱️ 60s</span></div>
+      <div class="sambung-current" id="sambungCurrentWord">SEMANGAT</div>
+      <p class="sambung-hint" id="sambungHint">Cari kata yang diawali huruf "T"</p>
+      <div class="sambung-options" id="sambungOptions"></div>
+      <div class="sambung-chain" id="sambungChainDisplay"></div>
+    </div>
+  </section>
+
+  <section class="screen" id="result-sambung">
+    <div id="resultBannerSambung" class="result-banner"></div>
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn" onclick="startSambung()">Main Lagi</button>
+      <button class="btn ghost" onclick="goTo('screen-menu')">Pilih Permainan Lain</button>
+    </div>
+  </section>
+
   <footer>Rumah Main BK • SMP Al Hikmah Surabaya — Bermain untuk Bahagia 🌿</footer>
 </div>
 
@@ -791,6 +845,7 @@ function goTo(id){
   stopCar(); // pastikan loop mobil rintangan berhenti
   stopMatchTimer(); // pastikan timer cari kotak sama berhenti
   stopMathTimer(); // pastikan timer logika berhitung (tingkat Sangat Sulit) berhenti
+  stopSambungTimer(); // pastikan timer sambung kata beruntun berhenti
 }
 
 /* ===================== COUNTER PENGGUNA (versi GitHub: counter publik + fallback lokal) ===================== */
@@ -1998,6 +2053,122 @@ function endPancing(){
   const rincian = pancingCatches.map(c=>`Ronde ${c.round}: ${c.emoji} ${c.size} di ${c.depth}m (${pancingFormatWeight(c.weightG)})`).join('<br>');
   showResult('resultBannerPancing', win, `Total berat tangkapanmu dari 5 ronde: <strong>${pancingFormatWeight(pancingTotalGrams)}</strong>.<br><br>${rincian}<br><br>${win?'Kamu jadi Master Pemancing! 🏅':'Terus berlatih membidik kedalaman yang tepat, makin jeli makin besar ikannya!'}`);
   goTo('result-pancing');
+}
+
+/* ===================== MODUL 13: SAMBUNG KATA BERUNTUN ===================== */
+// Bank kata bertema motivasi/psikologi/kehidupan sekolah. Sudah diverifikasi terhubung baik
+// (setiap huruf akhir yang mungkin muncul punya kata lanjutan yang tersedia di bank).
+const sambungPool = [
+  'SEMANGAT','TEKUN','NIAT','TABAH','HEBAT','TANGGUH','HARAPAN','NIKMAT','TENANG','GIGIH',
+  'HORMAT','TULUS','SABAR','RAJIN','NYAMAN','NALAR','RAMAH','HANGAT','TEGUH','HASRAT',
+  'TARGET','TEKAD','DISIPLIN','NEKAD','DAMAI','IKHLAS','SOPAN','NURANI','INSAN','NALURI',
+  'IMAJINASI','IKHTIAR','RESPEK','KARAKTER','REZEKI','IDEALIS','SIMPATI','INSPIRASI','INISIATIF','FOKUS',
+  'SOLUSI','INTUISI','ISTIQOMAH','HARMONI','INTROSPEKSI','INTEGRITAS','SANTUN','NORMA','AMANAH','ANTUSIAS',
+  'SYUKUR','RENDAH','HATI','IBADAH'
+];
+const SAMBUNG_TIME_LIMIT = 60;
+const SAMBUNG_MAX_MISTAKES = 3;
+let sambungUsed=[], sambungCurrentWord='', sambungChainScore=0, sambungMistakeCount=0, sambungTimeLeft=0, sambungTimer=null, sambungSessionId=0;
+function startSambung(){
+  sambungSessionId++;
+  const session = sambungSessionId;
+  goTo('game-sambung');
+  sambungUsed = [];
+  sambungChainScore = 0; sambungMistakeCount = 0;
+  sambungCurrentWord = sambungPool[Math.floor(Math.random()*sambungPool.length)];
+  sambungUsed.push(sambungCurrentWord);
+  document.getElementById('sambungScore').textContent = 'Rantai: 0';
+  document.getElementById('sambungMistakes').textContent = 'Kesalahan: 0/'+SAMBUNG_MAX_MISTAKES;
+  document.getElementById('sambungChainDisplay').innerHTML = `<span>${sambungCurrentWord}</span>`;
+  renderSambungTurn();
+  sambungTimeLeft = SAMBUNG_TIME_LIMIT;
+  document.getElementById('sambungTime').textContent = '⏱️ '+sambungTimeLeft+'s';
+  clearInterval(sambungTimer);
+  sambungTimer = setInterval(()=>{
+    if(session!==sambungSessionId){ clearInterval(sambungTimer); return; }
+    sambungTimeLeft--;
+    document.getElementById('sambungTime').textContent = '⏱️ '+sambungTimeLeft+'s';
+    if(sambungTimeLeft<=0){ stopSambungTimer(); endSambung('waktu'); }
+  },1000);
+}
+function stopSambungTimer(){ clearInterval(sambungTimer); }
+function sambungRequiredLetter(){
+  return sambungCurrentWord.slice(-1).toUpperCase();
+}
+function renderSambungTurn(){
+  const letter = sambungRequiredLetter();
+  document.getElementById('sambungCurrentWord').textContent = sambungCurrentWord;
+  document.getElementById('sambungHint').textContent = `Cari kata yang diawali huruf "${letter}"`;
+
+  const candidates = sambungPool.filter(w => !sambungUsed.includes(w) && w.startsWith(letter));
+  const optBox = document.getElementById('sambungOptions');
+  optBox.innerHTML = '';
+
+  if(candidates.length === 0){
+    // Jalan buntu — tidak ada kata lanjutan yang tersisa, permainan berakhir secara wajar
+    stopSambungTimer();
+    endSambung('buntu');
+    return;
+  }
+  const correct = candidates[Math.floor(Math.random()*candidates.length)];
+  const currentFirstLetter = sambungCurrentWord.charAt(0).toUpperCase();
+  // Pengalih PRIORITAS: kata yang huruf AWALnya sama dengan kata yang SEDANG DITAMPILKAN di layar
+  // (bukan huruf akhir yang seharusnya dicari). Ini menjebak siswa yang kurang teliti dan secara
+  // reflek mencari kata berawalan sama dengan kata yang terlihat, padahal aturannya harus pakai
+  // huruf AKHIR kata tersebut. Pengalih ini tetap dijamin BUKAN sambungan yang sah (tidak diawali
+  // huruf yang dicari), jadi hanya ada SATU jawaban benar — adil dan tidak membingungkan.
+  const trickyDecoyPool = sambungPool.filter(w =>
+    !sambungUsed.includes(w) && w!==correct && !w.startsWith(letter) && w.startsWith(currentFirstLetter)
+  );
+  let decoys = shuffleArr(trickyDecoyPool.slice()).slice(0, 3);
+  if(decoys.length < 3){
+    // Cadangan jika kata "mirip" tidak cukup tersedia, supaya tetap selalu ada 4 pilihan
+    const fallbackPool = sambungPool.filter(w =>
+      !sambungUsed.includes(w) && w!==correct && !w.startsWith(letter) && !decoys.includes(w)
+    );
+    decoys = decoys.concat(shuffleArr(fallbackPool.slice()).slice(0, 3-decoys.length));
+  }
+  const options = shuffleArr([correct, ...decoys]);
+
+  options.forEach(opt=>{
+    const b = document.createElement('button');
+    b.className = 'btn ghost';
+    b.textContent = opt;
+    b.onclick = ()=>sambungAnswer(opt, correct, b, optBox);
+    optBox.appendChild(b);
+  });
+}
+function sambungAnswer(picked, correct, btn, optBox){
+  Array.from(optBox.querySelectorAll('button')).forEach(b=>b.disabled=true);
+  if(picked === correct){
+    btn.style.borderColor = 'var(--good)';
+    sambungChainScore++;
+    sambungUsed.push(correct);
+    document.getElementById('sambungScore').textContent = 'Rantai: '+sambungChainScore;
+    sambungCurrentWord = correct;
+    const chainBox = document.getElementById('sambungChainDisplay');
+    chainBox.innerHTML += ` <span>→ ${correct}</span>`;
+    setTimeout(()=>{ renderSambungTurn(); }, 500);
+  } else {
+    btn.style.borderColor = 'var(--bad)';
+    sambungMistakeCount++;
+    document.getElementById('sambungMistakes').textContent = 'Kesalahan: '+sambungMistakeCount+'/'+SAMBUNG_MAX_MISTAKES;
+    if(sambungMistakeCount >= SAMBUNG_MAX_MISTAKES){
+      stopSambungTimer();
+      setTimeout(()=>endSambung('salah'), 500);
+    } else {
+      setTimeout(()=>{ renderSambungTurn(); }, 600);
+    }
+  }
+}
+function endSambung(reason){
+  const win = sambungChainScore >= 8;
+  let alasan = '';
+  if(reason==='waktu') alasan = 'Waktu habis!';
+  else if(reason==='salah') alasan = 'Kesalahan sudah mencapai batas maksimal.';
+  else if(reason==='buntu') alasan = 'Tidak ada lagi kata lanjutan yang tersisa — rantaimu sudah sangat panjang!';
+  showResult('resultBannerSambung', win, `${alasan} Kamu berhasil menyambung <strong>${sambungChainScore} kata</strong> berturut-turut. ${win?'Kamu jadi Master Asosiasi Kata! 🏅':'Terus berlatih, makin sering main makin lancar berasosiasi kata!'}`);
+  goTo('result-sambung');
 }
 
 /* ===================== INIT ===================== */

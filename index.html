@@ -281,6 +281,24 @@ ul.instr li{font-size:14.5px; color:#ece2c8; line-height:1.5;}
   padding:4px 10px; font-size:12px; color:#f5e9c8;
 }
 
+/* menara hanoi */
+.hanoi-board{display:flex; justify-content:center; gap:18px; align-items:flex-end; width:100%; max-width:480px;}
+.hanoi-peg{
+  display:flex; flex-direction:column; align-items:center; flex:1; cursor:pointer;
+  border-radius:10px; padding:8px 4px 6px; transition:background .15s;
+}
+.hanoi-peg.selected{background:rgba(212,168,87,0.22);}
+.hanoi-disks{
+  display:flex; flex-direction:column-reverse; align-items:center; justify-content:flex-start;
+  min-height:160px; width:100%; border-bottom:6px solid var(--gold); border-radius:0 0 6px 6px;
+}
+.hanoi-disk{
+  height:22px; border-radius:6px; margin-bottom:3px; display:flex; align-items:center; justify-content:center;
+  color:#1b2a2a; font-weight:700; font-size:11px; box-shadow:0 2px 4px rgba(0,0,0,0.3);
+}
+.hanoi-peg-label{margin-top:8px; font-weight:700; color:var(--gold); font-family:var(--display); font-size:16px;}
+#hanoiFeedback{min-height:20px; text-align:center; font-size:13px; color:var(--bad); font-weight:700;}
+
 .result-banner{
   text-align:center; padding:20px; border-radius:16px;
 }
@@ -365,7 +383,7 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
     </div>
 
     <div class="card">
-      <p style="margin-bottom:10px;">11 permainan siap dimainkan. Selamat mencoba! 🌱</p>
+      <p style="margin-bottom:10px;">12 permainan siap dimainkan. Selamat mencoba! 🌱</p>
       <div class="grid">
         <div class="mod" onclick="goTo('instr-tembak')"><div class="emoji">🐦</div><div class="name">Tembak Burung</div><div class="tag">Kecepatan</div></div>
         <div class="mod" onclick="goTo('instr-ingat')"><div class="emoji">🔢</div><div class="name">Mengingat Deret</div><div class="tag">Daya Ingat</div></div>
@@ -379,6 +397,7 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
         <div class="mod" onclick="goTo('instr-fokus')"><div class="emoji">🎯</div><div class="name">Konsentrasi Jitu</div><div class="tag">Ketepatan Waktu</div></div>
         <div class="mod" onclick="goTo('instr-pancing')"><div class="emoji">🎣</div><div class="name">Pancing Mania</div><div class="tag">Prediksi</div></div>
         <div class="mod" onclick="goTo('instr-sambung')"><div class="emoji">🗣️</div><div class="name">Sambung Kata Beruntun</div><div class="tag">Asosiasi Verbal</div></div>
+        <div class="mod" onclick="goTo('instr-hanoi')"><div class="emoji">🗽</div><div class="name">Menara Hanoi</div><div class="tag">Strategi & Logika</div></div>
       </div>
     </div>
   </section>
@@ -826,6 +845,59 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
     <div id="resultBannerSambung" class="result-banner"></div>
     <div class="btn-row" style="justify-content:center;">
       <button class="btn" onclick="startSambung()">Main Lagi</button>
+      <button class="btn ghost" onclick="goTo('screen-menu')">Pilih Permainan Lain</button>
+    </div>
+  </section>
+
+  <!-- ============ MODUL 14: MENARA HANOI ============ -->
+  <section class="screen" id="instr-hanoi">
+    <div class="topbar"><div class="eyebrow">Modul 14 • Strategi & Logika</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="card">
+      <h2>🗽 Menara Hanoi</h2>
+      <p>Permainan klasik ini melatih perencanaan, logika berurutan, dan strategi pemecahan masalah.</p>
+      <ul class="instr">
+        <li>Pindahkan semua keping dari <strong>Titik A</strong> ke <strong>Titik C</strong>, boleh lewat Titik B.</li>
+        <li>Hanya boleh memindahkan <strong>1 keping</strong> setiap langkah (keping paling atas saja).</li>
+        <li>Keping yang lebih <strong>besar tidak boleh</strong> ditaruh di atas keping yang lebih kecil.</li>
+        <li>Klik satu titik untuk memilih keping paling atasnya, lalu klik titik tujuan untuk memindahkannya.</li>
+        <li>Selesaikan dengan langkah seminimal mungkin — jumlah langkah minimal akan ditampilkan sebagai patokan.</li>
+        <li><strong>Tantangan:</strong> selesaikan tingkat Sulit (5 keping) untuk jadi "Master Strategi"!</li>
+      </ul>
+    </div>
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn" onclick="startHanoi(0)">Mudah (3 Keping)</button>
+      <button class="btn" onclick="startHanoi(1)">Sedang (4 Keping)</button>
+      <button class="btn" onclick="startHanoi(2)">Sulit (5 Keping)</button>
+    </div>
+  </section>
+
+  <section class="screen" id="game-hanoi">
+    <div class="topbar"><div class="eyebrow" id="hanoiLevelLabel">Menara Hanoi • Mudah</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="game-area">
+      <div class="hud"><span id="hanoiMoves">Langkah: 0</span><span id="hanoiOptimal">Minimal: 7 langkah</span></div>
+      <div class="hanoi-board">
+        <div class="hanoi-peg" id="hanoiPegBox0" onclick="hanoiSelectPeg(0)">
+          <div class="hanoi-disks" id="hanoiPeg0"></div>
+          <div class="hanoi-peg-label">A</div>
+        </div>
+        <div class="hanoi-peg" id="hanoiPegBox1" onclick="hanoiSelectPeg(1)">
+          <div class="hanoi-disks" id="hanoiPeg1"></div>
+          <div class="hanoi-peg-label">B</div>
+        </div>
+        <div class="hanoi-peg" id="hanoiPegBox2" onclick="hanoiSelectPeg(2)">
+          <div class="hanoi-disks" id="hanoiPeg2"></div>
+          <div class="hanoi-peg-label">C</div>
+        </div>
+      </div>
+      <div id="hanoiFeedback"></div>
+      <button class="btn ghost" id="hanoiRestartBtn">Mulai Ulang Tingkat Ini</button>
+    </div>
+  </section>
+
+  <section class="screen" id="result-hanoi">
+    <div id="resultBannerHanoi" class="result-banner"></div>
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn" id="hanoiAgainBtn">Main Lagi</button>
       <button class="btn ghost" onclick="goTo('screen-menu')">Pilih Permainan Lain</button>
     </div>
   </section>
@@ -2169,6 +2241,85 @@ function endSambung(reason){
   else if(reason==='buntu') alasan = 'Tidak ada lagi kata lanjutan yang tersisa — rantaimu sudah sangat panjang!';
   showResult('resultBannerSambung', win, `${alasan} Kamu berhasil menyambung <strong>${sambungChainScore} kata</strong> berturut-turut. ${win?'Kamu jadi Master Asosiasi Kata! 🏅':'Terus berlatih, makin sering main makin lancar berasosiasi kata!'}`);
   goTo('result-sambung');
+}
+
+/* ===================== MODUL 14: MENARA HANOI ===================== */
+const hanoiLevels = [
+  { name:'Mudah', disks:3 },
+  { name:'Sedang', disks:4 },
+  { name:'Sulit', disks:5 }
+];
+const hanoiDiskColors = ['#e0664f','#d4a857','#3f8f5f','#4fa9c9','#9b7fd4'];
+let hanoiState=[[],[],[]], hanoiSelected=null, hanoiMoves=0, hanoiDiskCount=3, hanoiLevelIdx=0;
+function startHanoi(levelIdx){
+  hanoiLevelIdx = levelIdx;
+  const lvl = hanoiLevels[levelIdx];
+  hanoiDiskCount = lvl.disks;
+  hanoiState = [[],[],[]];
+  for(let size=hanoiDiskCount; size>=1; size--){ hanoiState[0].push(size); } // terbesar di dasar, terkecil di puncak
+  hanoiMoves = 0; hanoiSelected = null;
+  document.getElementById('hanoiLevelLabel').textContent = 'Menara Hanoi • '+lvl.name;
+  document.getElementById('hanoiMoves').textContent = 'Langkah: 0';
+  document.getElementById('hanoiOptimal').textContent = 'Minimal: '+(Math.pow(2,hanoiDiskCount)-1)+' langkah';
+  document.getElementById('hanoiFeedback').textContent = '';
+  document.getElementById('hanoiRestartBtn').onclick = ()=>startHanoi(levelIdx);
+  document.getElementById('hanoiAgainBtn').onclick = ()=>startHanoi(levelIdx);
+  goTo('game-hanoi');
+  renderHanoi();
+}
+function renderHanoi(){
+  for(let p=0; p<3; p++){
+    const container = document.getElementById('hanoiPeg'+p);
+    container.innerHTML = '';
+    hanoiState[p].forEach(size=>{
+      const d = document.createElement('div');
+      d.className = 'hanoi-disk';
+      d.style.width = (28 + size*16) + 'px';
+      d.style.background = hanoiDiskColors[size-1] || '#d4a857';
+      d.textContent = size;
+      container.appendChild(d);
+    });
+    document.getElementById('hanoiPegBox'+p).classList.toggle('selected', hanoiSelected===p);
+  }
+}
+function hanoiSelectPeg(p){
+  if(hanoiSelected===null){
+    if(hanoiState[p].length===0) return; // tidak ada keping untuk dipilih
+    hanoiSelected = p;
+    renderHanoi();
+    return;
+  }
+  if(hanoiSelected===p){
+    hanoiSelected = null; // batal pilih
+    renderHanoi();
+    return;
+  }
+  const fromStack = hanoiState[hanoiSelected];
+  const toStack = hanoiState[p];
+  const moving = fromStack[fromStack.length-1];
+  const targetTop = toStack[toStack.length-1];
+  if(toStack.length===0 || moving < targetTop){
+    fromStack.pop();
+    toStack.push(moving);
+    hanoiMoves++;
+    document.getElementById('hanoiMoves').textContent = 'Langkah: '+hanoiMoves;
+    document.getElementById('hanoiFeedback').textContent = '';
+    hanoiSelected = null;
+    renderHanoi();
+    checkHanoiWin();
+  } else {
+    document.getElementById('hanoiFeedback').textContent = '❌ Tidak bisa! Keping besar tidak boleh ditaruh di atas keping yang lebih kecil.';
+    hanoiSelected = null;
+    renderHanoi();
+  }
+}
+function checkHanoiWin(){
+  if(hanoiState[2].length === hanoiDiskCount){
+    const optimal = Math.pow(2,hanoiDiskCount)-1;
+    const efficient = hanoiMoves <= optimal + Math.ceil(optimal*0.3);
+    showResult('resultBannerHanoi', true, `Selamat! Kamu memindahkan semua ${hanoiDiskCount} keping ke Titik C dalam <strong>${hanoiMoves} langkah</strong> (minimal: ${optimal} langkah). ${efficient?'Strategimu efisien — kamu jadi Master Strategi! 🏅':'Coba lagi dengan langkah lebih sedikit untuk strategi yang lebih efisien!'}`);
+    goTo('result-hanoi');
+  }
 }
 
 /* ===================== INIT ===================== */

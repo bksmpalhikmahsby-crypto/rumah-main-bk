@@ -383,6 +383,14 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
 .bs-cell.miss{background:rgba(250,243,226,0.15); cursor:default;}
 .bs-cell.sunk{background:#7a1f1f; cursor:default;}
 .bs-cell.no-click{cursor:default;}
+
+/* lari tanpa henti */
+.runner-canvas-wrap{
+  width:100%; max-width:420px; border-radius:14px; overflow:hidden;
+  border:2px solid rgba(212,168,87,0.35); background:#0a2a2b;
+}
+.runner-canvas-wrap canvas{width:100%; display:block;}
+.runner-score-row{display:flex; justify-content:space-between; width:100%; max-width:420px; font-size:14px; color:var(--gold); font-weight:700;}
 </style>
 </head>
 <body>
@@ -455,7 +463,7 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
     </div>
 
     <div class="card">
-      <p style="margin-bottom:10px;">18 permainan siap dimainkan. Selamat mencoba! 🌱</p>
+      <p style="margin-bottom:10px;">19 permainan siap dimainkan. Selamat mencoba! 🌱</p>
       <div class="grid">
         <div class="mod" onclick="goTo('instr-tembak')"><div class="emoji">🐦</div><div class="name">Tembak Burung</div><div class="tag">Kecepatan</div></div>
         <div class="mod" onclick="goTo('instr-ingat')"><div class="emoji">🔢</div><div class="name">Mengingat Deret</div><div class="tag">Daya Ingat</div></div>
@@ -476,6 +484,7 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
         <div class="mod" onclick="goTo('instr-river')"><div class="emoji">🛶</div><div class="name">Penyeberangan Sungai</div><div class="tag">Pemecahan Masalah</div></div>
         <div class="mod" onclick="goTo('instr-detektif')"><div class="emoji">🕵️</div><div class="name">Jika Menjadi Detektif</div><div class="tag">Deduksi & Misteri</div></div>
         <div class="mod" onclick="goTo('instr-battleship')"><div class="emoji">🚢</div><div class="name">Tebak Posisi Kapal</div><div class="tag">Strategi vs Komputer</div></div>
+        <div class="mod" onclick="goTo('instr-runner')"><div class="emoji">🏃</div><div class="name">Lari Tanpa Henti</div><div class="tag">Refleks & Ketahanan</div></div>
       </div>
     </div>
   </section>
@@ -1251,6 +1260,41 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
     </div>
   </section>
 
+  <!-- ============ MODUL 22: LARI TANPA HENTI ============ -->
+  <section class="screen" id="instr-runner">
+    <div class="topbar"><div class="eyebrow">Modul 22 • Refleks & Ketahanan</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="card">
+      <h2>🏃 Lari Tanpa Henti</h2>
+      <p>Karaktermu berlari otomatis terus-menerus — tugasmu cuma melompat tepat waktu untuk menghindari rintangan!</p>
+      <ul class="instr">
+        <li>Klik tombol <strong>"Lompat!"</strong> (atau tekan <strong>Spasi</strong>/klik area permainan) untuk melompati rintangan.</li>
+        <li>Semakin lama bertahan, lari makin cepat dan rintangan makin sering muncul.</li>
+        <li>Skor bertambah otomatis sesuai jarak yang berhasil ditempuh.</li>
+        <li>Skor tertinggimu akan <strong>tersimpan di perangkat ini</strong> — coba pecahkan rekormu sendiri setiap main!</li>
+        <li><strong>Tantangan:</strong> bertahan sejauh mungkin tanpa menabrak rintangan!</li>
+      </ul>
+      <p id="runnerHighScoreText" style="margin-top:10px; color:var(--gold); font-weight:700; text-align:center;"></p>
+    </div>
+    <div class="btn-row" style="justify-content:center;"><button class="btn" onclick="startRunner()">Mulai Berlari</button></div>
+  </section>
+
+  <section class="screen" id="game-runner">
+    <div class="topbar"><div class="eyebrow">Lari Tanpa Henti</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="game-area">
+      <div class="runner-score-row"><span id="runnerScoreText">Skor: 0</span><span id="runnerBestText">Terbaik: 0</span></div>
+      <div class="runner-canvas-wrap"><canvas id="runnerCanvas" width="420" height="220"></canvas></div>
+      <button class="btn" id="runnerJumpBtn" style="font-size:18px; padding:18px 60px;">⬆️ Lompat!</button>
+    </div>
+  </section>
+
+  <section class="screen" id="result-runner">
+    <div id="resultBannerRunner" class="result-banner"></div>
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn" onclick="startRunner()">Main Lagi</button>
+      <button class="btn ghost" onclick="goTo('screen-menu')">Pilih Permainan Lain</button>
+    </div>
+  </section>
+
   <footer>Rumah Main BK • SMP Al Hikmah Surabaya — Bermain untuk Bahagia 🌿</footer>
 </div>
 
@@ -1269,6 +1313,7 @@ function goTo(id){
   stopSambungTimer(); // pastikan timer sambung kata beruntun berhenti
   stopOthello(); // pastikan timer "AI berpikir" Othello berhenti
   stopConnect4(); // pastikan timer "AI berpikir" Susun 4 berhenti
+  stopRunner(); // pastikan render loop & keydown Lari Tanpa Henti berhenti
 }
 
 /* ===================== COUNTER PENGGUNA (versi GitHub: counter publik + fallback lokal) ===================== */
@@ -3865,6 +3910,193 @@ function bsEndGame(playerWon){
     continueBtn.style.display='none';
     goTo('result-battleship');
   };
+}
+
+/* ===================== MODUL 22: LARI TANPA HENTI (parallax + partikel) ===================== */
+const RUNNER_GROUND_Y = 175;
+const RUNNER_GRAVITY = 0.65;
+const RUNNER_JUMP_VELOCITY = -11.5;
+const RUNNER_PLAYER_X = 60;
+const RUNNER_PLAYER_RADIUS = 14;
+let runnerCtx, runnerCanvas, runnerLoop, runnerSessionId=0;
+let runnerY, runnerVY, runnerJumping, runnerObstacles, runnerParticles, runnerSpeed, runnerDistance, runnerScore, runnerGameOver, runnerNextSpawnIn, runnerLastMilestone;
+function runnerGetHighScore(){
+  try{ return parseInt(localStorage.getItem('runner_highscore')||'0'); } catch(e){ return 0; }
+}
+function runnerSetHighScore(v){
+  try{ localStorage.setItem('runner_highscore', String(v)); } catch(e){}
+}
+function startRunner(){
+  runnerSessionId++;
+  const session = runnerSessionId;
+  goTo('game-runner');
+  runnerCanvas = document.getElementById('runnerCanvas');
+  runnerCtx = runnerCanvas.getContext('2d');
+  runnerY = RUNNER_GROUND_Y; runnerVY = 0; runnerJumping = false;
+  runnerObstacles = []; runnerParticles = [];
+  runnerSpeed = 3.2; runnerDistance = 0; runnerScore = 0; runnerGameOver = false;
+  runnerNextSpawnIn = 60; runnerLastMilestone = 0;
+  document.getElementById('runnerScoreText').textContent = 'Skor: 0';
+  document.getElementById('runnerBestText').textContent = 'Terbaik: '+runnerGetHighScore();
+  const jumpBtn = document.getElementById('runnerJumpBtn');
+  jumpBtn.disabled=false;
+  jumpBtn.onclick = runnerJump;
+  document.onkeydown = (e)=>{ if(e.code==='Space'){ e.preventDefault(); runnerJump(); } };
+  runnerCanvas.onclick = runnerJump;
+  runnerLoopFn(session);
+}
+function runnerJump(){
+  if(runnerGameOver) return;
+  if(!runnerJumping){
+    runnerVY = RUNNER_JUMP_VELOCITY;
+    runnerJumping = true;
+    runnerSpawnDust(8, '#caa86a');
+  }
+}
+function runnerSpawnDust(count, color){
+  for(let i=0;i<count;i++){
+    const angle = Math.PI + Math.random()*Math.PI;
+    const speed = 0.6 + Math.random()*1.6;
+    runnerParticles.push({
+      x: RUNNER_PLAYER_X, y: RUNNER_GROUND_Y+8,
+      vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed*0.6 - 0.5,
+      r: 2+Math.random()*2.5, color, life:0, maxLife: 20+Math.random()*12
+    });
+  }
+}
+function runnerSpawnSparkle(){
+  for(let i=0;i<14;i++){
+    const angle = Math.random()*Math.PI*2;
+    const speed = 1+Math.random()*2.5;
+    runnerParticles.push({
+      x: runnerCanvas.width/2, y: 40,
+      vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed,
+      r: 2+Math.random()*2, color:'#f0d77b', life:0, maxLife: 28+Math.random()*10
+    });
+  }
+}
+function runnerSpawnObstacle(){
+  const height = 18+Math.random()*22;
+  const width = 12+Math.random()*10;
+  runnerObstacles.push({ x: runnerCanvas.width+10, y: RUNNER_GROUND_Y+14-height, w: width, h: height });
+}
+function runnerCircleRectCollide(cx,cy,radius, rx,ry,rw,rh){
+  const closestX = Math.max(rx, Math.min(cx, rx+rw));
+  const closestY = Math.max(ry, Math.min(cy, ry+rh));
+  const dx = cx-closestX, dy = cy-closestY;
+  return (dx*dx+dy*dy) < radius*radius;
+}
+function runnerLoopFn(session){
+  if(session!==runnerSessionId) return;
+  if(!runnerCtx) return;
+  const ctx = runnerCtx, w = runnerCanvas.width, h = runnerCanvas.height;
+
+  if(!runnerGameOver){
+    runnerVY += RUNNER_GRAVITY;
+    runnerY += runnerVY;
+    if(runnerY >= RUNNER_GROUND_Y){
+      if(runnerJumping){ runnerSpawnDust(6, '#7a8f6a'); }
+      runnerY = RUNNER_GROUND_Y; runnerVY = 0; runnerJumping = false;
+    }
+    runnerDistance += runnerSpeed;
+    runnerScore = Math.floor(runnerDistance/8);
+    runnerSpeed = Math.min(9, 3.2 + runnerDistance*0.0009);
+
+    runnerNextSpawnIn--;
+    if(runnerNextSpawnIn<=0){
+      runnerSpawnObstacle();
+      runnerNextSpawnIn = Math.max(38, 85 - runnerSpeed*5) + Math.random()*30;
+    }
+    runnerObstacles.forEach(o=> o.x -= runnerSpeed);
+    runnerObstacles = runnerObstacles.filter(o=> o.x+o.w > -10);
+
+    const milestone = Math.floor(runnerScore/100);
+    if(milestone>runnerLastMilestone){ runnerLastMilestone=milestone; runnerSpawnSparkle(); }
+
+    document.getElementById('runnerScoreText').textContent = 'Skor: '+runnerScore;
+
+    for(const o of runnerObstacles){
+      if(runnerCircleRectCollide(RUNNER_PLAYER_X, runnerY, RUNNER_PLAYER_RADIUS, o.x, o.y, o.w, o.h)){
+        runnerEndGame(session);
+        break;
+      }
+    }
+  }
+
+  // === Render ===
+  const sky = ctx.createLinearGradient(0,0,0,h);
+  sky.addColorStop(0,'#1d6b66'); sky.addColorStop(1,'#0a2a2b');
+  ctx.fillStyle = sky; ctx.fillRect(0,0,w,h);
+
+  // parallax bukit jauh (lambat)
+  ctx.fillStyle = 'rgba(212,168,87,0.12)';
+  const farOffset = (runnerDistance*0.2) % 140;
+  for(let i=-1;i<=Math.ceil(w/140)+1;i++){
+    const bx = i*140 - farOffset;
+    ctx.beginPath();
+    ctx.ellipse(bx+70, RUNNER_GROUND_Y+10, 90, 40, 0, Math.PI, 0, true);
+    ctx.fill();
+  }
+  // parallax rumput dekat (cepat)
+  ctx.fillStyle = 'rgba(63,143,95,0.35)';
+  const nearOffset = (runnerDistance*1.4) % 36;
+  for(let i=-1;i<=Math.ceil(w/36)+1;i++){
+    const gx = i*36 - nearOffset;
+    ctx.fillRect(gx, RUNNER_GROUND_Y+16, 4, 10);
+    ctx.fillRect(gx+14, RUNNER_GROUND_Y+18, 4, 8);
+  }
+  // tanah
+  ctx.fillStyle = '#173f40';
+  ctx.fillRect(0, RUNNER_GROUND_Y+14, w, h-(RUNNER_GROUND_Y+14));
+  ctx.strokeStyle = 'rgba(212,168,87,0.4)';
+  ctx.beginPath(); ctx.moveTo(0,RUNNER_GROUND_Y+14); ctx.lineTo(w,RUNNER_GROUND_Y+14); ctx.stroke();
+
+  // rintangan
+  ctx.fillStyle = '#e0664f';
+  runnerObstacles.forEach(o=>{ ctx.fillRect(o.x, o.y, o.w, o.h); });
+
+  // partikel
+  for(let i=runnerParticles.length-1;i>=0;i--){
+    const p = runnerParticles[i];
+    p.life++;
+    if(p.life>p.maxLife){ runnerParticles.splice(i,1); continue; }
+    p.x+=p.vx; p.y+=p.vy; p.vy+=0.05;
+    ctx.globalAlpha = Math.max(0, 1-p.life/p.maxLife);
+    ctx.fillStyle = p.color;
+    ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+
+  // karakter (emoji, posisi tengah presisi)
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.font='30px serif';
+  ctx.fillText('🏃', RUNNER_PLAYER_X, runnerY);
+
+  // kilatan milestone
+  if(runnerLastMilestone>0 && runnerScore - runnerLastMilestone*100 < 8){
+    ctx.globalAlpha = 0.15;
+    ctx.fillStyle = '#f0d77b';
+    ctx.fillRect(0,0,w,h);
+    ctx.globalAlpha = 1;
+  }
+
+  runnerLoop = requestAnimationFrame(()=>runnerLoopFn(session));
+}
+function runnerEndGame(session){
+  if(session!==runnerSessionId) return;
+  runnerGameOver = true;
+  document.getElementById('runnerJumpBtn').disabled = true;
+  const best = runnerGetHighScore();
+  const isNewBest = runnerScore > best;
+  if(isNewBest) runnerSetHighScore(runnerScore);
+  document.getElementById('runnerBestText').textContent = 'Terbaik: '+(isNewBest?runnerScore:best);
+  showResult('resultBannerRunner', true, `Kamu bertahan sejauh <strong>${runnerScore} poin</strong>! ${isNewBest?'🎉 Itu rekor TERBAIKmu yang baru!':'Skor terbaikmu masih '+best+' — ayo pecahkan lagi!'}`);
+  goTo('result-runner');
+}
+function stopRunner(){
+  cancelAnimationFrame(runnerLoop);
+  document.onkeydown = null;
+  runnerCtx = null;
 }
 
 /* ===================== INIT ===================== */

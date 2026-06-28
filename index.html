@@ -391,6 +391,15 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
 }
 .runner-canvas-wrap canvas{width:100%; display:block;}
 .runner-score-row{display:flex; justify-content:space-between; width:100%; max-width:420px; font-size:14px; color:var(--gold); font-weight:700;}
+
+/* tembak ruang angkasa */
+.space-canvas-wrap{
+  width:100%; max-width:380px; border-radius:14px; overflow:hidden;
+  border:2px solid rgba(212,168,87,0.35); background:#050a1a;
+}
+.space-canvas-wrap canvas{width:100%; display:block;}
+.space-score-row{display:flex; justify-content:space-between; width:100%; max-width:380px; font-size:14px; color:var(--gold); font-weight:700;}
+.space-controls{display:flex; gap:16px; justify-content:center;}
 </style>
 </head>
 <body>
@@ -463,7 +472,7 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
     </div>
 
     <div class="card">
-      <p style="margin-bottom:10px;">19 permainan siap dimainkan. Selamat mencoba! 🌱</p>
+      <p style="margin-bottom:10px;">20 permainan siap dimainkan. Selamat mencoba! 🌱</p>
       <div class="grid">
         <div class="mod" onclick="goTo('instr-tembak')"><div class="emoji">🐦</div><div class="name">Tembak Burung</div><div class="tag">Kecepatan</div></div>
         <div class="mod" onclick="goTo('instr-ingat')"><div class="emoji">🔢</div><div class="name">Mengingat Deret</div><div class="tag">Daya Ingat</div></div>
@@ -485,6 +494,7 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
         <div class="mod" onclick="goTo('instr-detektif')"><div class="emoji">🕵️</div><div class="name">Jika Menjadi Detektif</div><div class="tag">Deduksi & Misteri</div></div>
         <div class="mod" onclick="goTo('instr-battleship')"><div class="emoji">🚢</div><div class="name">Tebak Posisi Kapal</div><div class="tag">Strategi vs Komputer</div></div>
         <div class="mod" onclick="goTo('instr-runner')"><div class="emoji">🏃</div><div class="name">Lari Tanpa Henti</div><div class="tag">Refleks & Ketahanan</div></div>
+        <div class="mod" onclick="goTo('instr-space')"><div class="emoji">🚀</div><div class="name">Tembak Ruang Angkasa</div><div class="tag">Refleks & Strategi</div></div>
       </div>
     </div>
   </section>
@@ -1295,6 +1305,64 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
     </div>
   </section>
 
+  <!-- ============ MODUL 23: TEMBAK-TEMBAKAN RUANG ANGKASA ============ -->
+  <section class="screen" id="instr-space">
+    <div class="topbar"><div class="eyebrow">Modul 23 • Refleks & Strategi</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="card">
+      <h2>🚀 Tembak Ruang Angkasa</h2>
+      <p>Kendalikan pesawatmu bebas ke segala arah, hindari musuh yang makin bervariasi, dan hadapi BOS besar di setiap level!</p>
+      <ul class="instr">
+        <li><strong>Seret langsung</strong> di area permainan (klik-tahan & geser) untuk menggerakkan pesawat persis sesuai gerakan jarimu — atau pakai 4 tombol arah (←→ kiri-kanan, ↑↓ maju-mundur) yang bisa ditahan untuk gerak lebih lincah.</li>
+        <li>Pesawatmu menembak <strong>otomatis</strong> terus-menerus.</li>
+        <li>Musuh sekarang <strong>4 jenis berbeda</strong>: 👾 biasa, 👽 tangguh (butuh beberapa kali tembak), 🦂 gerak zig-zag cepat, dan 🛸 yang bisa menembak balik!</li>
+        <li><strong>Tidak ada batas level!</strong> Kalahkan <strong>15 musuh</strong> di tiap level untuk memunculkan BOS besar 👹 — makin tinggi level, makin banyak arah tembakan BOS-nya (Level 1 = 3 arah, Level 2 = 4 arah, dan seterusnya sampai maksimal 12 arah), musuh biasa juga makin kuat dan makin sering bisa menembak balik.</li>
+        <li>Sesekali muncul huruf reward — tembak untuk mengaktifkan:
+          <ul style="margin-top:6px;">
+            <li>🔵 <strong>P (Perisai)</strong> — kebal dari tembakan & tabrakan musuh sementara waktu.</li>
+            <li>🔴 <strong>B (Bom)</strong> — ledakan api langsung menghancurkan semua musuh di layar!</li>
+            <li>🟡 <strong>K (Kecepatan)</strong> — peluru jadi berkali-lipat lebih cepat sementara waktu.</li>
+          </ul>
+        </li>
+        <li>Kamu punya 3 nyawa. Skor tertinggimu tersimpan otomatis di perangkat ini.</li>
+        <li><strong>Tantangan:</strong> mainkan terus sampai batas kemampuanmu sendiri — seberapa tinggi level dan seberapa besar skor yang bisa kamu capai?</li>
+      </ul>
+      <p id="spaceHighScoreText" style="margin-top:10px; color:var(--gold); font-weight:700; text-align:center;"></p>
+    </div>
+    <div class="btn-row" style="justify-content:center;"><button class="btn" onclick="startSpace()">Mulai Bermain</button></div>
+  </section>
+
+  <section class="screen" id="game-space">
+    <div class="topbar"><div class="eyebrow" id="spaceLevelLabel">Level 1</div><button class="btn ghost" onclick="goTo('screen-menu')">← Menu</button></div>
+    <div class="game-area">
+      <div class="space-score-row"><span id="spaceScoreText">Skor: 0</span><span id="spaceLivesText">❤️❤️❤️</span><span id="spaceBestText">Terbaik: 0</span></div>
+      <div id="spacePowerupRow" style="display:none; width:100%; max-width:380px; text-align:center; font-size:13px; color:var(--gold); font-weight:700;"></div>
+      <div id="spaceBossHpRow" style="display:none; width:100%; max-width:380px;">
+        <div style="font-size:12px; color:var(--bad); font-weight:700; text-align:center; margin-bottom:3px;" id="spaceBossLabel">👹 BOS</div>
+        <div style="width:100%; height:10px; background:rgba(255,255,255,0.1); border-radius:6px; overflow:hidden;">
+          <div id="spaceBossHpBar" style="height:100%; width:100%; background:var(--bad); transition:width .2s;"></div>
+        </div>
+      </div>
+      <div class="space-canvas-wrap"><canvas id="spaceCanvas" width="380" height="420"></canvas></div>
+      <p style="font-size:12px; color:#ece2c8; text-align:center; margin-top:-4px;">💡 Tahan & geser langsung di kanvas untuk gerak paling lincah</p>
+      <div class="space-controls" style="flex-wrap:wrap;">
+        <button class="btn ghost" id="spaceLeftBtn" style="font-size:20px; padding:14px 24px;">←</button>
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <button class="btn ghost" id="spaceUpBtn" style="font-size:20px; padding:8px 24px;">↑</button>
+          <button class="btn ghost" id="spaceDownBtn" style="font-size:20px; padding:8px 24px;">↓</button>
+        </div>
+        <button class="btn ghost" id="spaceRightBtn" style="font-size:20px; padding:14px 24px;">→</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="result-space">
+    <div id="resultBannerSpace" class="result-banner"></div>
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn" onclick="startSpace()">Main Lagi</button>
+      <button class="btn ghost" onclick="goTo('screen-menu')">Pilih Permainan Lain</button>
+    </div>
+  </section>
+
   <footer>Rumah Main BK • SMP Al Hikmah Surabaya — Bermain untuk Bahagia 🌿</footer>
 </div>
 
@@ -1314,6 +1382,7 @@ function goTo(id){
   stopOthello(); // pastikan timer "AI berpikir" Othello berhenti
   stopConnect4(); // pastikan timer "AI berpikir" Susun 4 berhenti
   stopRunner(); // pastikan render loop & keydown Lari Tanpa Henti berhenti
+  stopSpace(); // pastikan render loop & keydown Tembak Ruang Angkasa berhenti
 }
 
 /* ===================== COUNTER PENGGUNA (versi GitHub: counter publik + fallback lokal) ===================== */
@@ -4097,6 +4166,455 @@ function stopRunner(){
   cancelAnimationFrame(runnerLoop);
   document.onkeydown = null;
   runnerCtx = null;
+}
+
+/* ===================== MODUL 23: TEMBAK-TEMBAKAN RUANG ANGKASA (4 arah, reward P/B/K, 5 level & BOS) ===================== */
+const SPACE_SHIP_RADIUS = 14;
+const SPACE_BULLET_RADIUS = 4;
+const SPACE_MOVE_SPEED = 4.2; // kecepatan gerak per frame saat tombol arah ditahan
+const SPACE_BUFF_DURATION = 480; // ~8 detik di 60fps, untuk Perisai (P) dan Kecepatan (K)
+const SPACE_PLAY_TOP = 0.32; // batas atas area gerak pesawat (rasio tinggi kanvas)
+const SPACE_KILLS_PER_LEVEL = 15;
+const SPACE_ENEMY_TYPES = {
+  scout:   { emoji:'👾', hp:1, speed:1.0, points:10, radius:13 },
+  tank:    { emoji:'👽', hp:3, speed:0.6, points:30, radius:15 },
+  zigzag:  { emoji:'🦂', hp:1, speed:1.3, points:15, radius:12, erratic:true },
+  shooter: { emoji:'🛸', hp:2, speed:0.8, points:20, radius:14, shoots:true }
+};
+const SPACE_POWERUP_TYPES = {
+  P: { color:'#4fa9c9', name:'Perisai' },
+  B: { color:'#e0664f', name:'Bom' },
+  K: { color:'#f0d77b', name:'Kecepatan' }
+};
+let spaceCtx, spaceCanvas, spaceLoop, spaceSessionId=0;
+let spaceShipX, spaceShipY, spaceShipTargetX, spaceShipTargetY, spaceLives, spaceScore, spaceGameOver;
+let spaceBullets, spaceEnemyBullets, spaceEnemies, spaceParticles, spaceStars, spacePowerups;
+let spaceEnemySpeedMult, spaceNextSpawnIn, spaceFireCooldown, spaceFrame;
+let spaceMoveDir, spaceDragging;
+let spaceShieldTimer, spaceSpeedBoostTimer, spaceBombFlash;
+let spaceLevel, spaceEnemiesDefeatedThisLevel, spaceBoss, spaceIsBossLevel;
+function spaceGetHighScore(){
+  try{ return parseInt(localStorage.getItem('space_highscore')||'0'); } catch(e){ return 0; }
+}
+function spaceSetHighScore(v){
+  try{ localStorage.setItem('space_highscore', String(v)); } catch(e){}
+}
+function startSpace(){
+  spaceSessionId++;
+  const session = spaceSessionId;
+  goTo('game-space');
+  spaceCanvas = document.getElementById('spaceCanvas');
+  spaceCtx = spaceCanvas.getContext('2d');
+  spaceCtx.textAlign='center'; spaceCtx.textBaseline='middle';
+  spaceShipX = spaceCanvas.width/2; spaceShipTargetX = spaceShipX;
+  spaceShipY = spaceCanvas.height-46; spaceShipTargetY = spaceShipY;
+  spaceLives = 3; spaceScore = 0; spaceGameOver = false;
+  spaceBullets = []; spaceEnemyBullets = []; spaceEnemies = []; spaceParticles = []; spacePowerups = [];
+  spaceEnemySpeedMult = 1; spaceNextSpawnIn = 50; spaceFireCooldown = 0; spaceFrame = 0;
+  spaceMoveDir = {x:0, y:0}; spaceDragging = false;
+  spaceShieldTimer = 0; spaceSpeedBoostTimer = 0; spaceBombFlash = 0;
+  spaceLevel = 1; spaceEnemiesDefeatedThisLevel = 0; spaceBoss = null; spaceIsBossLevel = false;
+  spaceStars = Array.from({length:40}, ()=>({
+    x: Math.random()*spaceCanvas.width, y: Math.random()*spaceCanvas.height,
+    speed: 0.5+Math.random()*2, size: 1+Math.random()*1.5
+  }));
+  document.getElementById('spaceScoreText').textContent = 'Skor: 0';
+  document.getElementById('spaceLivesText').textContent = '❤️❤️❤️';
+  document.getElementById('spaceBestText').textContent = 'Terbaik: '+spaceGetHighScore();
+  document.getElementById('spaceLevelLabel').textContent = 'Level 1';
+  document.getElementById('spacePowerupRow').style.display='none';
+  document.getElementById('spaceBossHpRow').style.display='none';
+
+  // --- Kontrol tombol arah: TAHAN untuk gerak terus-menerus (lebih lincah, sesuai lama tekan) ---
+  function bindHold(id, dx, dy){
+    const btn = document.getElementById(id);
+    const start = (e)=>{ e.preventDefault(); spaceMoveDir.x=dx; spaceMoveDir.y=dy; };
+    const end = (e)=>{ if(spaceMoveDir.x===dx && spaceMoveDir.y===dy){ spaceMoveDir.x=0; spaceMoveDir.y=0; } };
+    btn.onmousedown = start; btn.onmouseup = end; btn.onmouseleave = end;
+    btn.ontouchstart = start; btn.ontouchend = end;
+  }
+  bindHold('spaceLeftBtn', -1, 0);
+  bindHold('spaceRightBtn', 1, 0);
+  bindHold('spaceUpBtn', 0, -1);
+  bindHold('spaceDownBtn', 0, 1);
+
+  // --- Seret langsung di kanvas: posisi pesawat mengikuti jari/cursor persis (paling sensitif) ---
+  function pointerPos(e){
+    const rect = spaceCanvas.getBoundingClientRect();
+    const cx = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    const cy = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+    return { x: cx*(spaceCanvas.width/rect.width), y: cy*(spaceCanvas.height/rect.height) };
+  }
+  function dragStart(e){ spaceDragging=true; dragMove(e); }
+  function dragMove(e){
+    if(!spaceDragging) return;
+    e.preventDefault();
+    const p = pointerPos(e);
+    spaceShipTargetX = p.x; spaceShipTargetY = p.y;
+  }
+  function dragEnd(){ spaceDragging=false; }
+  spaceCanvas.onmousedown = dragStart;
+  spaceCanvas.onmousemove = dragMove;
+  spaceCanvas.onmouseup = dragEnd;
+  spaceCanvas.onmouseleave = dragEnd;
+  spaceCanvas.ontouchstart = dragStart;
+  spaceCanvas.ontouchmove = dragMove;
+  spaceCanvas.ontouchend = dragEnd;
+
+  document.onkeydown = (e)=>{
+    if(e.key==='ArrowLeft') spaceMoveDir.x=-1;
+    if(e.key==='ArrowRight') spaceMoveDir.x=1;
+    if(e.key==='ArrowUp') spaceMoveDir.y=-1;
+    if(e.key==='ArrowDown') spaceMoveDir.y=1;
+  };
+  document.onkeyup = (e)=>{
+    if(e.key==='ArrowLeft'||e.key==='ArrowRight') spaceMoveDir.x=0;
+    if(e.key==='ArrowUp'||e.key==='ArrowDown') spaceMoveDir.y=0;
+  };
+  spaceLoopFn(session);
+}
+function spaceClampShipTarget(){
+  const minY = spaceCanvas.height*SPACE_PLAY_TOP;
+  spaceShipTargetX = Math.max(SPACE_SHIP_RADIUS, Math.min(spaceCanvas.width-SPACE_SHIP_RADIUS, spaceShipTargetX));
+  spaceShipTargetY = Math.max(minY, Math.min(spaceCanvas.height-SPACE_SHIP_RADIUS-4, spaceShipTargetY));
+}
+function spacePickEnemyType(){
+  // Level lebih tinggi -> makin sering musuh yang lebih sulit muncul, terutama yang bisa menembak balik
+  const roll = Math.random();
+  const shooterChance = Math.min(0.45, 0.15 + spaceLevel*0.015);
+  if(spaceLevel>=3 && roll<shooterChance) return 'shooter';
+  if(spaceLevel>=2 && roll<shooterChance+0.17) return 'zigzag';
+  if(spaceLevel>=2 && roll<shooterChance+0.35) return 'tank';
+  return 'scout';
+}
+function spaceSpawnEnemy(){
+  const typeKey = spacePickEnemyType();
+  const type = SPACE_ENEMY_TYPES[typeKey];
+  const x = type.radius + Math.random()*(spaceCanvas.width-type.radius*2);
+  const bonusHp = Math.floor(spaceLevel/5); // tiap kelipatan 5 level, semua musuh dapat tambahan HP dasar
+  spaceEnemies.push({
+    type: typeKey, x, y:-20, hp: type.hp+bonusHp, maxHp: type.hp+bonusHp,
+    vy: type.speed*spaceEnemySpeedMult + Math.random()*0.4,
+    vx: type.erratic ? (Math.random()<0.5?-1.6:1.6) : (Math.random()-0.5)*0.8,
+    shootCooldown: 60+Math.random()*60
+  });
+}
+function spaceSpawnPowerup(){
+  const keys = Object.keys(SPACE_POWERUP_TYPES);
+  const letter = keys[Math.floor(Math.random()*keys.length)];
+  spacePowerups.push({ x: 20+Math.random()*(spaceCanvas.width-40), y:-20, vy: 1.3, letter });
+}
+// Setiap musuh (atau korban bom) yang kalah dihitung lewat fungsi ini supaya logikanya konsisten
+// di mana pun pemicunya — termasuk memeriksa apakah sudah waktunya memunculkan BOS level ini.
+function spaceOnEnemyKilled(en){
+  const type = SPACE_ENEMY_TYPES[en.type];
+  spaceScore += type.points;
+  spaceEnemiesDefeatedThisLevel++;
+  document.getElementById('spaceScoreText').textContent = 'Skor: '+spaceScore;
+  if(!spaceIsBossLevel && spaceEnemiesDefeatedThisLevel>=SPACE_KILLS_PER_LEVEL){
+    spaceStartBossLevel();
+  }
+}
+function spaceStartBossLevel(){
+  spaceIsBossLevel = true;
+  spaceEnemies = []; // bersihkan musuh biasa yang tersisa, fokus ke BOS
+  const bossHp = 20 + spaceLevel*8;
+  spaceBoss = { x: spaceCanvas.width/2, y: 60, hp: bossHp, maxHp: bossHp, vx: 1.2+spaceLevel*0.15, shootCooldown: 70 };
+  document.getElementById('spaceBossLabel').textContent = `👹 BOS Level ${spaceLevel}`;
+  document.getElementById('spaceBossHpRow').style.display='block';
+  spaceUpdateBossHpBar();
+}
+function spaceUpdateBossHpBar(){
+  if(!spaceBoss) return;
+  const pct = Math.max(0, (spaceBoss.hp/spaceBoss.maxHp)*100);
+  document.getElementById('spaceBossHpBar').style.width = pct+'%';
+}
+// BOS menembak dengan jumlah arah = level+2 (Level1=3 arah, Level2=4 arah, dst), tersebar merata di depannya.
+function spaceBossShoot(){
+  const count = Math.min(spaceLevel+2, 12); // dibatasi maksimal 12 agar tetap masuk akal secara visual di level sangat tinggi
+  const spread = Math.min(70 + (count-3)*4, 140);
+  for(let i=0;i<count;i++){
+    const t = count===1 ? 0.5 : i/(count-1);
+    const offsetX = -spread/2 + t*spread;
+    spaceEnemyBullets.push({ x: spaceBoss.x+offsetX, y: spaceBoss.y+24 });
+  }
+}
+function spaceAdvanceLevel(){
+  spaceLevel++;
+  document.getElementById('spaceLevelLabel').textContent = 'Level '+spaceLevel;
+  spaceEnemiesDefeatedThisLevel = 0;
+  spaceEnemySpeedMult = Math.min(3.0, 1 + (spaceLevel-1)*0.22); // dibatasi masuk akal, tetap makin cepat tapi tidak mustahil
+  spaceIsBossLevel = false;
+  document.getElementById('spaceBossHpRow').style.display='none';
+}
+function spaceTriggerBomb(){
+  // Ledakan api langsung menghancurkan SEMUA musuh biasa yang ada di layar
+  spaceEnemies.forEach(en=>{
+    spaceBurst(en.x, en.y, '#ff6a00', 14);
+    spaceBurst(en.x, en.y, '#ffcf4d', 8);
+    spaceOnEnemyKilled(en);
+  });
+  spaceEnemies = [];
+  spaceEnemyBullets = []; // bom juga menyapu bersih peluru musuh yang sedang melayang
+  if(spaceBoss){
+    spaceBoss.hp -= 5;
+    spaceBurst(spaceBoss.x, spaceBoss.y, '#ff6a00', 24);
+    spaceUpdateBossHpBar();
+    if(spaceBoss.hp<=0){
+      spaceBurst(spaceBoss.x, spaceBoss.y, '#f0d77b', 40);
+      spaceScore += 200;
+      document.getElementById('spaceScoreText').textContent = 'Skor: '+spaceScore;
+      spaceBoss = null;
+      document.getElementById('spaceBossHpRow').style.display='none';
+      spaceAdvanceLevel();
+    }
+  }
+  spaceBombFlash = 12;
+}
+function spaceActivatePowerup(letter, x, y){
+  spaceBurst(x, y, SPACE_POWERUP_TYPES[letter].color, 18);
+  if(letter==='P'){ spaceShieldTimer = SPACE_BUFF_DURATION; }
+  else if(letter==='K'){ spaceSpeedBoostTimer = SPACE_BUFF_DURATION; }
+  else if(letter==='B'){ spaceTriggerBomb(); }
+  spaceUpdatePowerupIndicator();
+}
+function spaceUpdatePowerupIndicator(){
+  const parts = [];
+  if(spaceShieldTimer>0) parts.push('🔵 Perisai Aktif!');
+  if(spaceSpeedBoostTimer>0) parts.push('🟡 Peluru Super Cepat!');
+  const row = document.getElementById('spacePowerupRow');
+  if(parts.length>0){ row.style.display='block'; row.textContent = parts.join('  '); }
+  else { row.style.display='none'; }
+}
+function spaceBurst(x,y,color,count){
+  for(let i=0;i<count;i++){
+    const angle = Math.random()*Math.PI*2;
+    const speed = 1+Math.random()*3;
+    spaceParticles.push({
+      x, y, vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed,
+      r: 2+Math.random()*2.5, color, life:0, maxLife: 18+Math.random()*14
+    });
+  }
+}
+function spaceCircleCollide(x1,y1,r1, x2,y2,r2){
+  const dx=x1-x2, dy=y1-y2;
+  return (dx*dx+dy*dy) < (r1+r2)*(r1+r2);
+}
+function spaceLoseLife(session){
+  if(spaceShieldTimer>0) return false; // kebal selama Perisai aktif
+  spaceLives--;
+  document.getElementById('spaceLivesText').textContent = '❤️'.repeat(Math.max(spaceLives,0)) + '🖤'.repeat(3-Math.max(spaceLives,0));
+  if(spaceLives<=0){ spaceEndGame(session); return true; }
+  return false;
+}
+function spaceLoopFn(session){
+  if(session!==spaceSessionId) return;
+  if(!spaceCtx) return;
+  const ctx = spaceCtx, w = spaceCanvas.width, h = spaceCanvas.height;
+  spaceFrame++;
+
+  if(!spaceGameOver){
+    if(spaceMoveDir.x!==0 || spaceMoveDir.y!==0){
+      spaceShipTargetX += spaceMoveDir.x*SPACE_MOVE_SPEED;
+      spaceShipTargetY += spaceMoveDir.y*SPACE_MOVE_SPEED;
+    }
+    spaceClampShipTarget();
+    spaceShipX += (spaceShipTargetX - spaceShipX) * 0.35;
+    spaceShipY += (spaceShipTargetY - spaceShipY) * 0.35;
+
+    if(spaceShieldTimer>0){ spaceShieldTimer--; if(spaceShieldTimer<=0) spaceUpdatePowerupIndicator(); }
+    if(spaceSpeedBoostTimer>0){ spaceSpeedBoostTimer--; if(spaceSpeedBoostTimer<=0) spaceUpdatePowerupIndicator(); }
+    if(spaceBombFlash>0) spaceBombFlash--;
+
+    spaceFireCooldown--;
+    if(spaceFireCooldown<=0){
+      spaceBullets.push({ x: spaceShipX, y: spaceShipY-18, fast: spaceSpeedBoostTimer>0 });
+      spaceFireCooldown = 16;
+    }
+    const bulletSpeed = 7;
+    spaceBullets.forEach(b=> b.y -= (b.fast ? bulletSpeed*3 : bulletSpeed));
+    spaceBullets = spaceBullets.filter(b=> b.y > -10);
+    spaceEnemyBullets.forEach(b=> b.y += 4.5);
+    spaceEnemyBullets = spaceEnemyBullets.filter(b=> b.y < h+10);
+
+    if(!spaceIsBossLevel){
+      spaceNextSpawnIn--;
+      if(spaceNextSpawnIn<=0){
+        spaceSpawnEnemy();
+        spaceNextSpawnIn = Math.max(18, 55 - spaceLevel*4) + Math.random()*20;
+      }
+    }
+    if(spaceFrame%420===0){ spaceSpawnPowerup(); }
+
+    spaceEnemies.forEach(en=>{
+      en.y += en.vy;
+      en.x += en.vx;
+      if(en.x<SPACE_ENEMY_TYPES[en.type].radius || en.x>w-SPACE_ENEMY_TYPES[en.type].radius) en.vx*=-1;
+      if(SPACE_ENEMY_TYPES[en.type].shoots){
+        en.shootCooldown--;
+        if(en.shootCooldown<=0 && en.y>0 && en.y<h*0.7){
+          spaceEnemyBullets.push({ x:en.x, y:en.y+10 });
+          en.shootCooldown = 90+Math.random()*60;
+        }
+      }
+    });
+    spaceEnemies = spaceEnemies.filter(en=> en.y < h+30);
+    spacePowerups.forEach(p=> p.y += p.vy);
+    spacePowerups = spacePowerups.filter(p=> p.y < h+20);
+
+    // peluru pemain vs musuh biasa
+    for(let i=spaceBullets.length-1;i>=0;i--){
+      const b = spaceBullets[i];
+      let bulletUsed=false;
+      for(let j=spaceEnemies.length-1;j>=0;j--){
+        const en = spaceEnemies[j];
+        const enType = SPACE_ENEMY_TYPES[en.type];
+        if(spaceCircleCollide(b.x,b.y,SPACE_BULLET_RADIUS, en.x,en.y,enType.radius)){
+          en.hp--;
+          spaceBurst(en.x, en.y, '#d4a857', en.hp<=0?10:4);
+          if(en.hp<=0){
+            spaceEnemies.splice(j,1);
+            spaceOnEnemyKilled(en);
+          }
+          spaceBullets.splice(i,1);
+          bulletUsed = true;
+          break;
+        }
+      }
+      if(bulletUsed) continue;
+      // peluru vs BOS
+      if(spaceBoss && spaceCircleCollide(b.x,b.y,SPACE_BULLET_RADIUS, spaceBoss.x, spaceBoss.y, 30)){
+        spaceBoss.hp--;
+        spaceBurst(spaceBoss.x, spaceBoss.y, '#e0664f', 4);
+        spaceUpdateBossHpBar();
+        spaceBullets.splice(i,1);
+        if(spaceBoss.hp<=0){
+          spaceBurst(spaceBoss.x, spaceBoss.y, '#f0d77b', 40);
+          spaceScore += 200;
+          document.getElementById('spaceScoreText').textContent = 'Skor: '+spaceScore;
+          spaceBoss = null;
+          document.getElementById('spaceBossHpRow').style.display='none';
+          spaceAdvanceLevel();
+        }
+        continue;
+      }
+      // peluru vs reward huruf (P/B/K)
+      for(let k=spacePowerups.length-1;k>=0;k--){
+        const p = spacePowerups[k];
+        if(spaceCircleCollide(b.x,b.y,SPACE_BULLET_RADIUS, p.x,p.y,14)){
+          spacePowerups.splice(k,1);
+          spaceBullets.splice(i,1);
+          spaceActivatePowerup(p.letter, p.x, p.y);
+          break;
+        }
+      }
+    }
+
+    // musuh / peluru musuh / BOS vs pesawat
+    for(let j=spaceEnemies.length-1;j>=0;j--){
+      const en = spaceEnemies[j];
+      const enType = SPACE_ENEMY_TYPES[en.type];
+      if(spaceCircleCollide(spaceShipX, spaceShipY, SPACE_SHIP_RADIUS, en.x, en.y, enType.radius)){
+        spaceBurst(en.x, en.y, '#e0664f', 16);
+        spaceEnemies.splice(j,1);
+        if(spaceLoseLife(session)) return;
+      }
+    }
+    for(let i=spaceEnemyBullets.length-1;i>=0;i--){
+      const eb = spaceEnemyBullets[i];
+      if(spaceCircleCollide(spaceShipX, spaceShipY, SPACE_SHIP_RADIUS, eb.x, eb.y, 5)){
+        spaceEnemyBullets.splice(i,1);
+        spaceBurst(eb.x, eb.y, '#e0664f', 10);
+        if(spaceLoseLife(session)) return;
+      }
+    }
+    if(spaceBoss){
+      spaceBoss.x += spaceBoss.vx;
+      if(spaceBoss.x<40||spaceBoss.x>w-40) spaceBoss.vx*=-1;
+      spaceBoss.shootCooldown--;
+      if(spaceBoss.shootCooldown<=0){
+        spaceBossShoot();
+        spaceBoss.shootCooldown = Math.max(40, 80 - spaceLevel*5);
+      }
+      if(spaceCircleCollide(spaceShipX, spaceShipY, SPACE_SHIP_RADIUS, spaceBoss.x, spaceBoss.y, 30)){
+        if(spaceLoseLife(session)) return;
+      }
+    }
+  }
+
+  // === Render ===
+  ctx.fillStyle = '#050a1a';
+  ctx.fillRect(0,0,w,h);
+  spaceStars.forEach(s=>{
+    if(!spaceGameOver) s.y += s.speed;
+    if(s.y>h){ s.y=-2; s.x=Math.random()*w; }
+    ctx.fillStyle = 'rgba(212,168,87,0.6)';
+    ctx.fillRect(s.x, s.y, s.size, s.size);
+  });
+
+  ctx.font='24px serif';
+  spaceEnemies.forEach(en=>{ ctx.fillText(SPACE_ENEMY_TYPES[en.type].emoji, en.x, en.y); });
+  spacePowerups.forEach(p=>{
+    const info = SPACE_POWERUP_TYPES[p.letter];
+    ctx.beginPath(); ctx.arc(p.x,p.y,14,0,Math.PI*2);
+    ctx.fillStyle = info.color; ctx.fill();
+    ctx.fillStyle = '#0a2a2b'; ctx.font='bold 16px sans-serif';
+    ctx.fillText(p.letter, p.x, p.y+1);
+    ctx.font='24px serif';
+  });
+  if(spaceBoss){ ctx.font='52px serif'; ctx.fillText('👹', spaceBoss.x, spaceBoss.y); ctx.font='24px serif'; }
+
+  spaceBullets.forEach(b=>{
+    ctx.fillStyle = b.fast ? '#f0d77b' : '#d4a857';
+    ctx.beginPath(); ctx.arc(b.x,b.y, b.fast?6:SPACE_BULLET_RADIUS, 0,Math.PI*2); ctx.fill();
+  });
+  ctx.fillStyle = '#e0664f';
+  spaceEnemyBullets.forEach(b=>{ ctx.beginPath(); ctx.arc(b.x,b.y,5,0,Math.PI*2); ctx.fill(); });
+
+  for(let i=spaceParticles.length-1;i>=0;i--){
+    const p = spaceParticles[i];
+    p.life++;
+    if(p.life>p.maxLife){ spaceParticles.splice(i,1); continue; }
+    p.x+=p.vx; p.y+=p.vy;
+    ctx.globalAlpha = Math.max(0, 1-p.life/p.maxLife);
+    ctx.fillStyle = p.color;
+    ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+
+  // Cincin Perisai di sekitar pesawat saat aktif
+  if(spaceShieldTimer>0){
+    ctx.strokeStyle = 'rgba(79,169,201,0.8)';
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(spaceShipX, spaceShipY, SPACE_SHIP_RADIUS+6, 0, Math.PI*2); ctx.stroke();
+  }
+  ctx.font='30px serif';
+  ctx.fillText('🚀', spaceShipX, spaceShipY);
+
+  if(spaceBombFlash>0){
+    ctx.globalAlpha = (spaceBombFlash/12)*0.35;
+    ctx.fillStyle = '#ff6a00';
+    ctx.fillRect(0,0,w,h);
+    ctx.globalAlpha = 1;
+  }
+
+  spaceLoop = requestAnimationFrame(()=>spaceLoopFn(session));
+}
+function spaceEndGame(session){
+  if(session!==spaceSessionId) return;
+  spaceGameOver = true;
+  const best = spaceGetHighScore();
+  const isNewBest = spaceScore > best;
+  if(isNewBest) spaceSetHighScore(spaceScore);
+  document.getElementById('spaceBestText').textContent = 'Terbaik: '+(isNewBest?spaceScore:best);
+  showResult('resultBannerSpace', true, `Pertempuranmu berakhir di <strong>Level ${spaceLevel}</strong> dengan skor <strong>${spaceScore}</strong>! ${isNewBest?'🎉 Itu rekor TERBAIKmu yang baru!':'Skor terbaikmu masih '+best+' — ayo coba pecahkan lagi!'}`);
+  goTo('result-space');
+}
+function stopSpace(){
+  cancelAnimationFrame(spaceLoop);
+  document.onkeydown = null;
+  document.onkeyup = null;
+  spaceCtx = null;
 }
 
 /* ===================== INIT ===================== */

@@ -1518,8 +1518,9 @@ function drawBirdLoop(){
     const b = birds[i];
     b.x += b.vx;
     if(b.x > birdCanvas.width-20 || now-b.born > b.life){ birds.splice(i,1); continue; }
+    birdCtx.textAlign='center'; birdCtx.textBaseline='middle';
     birdCtx.font = (b.r*2)+'px serif';
-    birdCtx.fillText('🐦', b.x-b.r, b.y+b.r);
+    birdCtx.fillText('🐦', b.x, b.y);
   }
   for(let i=particles.length-1;i>=0;i--){
     const p = particles[i];
@@ -4009,9 +4010,15 @@ function startRunner(){
   document.getElementById('runnerBestText').textContent = 'Terbaik: '+runnerGetHighScore();
   const jumpBtn = document.getElementById('runnerJumpBtn');
   jumpBtn.disabled=false;
-  jumpBtn.onclick = runnerJump;
+  // Pakai touchstart/mousedown (bereaksi saat jari MENYENTUH), bukan 'click' biasa yang baru bereaksi
+  // setelah jari diangkat/dilepas — supaya respon lompat secepat mungkin, krusial untuk game refleks ini.
+  function bindInstantJump(el){
+    el.onmousedown = (e)=>{ e.preventDefault(); runnerJump(); };
+    el.ontouchstart = (e)=>{ e.preventDefault(); runnerJump(); };
+  }
+  bindInstantJump(jumpBtn);
+  bindInstantJump(runnerCanvas);
   document.onkeydown = (e)=>{ if(e.code==='Space'){ e.preventDefault(); runnerJump(); } };
-  runnerCanvas.onclick = runnerJump;
   runnerLoopFn(session);
 }
 function runnerJump(){
@@ -4136,10 +4143,14 @@ function runnerLoopFn(session){
   }
   ctx.globalAlpha = 1;
 
-  // karakter (emoji, posisi tengah presisi)
+  // karakter (emoji, posisi tengah presisi, dibalik horizontal supaya menghadap arah lari/maju)
   ctx.textAlign='center'; ctx.textBaseline='middle';
   ctx.font='30px serif';
-  ctx.fillText('🏃', RUNNER_PLAYER_X, runnerY);
+  ctx.save();
+  ctx.translate(RUNNER_PLAYER_X, runnerY);
+  ctx.scale(-1,1); // emoji 🏃 secara default menghadap kiri, dibalik agar menghadap kanan (arah maju)
+  ctx.fillText('🏃', 0, 0);
+  ctx.restore();
 
   // kilatan milestone
   if(runnerLastMilestone>0 && runnerScore - runnerLastMilestone*100 < 8){
@@ -4589,7 +4600,11 @@ function spaceLoopFn(session){
     ctx.beginPath(); ctx.arc(spaceShipX, spaceShipY, SPACE_SHIP_RADIUS+6, 0, Math.PI*2); ctx.stroke();
   }
   ctx.font='30px serif';
-  ctx.fillText('🚀', spaceShipX, spaceShipY);
+  ctx.save();
+  ctx.translate(spaceShipX, spaceShipY);
+  ctx.rotate(-Math.PI/4); // emoji 🚀 secara default mengarah diagonal, diputar agar lurus menghadap ke atas
+  ctx.fillText('🚀', 0, 0);
+  ctx.restore();
 
   if(spaceBombFlash>0){
     ctx.globalAlpha = (spaceBombFlash/12)*0.35;

@@ -779,15 +779,17 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
         <li><strong>Mudah:</strong> 15 soal calistung dasar — penjumlahan, pengurangan, perkalian, pembagian sederhana. Tanpa waktu.</li>
         <li><strong>Sulit:</strong> 15 soal deret pola, hitungan calistung tingkat sedang-sulit, dan logika berpikir. Tanpa waktu.</li>
         <li><strong>Sangat Sulit:</strong> 15 soal cerita setingkat SMA/kuliah (aljabar, trigonometri, peluang, turunan, dll). Ada <strong>batas waktu di setiap soal</strong>, makin sulit soalnya makin lama waktunya.</li>
+        <li><strong>🏆 Ahli Berhitung:</strong> tantangan gabungan — <strong>30 soal setingkat SMP</strong> berupa calistung, deret angka (termasuk gaya soal psikotes), dan soal cerita logika (SPLDV, perbandingan, bangun ruang, dll), dengan komposisi <strong>10% Mudah (3 soal), 20% Sulit (6 soal), 70% Sangat Sulit (21 soal)</strong> — dengan <strong>batas waktu total 40 menit</strong> untuk semuanya.</li>
         <li>Setelah menjawab, akan muncul <strong>kunci jawaban dan cara penyelesaian detail</strong> — untuk soal Sangat Sulit juga disertai info jenjang (SMA/Kuliah) dan perkiraan era soal serupa.</li>
         <li>Setiap kali masuk kembali ke permainan ini, soal akan otomatis <strong>diacak ulang dan berbeda</strong> dari sebelumnya.</li>
-        <li><strong>Tantangan:</strong> jawab benar minimal 11 dari 15 untuk jadi "Jagoan Logika"!</li>
+        <li><strong>Tantangan:</strong> jawab benar minimal 11 dari 15 (atau 22 dari 30 untuk Ahli Berhitung) untuk jadi "Jagoan Logika"!</li>
       </ul>
     </div>
     <div class="btn-row" style="justify-content:center;">
       <button class="btn" onclick="startMath('mudah')">Mudah (Calistung)</button>
       <button class="btn" onclick="startMath('sulit')">Sulit (Pola &amp; Logika)</button>
       <button class="btn" onclick="startMath('sangat_sulit')">Sangat Sulit (SMA/Kuliah)</button>
+      <button class="btn" onclick="startMath('ahli')">🏆 Ahli Berhitung (30 Soal/40 Menit)</button>
     </div>
   </section>
 
@@ -870,6 +872,7 @@ footer{margin-top:30px; font-size:11px; color:rgba(250,243,226,0.5); text-align:
         <li>Setiap ronde, ada <strong>3 ikan tersembunyi</strong> di laut: 🐟 Kecil, 🐠 Sedang, dan 🐡 Besar — masing-masing berada di kedalaman acak yang berbeda dan <strong>tidak terlihat di awal</strong>.</li>
         <li>Gunakan garis ukuran (penggaris) di samping, geser slider untuk membidik kedalaman yang kamu rasa tepat, lalu klik <strong>"Lempar Pancing!"</strong>.</li>
         <li>Begitu pancing dilempar, <strong>ketiga ikan langsung terlihat sekaligus</strong> di posisi sebenarnya — ikan mana pun yang posisinya <strong>paling dekat</strong> dengan titik pancingmu, itulah yang tertangkap!</li>
+        <li><strong>Tapi hati-hati!</strong> Kalau jarak titik pancingmu ke ikan terdekat sekalipun lebih dari <strong>4 meter</strong>, kamu tidak akan dapat ikan apa-apa di ronde itu — jadi bidik sedekat mungkin!</li>
         <li>Jadi kamu tidak hanya menebak satu ikan, tapi memilih posisi terbaik di antara 3 kemungkinan ikan kecil/sedang/besar.</li>
         <li>Berat ikan ditampilkan dalam satuan <strong>ons/kg</strong>, dan akan diakumulasikan dari <strong>5 ronde</strong> pancinganmu.</li>
         <li><strong>Tantangan:</strong> kumpulkan total berat 7 kg atau lebih untuk jadi "Master Pemancing"!</li>
@@ -1378,6 +1381,7 @@ function goTo(id){
   stopCar(); // pastikan loop mobil rintangan berhenti
   stopMatchTimer(); // pastikan timer cari kotak sama berhenti
   stopMathTimer(); // pastikan timer logika berhitung (tingkat Sangat Sulit) berhenti
+  stopMathTotalTimer(); // pastikan timer total 40 menit (Ahli Berhitung) berhenti
   stopSambungTimer(); // pastikan timer sambung kata beruntun berhenti
   stopOthello(); // pastikan timer "AI berpikir" Othello berhenti
   stopConnect4(); // pastikan timer "AI berpikir" Susun 4 berhenti
@@ -2268,7 +2272,7 @@ function buildMathQuestions(level){
       {q:'Lanjutkan pola: 7, 14, 28, 56, ?', opts:[112,98,84,120], correct:112, exp:'Pola dikali 2 setiap suku: 56 × 2 = 112.'},
       {q:'Sebuah kelas memiliki rasio siswa laki-laki:perempuan = 3:5. Jika total siswa 32, berapa siswa laki-laki?', opts:[12,15,10,18], correct:12, exp:'Total bagian = 3+5 = 8. Laki-laki = 3/8 × 32 = 12.'}
     ];
-  } else {
+  } else if(level==='sangat_sulit'){
     // Sangat Sulit: soal cerita setingkat SMA/kuliah, dengan batas waktu, penjelasan, jenjang & perkiraan era
     return [
       {q:'Akar-akar persamaan x² − 5x + 6 = 0 adalah p dan q. Berapa hasil kali p × q?', opts:[6,5,-6,-5], correct:6, time:25, exp:'Untuk ax²+bx+c=0, hasil kali akar = c/a = 6/1 = 6.', jenjang:'SMA (Matematika Wajib/Peminatan)', era:'perkiraan sekitar 2015–2021 (gaya soal ilustratif, bukan soal asli)'},
@@ -2284,7 +2288,7 @@ function buildMathQuestions(level){
       {q:'Dua mobil bergerak berlawanan arah dari titik sama, masing-masing 60 km/jam dan 80 km/jam. Setelah 1,5 jam, berapa jarak antara keduanya?', opts:[210,200,220,190], correct:210, time:30, exp:'Jarak gabungan = (60+80)×1,5 = 140×1,5 = 210 km.', jenjang:'SMA (Soal Cerita Kecepatan)', era:'perkiraan sekitar 2014–2020 (ilustratif)'},
       {q:'Volume kubus dengan panjang sisi 5 cm adalah?', opts:[125,100,150,75], correct:125, time:18, exp:'V = s³ = 5³ = 125 cm³.', jenjang:'SMA (Geometri Ruang)', era:'perkiraan sekitar 2013–2018 (ilustratif)'},
       {q:'Sebuah investasi memberi keuntungan tetap Rp200.000 per bulan selama setahun. Berapa total keuntungan setahun?', opts:['Rp2.400.000','Rp2.000.000','Rp2.200.000','Rp2.600.000'], correct:'Rp2.400.000', time:22, exp:'200.000 × 12 bulan = 2.400.000.', jenjang:'Kuliah (Ekonomi/Akuntansi Dasar)', era:'perkiraan sekitar 2017–2022 (ilustratif)'},
-      {q:'Turunan dari f(x) = 3x² + 5x adalah f\u2019(x) = ?', opts:['6x + 5','3x + 5','6x','5x + 3'], correct:'6x + 5', time:30, exp:'Turunan tiap suku: d/dx(3x²)=6x, d/dx(5x)=5, jadi f\u2019(x)=6x+5.', jenjang:'Kuliah (Kalkulus I)', era:'perkiraan sekitar 2018–2023 (ilustratif)'},
+      {q:'Turunan dari f(x) = 3x² + 5x adalah f’(x) = ?', opts:['6x + 5','3x + 5','6x','5x + 3'], correct:'6x + 5', time:30, exp:'Turunan tiap suku: d/dx(3x²)=6x, d/dx(5x)=5, jadi f’(x)=6x+5.', jenjang:'Kuliah (Kalkulus I)', era:'perkiraan sekitar 2018–2023 (ilustratif)'},
       {q:'Kantong berisi 4 bola merah dan 6 bola biru. Berapa peluang terambil bola merah secara acak?', opts:['2/5','1/2','3/5','1/3'], correct:'2/5', time:25, exp:'Peluang = bola merah / total bola = 4/10 = 2/5.', jenjang:'SMA (Peluang Kelas XII)', era:'perkiraan sekitar 2015–2021 (ilustratif)'},
       {q:'Sebuah perusahaan memiliki biaya tetap Rp2.000.000 dan biaya variabel Rp5.000/unit. Harga jual Rp15.000/unit. Berapa unit minimal terjual agar mencapai titik impas (BEP)?', opts:[200,150,250,180], correct:200, time:35, exp:'BEP = biaya tetap ÷ (harga jual − biaya variabel) = 2.000.000 ÷ (15.000−5.000) = 2.000.000 ÷ 10.000 = 200 unit.', jenjang:'Kuliah (Ekonomi/Akuntansi Manajemen)', era:'perkiraan sekitar 2017–2023 (ilustratif)'},
       {q:'Dalam distribusi normal, sekitar berapa persen data berada dalam rentang ±1 standar deviasi dari rata-rata?', opts:['68%','95%','99%','50%'], correct:'68%', time:25, exp:'Aturan empiris 68-95-99,7%: ±1σ mencakup sekitar 68% data.', jenjang:'Kuliah (Statistika Dasar)', era:'perkiraan sekitar 2016–2022 (ilustratif)'},
@@ -2292,26 +2296,123 @@ function buildMathQuestions(level){
       {q:'Sebuah benda jatuh bebas dari ketinggian 80 m (g=10 m/s²). Berapa lama waktu sampai ke tanah?', opts:['4 detik','3 detik','5 detik','8 detik'], correct:'4 detik', time:30, exp:'h=½gt² → 80=½×10×t² → t²=16 → t=4 detik.', jenjang:'SMA (Fisika Kelas X — Gerak Jatuh Bebas)', era:'perkiraan sekitar 2014–2021 (ilustratif)'},
       {q:'Berapa nilai dari integral ∫₀² 2x dx?', opts:[4,2,8,6], correct:4, time:30, exp:'∫2x dx = x². Dihitung dari 0 sampai 2: 2² − 0² = 4.', jenjang:'Kuliah (Kalkulus I — Integral Dasar)', era:'perkiraan sekitar 2018–2023 (ilustratif)'}
     ];
+  } else if(level==='ahli'){
+    // Bank 40 soal campuran: calistung + deret angka + cerita logika, tingkat mudah s/d sangat sulit.
+    // Setiap soal diberi label `diff` agar pengambilan 30 soal per sesi bisa mengikuti BOBOT:
+    // Mudah 10% (3 soal), Sulit 20% (6 soal), Sangat Sulit 70% (21 soal) — lihat startMath().
+    return [
+      // --- MUDAH (6 soal: calistung dasar) ---
+      {q:'14 + 27 = ?', opts:[41,40,42,39], correct:41, exp:'14 + 27 = 41. Caranya: 14 + 30 = 44, lalu kurangi 3 → 41.', diff:'mudah'},
+      {q:'63 − 28 = ?', opts:[35,34,36,33], correct:35, exp:'63 − 28 = 35. Caranya: 63 − 30 = 33, lalu tambah 2 → 35.', diff:'mudah'},
+      {q:'7 × 6 = ?', opts:[42,36,48,40], correct:42, exp:'7 × 6 = 42 (hafalan perkalian dasar).', diff:'mudah'},
+      {q:'81 ÷ 9 = ?', opts:[9,8,10,7], correct:9, exp:'81 ÷ 9 = 9, karena 9 × 9 = 81.', diff:'mudah'},
+      {q:'Siti punya Rp30.000, membeli buku Rp12.500. Berapa sisa uangnya?', opts:[17500,18500,17000,16500], correct:17500, exp:'30.000 − 12.500 = 17.500.', diff:'mudah'},
+      {q:'2 kotak pensil masing-masing berisi 12 pensil. Berapa pensil semuanya?', opts:[24,22,26,20], correct:24, exp:'2 × 12 = 24 pensil.', diff:'mudah'},
+      // --- SULIT (10 soal: deret angka & cerita logika sedang) ---
+      {q:'Lanjutkan pola: 3, 6, 9, 12, ?', opts:[15,14,16,18], correct:15, exp:'Pola ditambah 3 setiap suku: 12 + 3 = 15.', diff:'sulit'},
+      {q:'Lanjutkan pola: 2, 4, 8, 16, ?', opts:[32,24,30,28], correct:32, exp:'Pola dikali 2 setiap suku: 16 × 2 = 32.', diff:'sulit'},
+      {q:'Lanjutkan pola: 50, 45, 40, 35, ?', opts:[30,32,28,25], correct:30, exp:'Pola dikurangi 5 setiap suku: 35 − 5 = 30.', diff:'sulit'},
+      {q:'Dalam sebuah kelas, 3/5 siswa adalah perempuan. Jika total siswa 30, berapa siswa perempuan?', opts:[18,15,20,12], correct:18, exp:'3/5 × 30 = 18 siswa perempuan.', diff:'sulit'},
+      {q:'Sebuah kereta menempuh 240 km dalam 4 jam. Berapa kecepatan rata-ratanya?', opts:['60 km/jam','50 km/jam','70 km/jam','55 km/jam'], correct:'60 km/jam', time:25, exp:'Kecepatan = jarak ÷ waktu = 240 ÷ 4 = 60 km/jam.', diff:'sulit'},
+      {q:'Harga sebuah tas Rp200.000 naik 15%. Berapa harga barunya?', opts:[230000,220000,225000,215000], correct:230000, time:25, exp:'Kenaikan = 15% × 200.000 = 30.000. Harga baru = 200.000 + 30.000 = 230.000.', diff:'sulit'},
+      {q:'Lanjutkan pola: 80, 40, 20, 10, ?', opts:[5,8,6,4], correct:5, time:20, exp:'Pola dibagi 2 setiap suku: 10 ÷ 2 = 5.', diff:'sulit'},
+      {q:'Jika 3x − 4 = 17, maka x = ?', opts:[7,6,8,5], correct:7, time:25, exp:'3x = 17+4 = 21, x = 21÷3 = 7.', diff:'sulit'},
+      {q:'Lanjutkan pola: 6, 11, 17, 24, 32, ?', opts:[41,40,39,42], correct:41, time:25, exp:'Selisih bertambah 1 setiap langkah: +5,+6,+7,+8,+9 → 32+9=41.', diff:'sulit'},
+      {q:'Jika x² = 196, dan x positif, maka x = ?', opts:[14,13,15,16], correct:14, time:22, exp:'√196 = 14, karena 14×14=196.', diff:'sulit'},
+      // --- SANGAT SULIT setingkat SMP (gaya psikotes/HOTS: SPLDV, perbandingan, bangun ruang, deret kompleks, dll) ---
+      {q:'Diketahui 2x + y = 14 dan x + y = 9. Berapa nilai x?', opts:[5,4,6,3], correct:5, time:28, exp:'Kurangkan kedua persamaan: (2x+y)−(x+y)=14−9 → x=5.', jenjang:'SMP (Sistem Persamaan Linear Dua Variabel)', diff:'sangat_sulit'},
+      {q:'8 pekerja dapat menyelesaikan suatu proyek dalam 15 hari. Jika pekerja ditambah menjadi 12 orang, berapa hari proyek selesai (anggap kecepatan kerja sama)?', opts:[10,12,9,11], correct:10, time:28, exp:'Perbandingan berbalik nilai: 8×15=120 (total hari-kerja). 120÷12=10 hari.', jenjang:'SMP (Perbandingan Berbalik Nilai)', diff:'sangat_sulit'},
+      {q:'Jarak dua kota pada peta berskala 1:500.000 adalah 4 cm. Berapa jarak sesungguhnya (km)?', opts:[20,18,22,25], correct:20, time:25, exp:'4×500.000=2.000.000 cm = 20 km.', jenjang:'SMP (Skala & Perbandingan)', diff:'sangat_sulit'},
+      {q:'Sebuah trapesium memiliki sisi sejajar 8 cm dan 14 cm, dengan tinggi 6 cm. Berapa luasnya?', opts:[66,60,72,84], correct:66, time:25, exp:'Luas trapesium = ½×(8+14)×6 = ½×22×6 = 66 cm².', jenjang:'SMP (Luas Bangun Datar)', diff:'sangat_sulit'},
+      {q:'Sebuah balok berukuran panjang 8 cm, lebar 5 cm, dan tinggi 4 cm. Berapa volumenya?', opts:[160,150,170,140], correct:160, time:22, exp:'Volume balok = p×l×t = 8×5×4 = 160 cm³.', jenjang:'SMP (Volume Bangun Ruang)', diff:'sangat_sulit'},
+      {q:'Sebuah tabung memiliki jari-jari 7 cm dan tinggi 10 cm (π=22/7). Berapa volumenya?', opts:[1540,1480,1600,1450], correct:1540, time:30, exp:'Volume tabung = π×r²×t = 22/7×49×10 = 1540 cm³.', jenjang:'SMP (Volume Bangun Ruang)', diff:'sangat_sulit'},
+      {q:'Harga sebuah sepatu Rp150.000 mendapat diskon 20%, lalu mendapat diskon tambahan 10% dari harga setelah diskon pertama. Berapa harga akhirnya?', opts:[108000,105000,112500,110000], correct:108000, time:30, exp:'150.000×0,8=120.000, lalu 120.000×0,9=108.000.', jenjang:'SMP (Diskon Berlapis/Persentase)', diff:'sangat_sulit'},
+      {q:'Sebuah mobil menempuh 100 km pertama dalam waktu 2 jam, lalu 80 km berikutnya juga dalam waktu 2 jam. Berapa kecepatan rata-rata seluruh perjalanan?', opts:['45 km/jam','50 km/jam','40 km/jam','42 km/jam'], correct:'45 km/jam', time:28, exp:'Total jarak=180 km, total waktu=4 jam, rata-rata=180÷4=45 km/jam.', jenjang:'SMP (Kecepatan Rata-rata)', diff:'sangat_sulit'},
+      {q:'Lonceng A berbunyi tiap 12 menit dan lonceng B tiap 18 menit. Jika keduanya berbunyi bersamaan pukul 08.00, pukul berapa keduanya berbunyi bersamaan lagi?', opts:['08.36','08.30','08.24','08.42'], correct:'08.36', time:28, exp:'KPK(12,18)=36 menit. 08.00 + 36 menit = 08.36.', jenjang:'SMP (KPK dalam Soal Cerita)', diff:'sangat_sulit'},
+      {q:'2³ × 2⁴ = ?', opts:[128,64,256,32], correct:128, time:18, exp:'2³×2⁴=2⁽³⁺⁴⁾=2⁷=128.', jenjang:'SMP (Bilangan Berpangkat)', diff:'sangat_sulit'},
+      {q:'Akar kuadrat dari 225 adalah?', opts:[15,16,14,13], correct:15, time:18, exp:'√225=15, karena 15×15=225.', jenjang:'SMP (Bentuk Akar)', diff:'sangat_sulit'},
+      {q:'Sebuah kotak berisi 4 bola merah, 3 bola biru, dan 5 bola hijau. Berapa peluang terambil 1 bola merah secara acak?', opts:['1/3','1/4','1/2','1/6'], correct:'1/3', time:25, exp:'Peluang=jumlah bola merah÷total bola=4/12=1/3.', jenjang:'SMP (Peluang Sederhana)', diff:'sangat_sulit'},
+      {q:'Lanjutkan pola (gaya tes psikotes): 2, 5, 10, 17, 26, ?', opts:[37,35,39,33], correct:37, time:28, exp:'Selisihnya bertambah 2 setiap langkah: +3,+5,+7,+9,+11 → 26+11=37.', jenjang:'SMP (Deret Pola — Psikotes)', diff:'sangat_sulit'},
+      {q:'Lanjutkan pola (gaya tes psikotes): 3, 7, 15, 31, 63, ?', opts:[127,125,129,123], correct:127, time:28, exp:'Pola: kalikan 2 lalu tambah 1 → 63×2+1=127.', jenjang:'SMP (Deret Pola — Psikotes)', diff:'sangat_sulit'},
+      {q:'Harga 5 buku adalah Rp60.000. Berapa harga 8 buku dengan harga satuan yang sama?', opts:[96000,90000,100000,84000], correct:96000, time:22, exp:'Harga per buku=60.000÷5=12.000. 8 buku=12.000×8=96.000.', jenjang:'SMP (Perbandingan Senilai)', diff:'sangat_sulit'},
+      {q:'Umur Ayah sekarang 4 kali umur anaknya. 6 tahun lagi, umur Ayah menjadi 3 kali umur anaknya. Berapa umur anak sekarang?', opts:[12,10,14,8], correct:12, time:30, exp:'Misal umur anak=x, ayah=4x. 6 tahun lagi: 4x+6=3(x+6) → 4x+6=3x+18 → x=12.', jenjang:'SMP (Soal Cerita Aljabar)', diff:'sangat_sulit'},
+      {q:'Suatu kelas berisi 50 siswa, 60% di antaranya laki-laki. Jika 10 siswa laki-laki pindah sekolah, berapa persen siswa laki-laki yang tersisa (dari total siswa yang tersisa)?', opts:['50%','45%','55%','60%'], correct:'50%', time:30, exp:'Laki-laki awal=60%×50=30. Setelah 10 pindah=20 laki-laki, total siswa tersisa=40. Persentase=20/40×100%=50%.', jenjang:'SMP (Soal Cerita Persentase)', diff:'sangat_sulit'},
+      {q:'Sebuah denah rumah berskala 1:100. Jika panjang sebuah ruangan pada denah 5 cm, berapa panjang ruangan sesungguhnya (meter)?', opts:[5,4,6,10], correct:5, time:22, exp:'5×100=500 cm=5 meter.', jenjang:'SMP (Skala Denah)', diff:'sangat_sulit'},
+      {q:'Jika A=1, B=2, C=3, ..., Z=26, berapa jumlah nilai huruf pada kata "SMP" (S+M+P)?', opts:[48,46,50,52], correct:48, time:20, exp:'S=19, M=13, P=16. Jumlah=19+13+16=48.', jenjang:'SMP (Soal Psikotes — Kode Huruf)', diff:'sangat_sulit'},
+      {q:'Dari 4 jenis baju dan 3 jenis celana, berapa banyak pasangan baju-celana berbeda yang bisa dibuat?', opts:[12,7,10,14], correct:12, time:22, exp:'Aturan perkalian: 4×3=12 pasangan.', jenjang:'SMP (Kaidah Pencacahan Dasar)', diff:'sangat_sulit'},
+      {q:'Seorang pedagang membeli barang seharga Rp80.000 dan menjualnya dengan keuntungan 25%. Berapa harga jualnya?', opts:[100000,95000,105000,90000], correct:100000, time:22, exp:'Untung=25%×80.000=20.000. Harga jual=80.000+20.000=100.000.', jenjang:'SMP (Untung & Rugi)', diff:'sangat_sulit'},
+      {q:'Uang sebesar Rp180.000 dibagikan kepada A, B, dan C dengan perbandingan 2:3:4. Berapa bagian yang diterima C?', opts:[80000,60000,90000,70000], correct:80000, time:25, exp:'Total bagian=2+3+4=9. Bagian C=4/9×180.000=80.000.', jenjang:'SMP (Perbandingan Tiga Bagian)', diff:'sangat_sulit'},
+      {q:'2,5 jam sama dengan berapa menit?', opts:[150,140,160,130], correct:150, time:15, exp:'2,5 jam × 60 menit = 150 menit.', jenjang:'SMP (Konversi Satuan Waktu)', diff:'sangat_sulit'},
+      {q:'Sebuah tangki berisi air sebanyak 3/4 dari kapasitasnya yang 200 liter. Jika 50 liter air dipakai, berapa liter sisa air dalam tangki?', opts:[100,90,110,120], correct:100, time:25, exp:'Air awal=3/4×200=150 liter. Setelah dipakai 50 liter, sisa=150−50=100 liter.', jenjang:'SMP (Soal Cerita Pecahan)', diff:'sangat_sulit'}
+    ];
+  } else {
+    return [];
   }
 }
 let mathQuestions=[], mathIdx=0, mathScoreCount=0, mathLevel='mudah', mathTimer=null, mathSessionId=0;
-const mathLevelNames = {mudah:'Mudah (Calistung)', sulit:'Sulit (Pola & Logika)', sangat_sulit:'Sangat Sulit (SMA/Kuliah)'};
+let mathTotalTimer=null, mathTotalSecondsLeft=0;
+const mathLevelNames = {mudah:'Mudah (Calistung)', sulit:'Sulit (Pola & Logika)', sangat_sulit:'Sangat Sulit (SMA/Kuliah)', ahli:'🏆 Ahli Berhitung'};
+const MATH_AHLI_QUESTION_COUNT = 30;
+const MATH_AHLI_TIME_LIMIT = 40*60; // 40 menit dalam detik, untuk SELURUH 30 soal (bukan per soal)
+// Bobot kesulitan untuk mode Ahli Berhitung: Mudah 10%, Sulit 20%, Sangat Sulit 70% dari 30 soal.
+const MATH_AHLI_WEIGHTS = { mudah: 3, sulit: 6, sangat_sulit: 21 };
+function buildMathAhliWeightedSet(){
+  const bank = buildMathQuestions('ahli');
+  const byDiff = { mudah: [], sulit: [], sangat_sulit: [] };
+  bank.forEach(q=>{ if(byDiff[q.diff]) byDiff[q.diff].push(q); });
+  let result = [];
+  Object.keys(MATH_AHLI_WEIGHTS).forEach(tier=>{
+    const need = MATH_AHLI_WEIGHTS[tier];
+    const available = shuffleArr(byDiff[tier].slice());
+    result = result.concat(available.slice(0, Math.min(need, available.length)));
+  });
+  return shuffleArr(result); // acak urutan akhir supaya tingkat kesulitan tidak berkelompok berurutan
+}
 function startMath(level){
   stopMathTimer();
+  stopMathTotalTimer();
   mathSessionId++;
+  const session = mathSessionId;
   mathLevel = level;
   goTo('game-hitung');
   document.getElementById('mathLevelTag').textContent = 'Tingkat: '+mathLevelNames[level];
-  document.getElementById('mathTime').textContent = level==='sangat_sulit' ? '⏱️ -' : '⏱️ Tanpa batas';
   document.getElementById('mathAgainBtn').onclick = ()=>startMath(level);
-  // Ambil 15 soal SECARA ACAK dari bank soal (lebih banyak dari 15) supaya setiap kali masuk lagi, soal benar-benar berbeda
-  const pool = shuffleArr(buildMathQuestions(level).slice());
-  mathQuestions = pool.slice(0,15);
+  // Ambil soal SECARA ACAK dari bank soal (lebih banyak dari yang dipakai) supaya setiap kali masuk lagi, soal benar-benar berbeda
+  if(level==='ahli'){
+    // Mode Ahli Berhitung: ambil 30 soal dengan BOBOT kesulitan Mudah 10% : Sulit 20% : Sangat Sulit 70%
+    // (3 soal Mudah, 6 soal Sulit, 21 soal Sangat Sulit), diacak dari masing-masing kelompok di bank 40 soal.
+    mathQuestions = buildMathAhliWeightedSet();
+  } else {
+    const pool = shuffleArr(buildMathQuestions(level).slice());
+    mathQuestions = pool.slice(0, 15);
+  }
   mathIdx=0; mathScoreCount=0;
   document.getElementById('mathScore').textContent='Skor: 0';
+  if(level==='ahli'){
+    // Timer TOTAL untuk seluruh 30 soal (40 menit), bukan timer per soal seperti Sangat Sulit
+    mathTotalSecondsLeft = MATH_AHLI_TIME_LIMIT;
+    document.getElementById('mathTime').textContent = mathFormatTotalTime(mathTotalSecondsLeft);
+    mathTotalTimer = setInterval(()=>{
+      if(session!==mathSessionId){ stopMathTotalTimer(); return; }
+      mathTotalSecondsLeft--;
+      document.getElementById('mathTime').textContent = mathFormatTotalTime(mathTotalSecondsLeft);
+      if(mathTotalSecondsLeft<=0){
+        stopMathTotalTimer();
+        endMath(true); // waktu total habis -> selesaikan sesi apa adanya
+      }
+    },1000);
+  } else {
+    document.getElementById('mathTime').textContent = level==='sangat_sulit' ? '⏱️ -' : '⏱️ Tanpa batas';
+  }
   renderMath();
 }
+function mathFormatTotalTime(totalSeconds){
+  const m = Math.floor(totalSeconds/60);
+  const s = totalSeconds%60;
+  return '⏱️ '+m+':'+String(s).padStart(2,'0');
+}
 function stopMathTimer(){ clearInterval(mathTimer); }
+function stopMathTotalTimer(){ clearInterval(mathTotalTimer); }
 function renderMath(){
   const session = mathSessionId;
   const item = mathQuestions[mathIdx];
@@ -2338,6 +2439,9 @@ function renderMath(){
       document.getElementById('mathTime').textContent='⏱️ '+t+'s';
       if(t<=0){ stopMathTimer(); mathAnswer(null, item, session, null, box); }
     },1000);
+  } else if(mathLevel==='ahli'){
+    // Tampilan waktu di sini TETAP menunjukkan sisa waktu TOTAL (40 menit), terus berjalan dari startMath,
+    // tidak direset per soal — biarkan interval total timer yang sudah berjalan terus meng-update teksnya.
   } else {
     document.getElementById('mathTime').textContent='⏱️ Tanpa batas';
   }
@@ -2361,8 +2465,8 @@ function mathAnswer(picked, item, session, clickedBtn, box){
   banner.style.color = isCorrect ? 'var(--good)' : 'var(--bad)';
   document.getElementById('mathExplanation').innerHTML = `💡 <strong>Cara penyelesaian:</strong> ${item.exp||'-'}`;
   const meta = document.getElementById('mathMeta');
-  if(mathLevel==='sangat_sulit' && item.jenjang){
-    meta.textContent = `📚 Setingkat: ${item.jenjang} • Perkiraan era soal serupa: ${item.era}`;
+  if((mathLevel==='sangat_sulit'||mathLevel==='ahli') && item.jenjang){
+    meta.textContent = item.era ? `📚 Setingkat: ${item.jenjang} • Perkiraan era soal serupa: ${item.era}` : `📚 Setingkat: ${item.jenjang}`;
   } else {
     meta.textContent='';
   }
@@ -2370,12 +2474,16 @@ function mathAnswer(picked, item, session, clickedBtn, box){
   document.getElementById('mathNextBtn').style.display='inline-flex';
   document.getElementById('mathNextBtn').onclick = ()=>{
     mathIdx++;
-    if(mathIdx>=mathQuestions.length){ endMath(); } else { renderMath(); }
+    if(mathIdx>=mathQuestions.length){ endMath(false); } else { renderMath(); }
   };
 }
-function endMath(){
-  const win = mathScoreCount>=11;
-  showResult('resultBannerHitung', win, `Kamu menjawab benar <strong>${mathScoreCount} dari ${mathQuestions.length}</strong> soal tingkat ${mathLevelNames[mathLevel]}. ${win?'Kamu jadi Jagoan Logika! 🏅':''}`);
+function endMath(timeUp){
+  stopMathTimer();
+  stopMathTotalTimer();
+  const passThreshold = mathLevel==='ahli' ? 22 : 11;
+  const win = mathScoreCount>=passThreshold;
+  const timeUpNote = timeUp ? ' ⏰ Waktu 40 menit habis, sesi diselesaikan apa adanya.' : '';
+  showResult('resultBannerHitung', win, `Kamu menjawab benar <strong>${mathScoreCount} dari ${mathQuestions.length}</strong> soal tingkat ${mathLevelNames[mathLevel]}.${timeUpNote} ${win?'Kamu jadi Jagoan Logika! 🏅':''}`);
   goTo('result-hitung');
 }
 
@@ -2483,6 +2591,7 @@ function endFokus(){
 /* ===================== MODUL 12: PANCING MANIA (5 ronde, 3 ikan tersembunyi muncul saat melempar pancing) ===================== */
 const PANCING_MAX_DEPTH = 30;
 const PANCING_TOTAL_ROUNDS = 5;
+const PANCING_CATCH_RADIUS = 4; // jarak maksimal (meter) dari ikan terdekat agar masih bisa tertangkap
 // 3 ukuran ikan dengan rentang berat masing-masing (gram). Kedalaman setiap ikan diacak ulang tiap ronde,
 // dan TIDAK ditampilkan sebelum pancing dilempar.
 const pancingSizeDefs = [
@@ -2558,26 +2667,39 @@ function pancingSubmit(session, chosenDepth){
     el.style.top = pancingDepthToPercent(f.depth)+'%';
   });
 
-  // Ikan yang posisinya PALING DEKAT dengan titik pancing itulah yang tertangkap
-  let caught = pancingRoundFish[0];
-  let bestDiff = Math.abs(chosenDepth - caught.depth);
+  // Ikan yang posisinya PALING DEKAT dengan titik pancing itulah kandidat tertangkap —
+  // TAPI hanya benar-benar tertangkap kalau jaraknya tidak lebih dari 4 meter (PANCING_CATCH_RADIUS).
+  let nearest = pancingRoundFish[0];
+  let bestDiff = Math.abs(chosenDepth - nearest.depth);
   for(const f of pancingRoundFish){
     const d = Math.abs(chosenDepth - f.depth);
-    if(d < bestDiff){ bestDiff = d; caught = f; }
+    if(d < bestDiff){ bestDiff = d; nearest = f; }
   }
-  const weightG = Math.round(caught.minG + Math.random()*(caught.maxG - caught.minG));
-  pancingTotalGrams += weightG;
-  pancingCatches.push({round: pancingRoundIdx+1, size: caught.name, emoji: caught.emoji, weightG, depth: caught.depth});
-
-  document.getElementById('pancingTotalTag').textContent = '⚖️ Total: '+pancingFormatWeight(pancingTotalGrams);
-
-  const lainnya = pancingRoundFish.filter(f=>f!==caught).map(f=>`${f.emoji} ${f.name} di ${f.depth}m`).join(' &nbsp;dan&nbsp; ');
   const fb = document.getElementById('pancingFeedback');
   fb.style.display='block';
-  fb.innerHTML = `<div style="font-weight:700; font-size:18px; color:var(--good);">${caught.emoji} Kamu menangkap ${caught.name}!</div>
-    <p style="margin-top:8px;">Berat ikan: <strong>${pancingFormatWeight(weightG)}</strong></p>
-    <p style="margin-top:8px; color:#ece2c8;">Titik pancingmu: <strong>${chosenDepth} meter</strong> &nbsp;|&nbsp; Ikan ini berada di: <strong>${caught.depth} meter</strong></p>
-    <p style="margin-top:8px; color:#ece2c8; font-size:13px;">Yang lolos kali ini: ${lainnya}</p>`;
+
+  if(bestDiff > PANCING_CATCH_RADIUS){
+    // Meleset lebih dari 4 meter dari ikan terdekat sekalipun -> tidak dapat ikan apa-apa
+    pancingCatches.push({round: pancingRoundIdx+1, missed:true, chosenDepth, nearestDepth: nearest.depth, diff: bestDiff});
+    const semuaIkan = pancingRoundFish.map(f=>`${f.emoji} ${f.name} di ${f.depth}m`).join(' &nbsp;dan&nbsp; ');
+    fb.innerHTML = `<div style="font-weight:700; font-size:18px; color:var(--bad);">💨 Yah, tidak ada ikan yang tertangkap!</div>
+      <p style="margin-top:8px; color:#ece2c8;">Titik pancingmu: <strong>${chosenDepth} meter</strong> — meleset lebih dari ${PANCING_CATCH_RADIUS} meter dari ikan terdekat.</p>
+      <p style="margin-top:8px; color:#ece2c8; font-size:13px;">Posisi ikan ronde ini: ${semuaIkan}</p>
+      <p style="margin-top:10px; font-style:italic; color:var(--gold);">"${randomQuote(loseQuotes)}"</p>`;
+  } else {
+    const caught = nearest;
+    const weightG = Math.round(caught.minG + Math.random()*(caught.maxG - caught.minG));
+    pancingTotalGrams += weightG;
+    pancingCatches.push({round: pancingRoundIdx+1, missed:false, size: caught.name, emoji: caught.emoji, weightG, depth: caught.depth});
+    document.getElementById('pancingTotalTag').textContent = '⚖️ Total: '+pancingFormatWeight(pancingTotalGrams);
+
+    const lainnya = pancingRoundFish.filter(f=>f!==caught).map(f=>`${f.emoji} ${f.name} di ${f.depth}m`).join(' &nbsp;dan&nbsp; ');
+    fb.innerHTML = `<div style="font-weight:700; font-size:18px; color:var(--good);">${caught.emoji} Kamu menangkap ${caught.name}!</div>
+      <p style="margin-top:8px;">Berat ikan: <strong>${pancingFormatWeight(weightG)}</strong></p>
+      <p style="margin-top:8px; color:#ece2c8;">Titik pancingmu: <strong>${chosenDepth} meter</strong> &nbsp;|&nbsp; Ikan ini berada di: <strong>${caught.depth} meter</strong> (jarak ${bestDiff}m)</p>
+      <p style="margin-top:8px; color:#ece2c8; font-size:13px;">Yang lolos kali ini: ${lainnya}</p>`;
+  }
+
   const nextBtn = document.getElementById('pancingNextBtn');
   nextBtn.textContent = (pancingRoundIdx+1 >= PANCING_TOTAL_ROUNDS) ? 'Lihat Hasil Akhir →' : 'Ronde Berikutnya →';
   nextBtn.style.display='inline-flex';
@@ -2588,8 +2710,13 @@ function pancingSubmit(session, chosenDepth){
 }
 function endPancing(){
   const win = pancingTotalGrams >= 7000;
-  const rincian = pancingCatches.map(c=>`Ronde ${c.round}: ${c.emoji} ${c.size} di ${c.depth}m (${pancingFormatWeight(c.weightG)})`).join('<br>');
-  showResult('resultBannerPancing', win, `Total berat tangkapanmu dari 5 ronde: <strong>${pancingFormatWeight(pancingTotalGrams)}</strong>.<br><br>${rincian}<br><br>${win?'Kamu jadi Master Pemancing! 🏅':'Terus berlatih membidik kedalaman yang tepat, makin jeli makin besar ikannya!'}`);
+  const rincian = pancingCatches.map(c=> c.missed
+    ? `Ronde ${c.round}: 💨 Tidak dapat ikan (meleset ${c.diff}m dari ikan terdekat)`
+    : `Ronde ${c.round}: ${c.emoji} ${c.size} di ${c.depth}m (${pancingFormatWeight(c.weightG)})`
+  ).join('<br>');
+  const missedCount = pancingCatches.filter(c=>c.missed).length;
+  const ringkasanGagal = missedCount>0 ? `<br><br>Kamu meleset lebih dari ${PANCING_CATCH_RADIUS} meter sebanyak ${missedCount} kali dari 5 ronde.` : '';
+  showResult('resultBannerPancing', win, `Total berat tangkapanmu dari 5 ronde: <strong>${pancingFormatWeight(pancingTotalGrams)}</strong>.<br><br>${rincian}${ringkasanGagal}<br><br>${win?'Kamu jadi Master Pemancing! 🏅':'Terus berlatih membidik kedalaman yang tepat, makin jeli makin besar ikannya!'}`);
   goTo('result-pancing');
 }
 
